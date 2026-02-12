@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -9,31 +10,120 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;800&family=Rajdhani:wght@600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Pretendard', sans-serif; background-color: #0f172a; color: white; -webkit-tap-highlight-color: transparent; overflow: hidden; }
-        .font-num { font-family: 'Rajdhani', sans-serif; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .animate-pop { animation: pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .animate-bounce-slow { animation: bounce 2s infinite; }
-        @keyframes pop { 0% { transform: scale(0.9); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        
-        .tier-badge-1 { background: #9ca3af; color: #1f2937; } 
-        .tier-badge-2 { background: #94a3b8; color: #0f172a; border: 1px solid #cbd5e1; }
-        .tier-badge-3 { background: linear-gradient(135deg, #facc15, #ca8a04); color: #422006; }
-        .tier-badge-4 { background: linear-gradient(135deg, #22d3ee, #3b82f6); color: white; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
-        
-        .shop-item-card { transition: all 0.2s; }
-        .shop-item-card:active { transform: scale(0.95); }
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #0f172a;
+            color: white;
+            -webkit-tap-highlight-color: transparent;
+            overflow: hidden;
+        }
+
+        .font-num {
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .animate-pop {
+            animation: pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .animate-bounce-slow {
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0.9);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .tier-badge-1 {
+            background: #9ca3af;
+            color: #1f2937;
+        }
+
+        .tier-badge-2 {
+            background: #94a3b8;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
+        }
+
+        .tier-badge-3 {
+            background: linear-gradient(135deg, #facc15, #ca8a04);
+            color: #422006;
+        }
+
+        .tier-badge-4 {
+            background: linear-gradient(135deg, #22d3ee, #3b82f6);
+            color: white;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        .shop-item-card {
+            transition: all 0.2s;
+        }
+
+        .shop-item-card:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
+
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo } = React;
+
+        // --- Firebase Configuration ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqlccYVYsY9lv-nwKSFGl6lYRqu_n-whI",
+            authDomain: "hoony-6cddb.firebaseapp.com",
+            projectId: "hoony-6cddb",
+            storageBucket: "hoony-6cddb.firebasestorage.app",
+            messagingSenderId: "782811839922",
+            appId: "1:782811839922:web:f24064e6ca682a215678ab",
+            measurementId: "G-R5C1GPWENT"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const analytics = firebase.analytics();
 
         // --- 1. 상점 아이템 데이터 ---
         const SHOP_ITEMS = {
@@ -77,12 +167,12 @@
                 const salaryStr = job["연봉"] || "";
                 let tier = 1;
                 let baseSalary = 30000000;
-                let cost = 300; 
+                let cost = 300;
 
                 if (salaryStr.includes("5천만원")) { tier = 4; baseSalary = 60000000; cost = 6000; }
                 else if (salaryStr.includes("4천만원")) { tier = 3; baseSalary = 45000000; cost = 2500; }
                 else if (salaryStr.includes("3천만원↑")) { tier = 2; baseSalary = 35000000; cost = 800; }
-                
+
                 const satStr = job["난이도(만족도%)"] || "70";
                 const satisfaction = parseFloat(satStr) || 70.0;
                 const mentalDrain = Math.max(1, ((100 - satisfaction) / 10).toFixed(1));
@@ -103,30 +193,117 @@
 
         const App = () => {
             // --- Game State ---
-            const [db, setDb] = useState(processJobData(DEMO_DATA));
+            const [localDb, setLocalDb] = useState(processJobData(DEMO_DATA)); // Renamed to localDb to avoid conflict
             const [isFullDataMode, setIsFullDataMode] = useState(false);
             const [currentJob, setCurrentJob] = useState(null);
             const [stats, setStats] = useState({ money: 0, exp: 0, mental: 100 });
             const [logs, setLogs] = useState(["커리어 하이에 오신 것을 환영합니다!"]);
             const [isBurnout, setIsBurnout] = useState(false);
-            
+
             // --- Customization State ---
-            const [inventory, setInventory] = useState(['av_1', 'bg_1', 'dk_1']); // Default items owned
+            const [inventory, setInventory] = useState(['av_1', 'bg_1', 'dk_1']);
             const [equipped, setEquipped] = useState({
                 avatar: SHOP_ITEMS.avatars[0],
                 background: SHOP_ITEMS.backgrounds[0],
                 desk: SHOP_ITEMS.deskItems[0]
             });
 
+            // --- Persistence State ---
+            const [userId, setUserId] = useState(null);
+            const [isLoaded, setIsLoaded] = useState(false);
+            const [saveStatus, setSaveStatus] = useState(''); // 'saving', 'saved', 'error'
+
             // UI State
-            const [view, setView] = useState("main"); 
+            const [view, setView] = useState("main");
             const [offers, setOffers] = useState([]);
             const [clickEffect, setClickEffect] = useState(null);
-            const [activeTab, setActiveTab] = useState(0); 
-            
+            const [activeTab, setActiveTab] = useState(0);
+
             // --- Helper Functions ---
             const addLog = (msg) => setLogs(prev => [msg, ...prev.slice(0, 3)]);
             const formatNum = (n) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+            // --- Persistence Logic ---
+            useEffect(() => {
+                // Initialize ID
+                let storedId = localStorage.getItem('career_high_uid');
+                if (!storedId) {
+                    storedId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('career_high_uid', storedId);
+                }
+                setUserId(storedId);
+
+                // Load Data
+                const loadData = async () => {
+                    if (!storedId) return;
+                    try {
+                        const docRef = db.collection('users').doc(storedId);
+                        const doc = await docRef.get();
+                        if (doc.exists) {
+                            const data = doc.data();
+                            // Restore state
+                            if (data.stats) setStats(data.stats);
+                            if (data.inventory) setInventory(data.inventory);
+
+                            // Restore equipped items (deep check)
+                            if (data.equippedIds) {
+                                setEquipped({
+                                    avatar: SHOP_ITEMS.avatars.find(i => i.id === data.equippedIds.avatar) || SHOP_ITEMS.avatars[0],
+                                    background: SHOP_ITEMS.backgrounds.find(i => i.id === data.equippedIds.background) || SHOP_ITEMS.backgrounds[0],
+                                    desk: SHOP_ITEMS.deskItems.find(i => i.id === data.equippedIds.desk) || SHOP_ITEMS.deskItems[0],
+                                });
+                            }
+
+                            if (data.currentJob) setCurrentJob(data.currentJob);
+                            addLog("☁️ [로드] 데이터 불러오기 성공!");
+                        } else {
+                            addLog("✨ [첫 시작] 새로운 커리어를 시작합니다.");
+                        }
+                    } catch (err) {
+                        console.error("Load Error:", err);
+                        addLog("❌ [로드 실패] " + err.message);
+                    } finally {
+                        setIsLoaded(true);
+                    }
+                };
+
+                loadData();
+            }, []);
+
+            // Auto-Save Effect
+            useEffect(() => {
+                if (!isLoaded || !userId) return;
+
+                const saveData = async () => {
+                    setSaveStatus('saving');
+                    try {
+                        const saveData = {
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            stats,
+                            inventory,
+                            equippedIds: {
+                                avatar: equipped.avatar.id,
+                                background: equipped.background.id,
+                                desk: equipped.desk.id
+                            },
+                            currentJob
+                        };
+
+                        await db.collection('users').doc(userId).set(saveData, { merge: true });
+                        setSaveStatus('saved');
+                        // setTimeout(() => setSaveStatus(''), 2000); 
+                    } catch (err) {
+                        console.error("Save Error:", err);
+                        setSaveStatus('error');
+                    }
+                };
+
+                // Debounce save (save 1 second after last change)
+                const timeoutId = setTimeout(saveData, 2000);
+                return () => clearTimeout(timeoutId);
+
+            }, [stats, inventory, equipped, currentJob, isLoaded, userId]);
+
 
             // --- Game Loop ---
             useEffect(() => {
@@ -160,13 +337,17 @@
 
             // --- Shop Logic ---
             const buyItem = (item, type) => {
+                console.log("Attempting to buy:", item, "Current Money:", stats.money);
                 if (stats.money >= item.price) {
                     setStats(prev => ({ ...prev, money: prev.money - item.price }));
                     setInventory(prev => [...prev, item.id]);
                     setEquipped(prev => ({ ...prev, [type]: item }));
                     addLog(`🛍️ [구매 성공] ${item.name} (-${formatNum(item.price)})`);
+                    // alert(`구매 성공! ${item.name}`); // Optional: Uncomment if logs are not enough
                 } else {
+                    console.warn("Purchase failed: Insufficient funds");
                     addLog(`💸 잔액이 부족합니다! (필요: ₩${formatNum(item.price)})`);
+                    alert("잔액이 부족합니다!");
                 }
             };
 
@@ -184,7 +365,7 @@
                     complete: (results) => {
                         if (results.data?.length > 0) {
                             const newDb = processJobData(results.data);
-                            setDb(newDb);
+                            setLocalDb(newDb);
                             setIsFullDataMode(true);
                             addLog(`📂 ${newDb.length}개 직업 데이터 로드!`);
                             generateOffers(newDb);
@@ -194,7 +375,7 @@
                 });
             };
 
-            const generateOffers = (database = db) => {
+            const generateOffers = (database = localDb) => {
                 if (database.length < 3) return;
                 const pool = database.filter(j => Math.abs(j.tier - (currentJob?.tier || 1)) <= 1);
                 const finalPool = pool.length > 3 ? pool : database;
@@ -206,14 +387,14 @@
                 const rect = e.target.getBoundingClientRect();
                 setClickEffect({ x: e.clientX - rect.left, y: e.clientY - rect.top, id: Date.now() });
 
-                let expGain = 20 + (currentJob ? currentJob.tier * 10 : 0); 
+                let expGain = 20 + (currentJob ? currentJob.tier * 10 : 0);
                 let mentalCost = currentJob ? currentJob.mentalDrain : 1;
 
                 setStats(prev => ({
                     ...prev,
                     exp: prev.exp + expGain,
                     mental: Math.max(0, prev.mental - mentalCost),
-                    money: prev.money + (currentJob ? currentJob.tier * 1000 : 100)
+                    money: Number(prev.money) + (currentJob ? currentJob.tier * 1000 : 100) // Ensure money is treated as number
                 }));
             };
 
@@ -240,22 +421,33 @@
                             <span className="text-sm font-bold truncate">{currentJob ? currentJob.name : '취업준비생'}</span>
                         </div>
                         <div className="text-right">
-                            <div className="text-xs text-blue-200">현재 자산</div>
+                            <div className="text-xs text-blue-200">
+                                현재 자산
+                                {saveStatus === 'saving' && <span className="ml-2 text-yellow-400 animate-pulse"><i className="fa-solid fa-floppy-disk"></i> 저장중...</span>}
+                                {saveStatus === 'saved' && <span className="ml-2 text-green-400 transition-opacity duration-1000"><i className="fa-solid fa-check"></i> 저장됨</span>}
+                                {saveStatus === 'error' && <span className="ml-2 text-red-400"><i className="fa-solid fa-triangle-exclamation"></i> 저장실패</span>}
+                            </div>
                             <div className="text-xl font-bold text-green-400 font-num drop-shadow-md">₩ {formatNum(stats.money)}</div>
                         </div>
                     </div>
 
                     {/* Visual Stage */}
                     <div className={`relative w-full h-64 rounded-2xl mb-6 shadow-2xl overflow-hidden border border-white/10 transition-all duration-500 ${equipped.background.style}`}>
-                        <div className="absolute bottom-4 right-4 text-4xl animate-bounce-slow filter drop-shadow-lg z-20">
+                        {/* Desk Item (Behind or Next to Avatar) */}
+                        <div className="absolute bottom-16 right-16 text-[60px] filter drop-shadow-lg z-10 transform translate-x-4 translate-y-4">
                             {equipped.desk.icon}
                         </div>
-                        <div className="absolute inset-0 flex items-center justify-center z-10">
-                            <div className="text-[80px] filter drop-shadow-2xl transform hover:scale-110 transition cursor-pointer" onClick={handleClick}>
+
+                        {/* Avatar */}
+                        <div className="absolute inset-0 flex items-center justify-center z-20">
+                            <div className="text-[100px] filter drop-shadow-2xl transform hover:scale-110 transition cursor-pointer relative" onClick={handleClick}>
                                 {isBurnout ? '🥵' : equipped.avatar.emoji}
+                                {/* Optional: Add a subtle glow or effect based on tier if needed */}
                             </div>
                         </div>
-                        <div className="absolute bottom-0 left-0 w-full p-3 bg-gradient-to-t from-black/80 to-transparent">
+
+                        {/* Logs Overlay */}
+                        <div className="absolute bottom-0 left-0 w-full p-3 bg-gradient-to-t from-black/80 to-transparent z-30 pointer-events-none">
                             <div className="flex flex-col space-y-1">
                                 {logs.map((log, i) => (
                                     <div key={i} className="text-xs text-white/90 font-light truncate animate-pop">
@@ -274,7 +466,7 @@
                                 <span>{Math.floor(stats.mental)}%</span>
                             </div>
                             <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
-                                <div className={`h-full transition-all duration-300 ${stats.mental < 30 ? 'bg-red-500' : 'bg-blue-500'}`} style={{width: `${stats.mental}%`}}></div>
+                                <div className={`h-full transition-all duration-300 ${stats.mental < 30 ? 'bg-red-500' : 'bg-blue-500'}`} style={{ width: `${stats.mental}%` }}></div>
                             </div>
                         </div>
                         <div>
@@ -283,13 +475,13 @@
                                 <span className="text-yellow-400">{formatNum(stats.exp)}</span>
                             </div>
                             <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
-                                <div className="h-full bg-yellow-500 transition-all duration-200" style={{width: `${Math.min(100, stats.exp / ((currentJob?.cost || 300) * 2)) * 100}%`}}></div>
+                                <div className="h-full bg-yellow-500 transition-all duration-200" style={{ width: `${Math.min(100, stats.exp / ((currentJob?.cost || 300) * 2)) * 100}%` }}></div>
                             </div>
                         </div>
                     </div>
 
                     {/* Main Button */}
-                    <button 
+                    <button
                         onClick={handleClick}
                         disabled={isBurnout}
                         className={`w-full flex-1 rounded-2xl font-black text-2xl shadow-lg transition-all relative overflow-hidden group
@@ -297,10 +489,10 @@
                     >
                         <span className="relative z-10">{isBurnout ? '휴식 중...' : '업무 수행 (WORK)'}</span>
                         {clickEffect && (
-                            <span 
+                            <span
                                 key={clickEffect.id}
                                 className="absolute bg-white/30 rounded-full w-20 h-20 animate-ping"
-                                style={{left: clickEffect.x - 40, top: clickEffect.y - 40, pointerEvents: 'none'}}
+                                style={{ left: clickEffect.x - 40, top: clickEffect.y - 40, pointerEvents: 'none' }}
                             />
                         )}
                     </button>
@@ -313,7 +505,7 @@
                     { id: 'backgrounds', name: '오피스', data: SHOP_ITEMS.backgrounds, equipType: 'background' },
                     { id: 'deskItems', name: '데스크', data: SHOP_ITEMS.deskItems, equipType: 'desk' }
                 ];
-                
+
                 return (
                     <div className="flex flex-col h-full p-6 pt-10">
                         <div className="flex justify-between items-center mb-4">
@@ -346,12 +538,12 @@
                                 return (
                                     <div key={item.id} className="bg-gray-800 p-3 rounded-xl border border-gray-700 flex flex-col justify-between shop-item-card relative overflow-hidden group">
                                         {isEquipped && <div className="absolute top-0 right-0 bg-yellow-500 text-black text-[10px] font-bold px-2 py-0.5 rounded-bl-lg z-10 shadow-md">장착중</div>}
-                                        
+
                                         <div className="text-center py-3">
                                             <div className="text-4xl mb-2 transform group-hover:scale-110 transition">{item.emoji || item.icon || (item.style ? '🎨' : '')}</div>
                                             <h3 className="font-bold text-sm text-white">{item.name}</h3>
                                             <p className="text-[10px] text-gray-400 mt-0.5">{item.desc}</p>
-                                            
+
                                             {/* 가격 표시 추가 */}
                                             <div className={`mt-2 font-num font-bold ${isOwned ? 'text-gray-500 line-through' : 'text-green-400'}`}>
                                                 {item.price === 0 ? '무료' : `₩ ${formatNum(item.price)}`}
@@ -360,23 +552,23 @@
 
                                         <div className="mt-1">
                                             {!isOwned ? (
-                                                <button 
+                                                <button
                                                     onClick={() => buyItem(item, categories[activeTab].equipType)}
                                                     className={`w-full py-2 rounded-lg text-xs font-bold shadow-sm transition active:scale-95 flex items-center justify-center gap-1
-                                                        ${stats.money >= item.price 
-                                                            ? 'bg-green-600 hover:bg-green-500 text-white shadow-green-900/50' 
+                                                        ${stats.money >= item.price
+                                                            ? 'bg-green-600 hover:bg-green-500 text-white shadow-green-900/50'
                                                             : 'bg-gray-700 text-gray-500 cursor-not-allowed'}`}
                                                 >
                                                     {stats.money >= item.price ? <i className="fa-solid fa-cart-shopping"></i> : <i className="fa-solid fa-lock"></i>}
                                                     {stats.money >= item.price ? '구매하기' : '잔액부족'}
                                                 </button>
                                             ) : (
-                                                <button 
+                                                <button
                                                     onClick={() => equipItem(item, categories[activeTab].equipType)}
                                                     disabled={isEquipped}
                                                     className={`w-full py-2 rounded-lg text-xs font-bold transition
-                                                        ${isEquipped 
-                                                            ? 'bg-gray-700 text-gray-400 cursor-default' 
+                                                        ${isEquipped
+                                                            ? 'bg-gray-700 text-gray-400 cursor-default'
                                                             : 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/50'}`}
                                                 >
                                                     {isEquipped ? '사용중' : '장착하기'}
@@ -419,7 +611,7 @@
                                         <span className={`${stats.exp >= job.cost ? 'text-blue-400' : 'text-red-400'} font-bold`}>{formatNum(job.cost)}</span>
                                     </div>
                                 </div>
-                                <button 
+                                <button
                                     onClick={() => applyJob(job)}
                                     className={`w-full py-3 rounded-lg font-bold text-sm transition 
                                         ${stats.exp >= job.cost ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-gray-700 text-gray-500'}`}
@@ -481,4 +673,5 @@
         root.render(<App />);
     </script>
 </body>
+
 </html>
