@@ -1,569 +1,661 @@
-import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Car, Home, Plane, Calculator, Briefcase, CheckCircle, ArrowRight, RefreshCw, User, DollarSign, Heart, Zap, ArrowLeft } from 'lucide-react';
-
-// --- 데이터 세트 (Data Mockup) ---
-
-// 1. 주거 옵션 (월 상환액은 대출 30년+이자 가정하여 대략적 역산)
-const HOUSING_OPTIONS = [
-  { id: 'h1', title: '한강 뷰 아파트', price: 2500000000, monthlyCost: 850, img: '🏢', desc: '서울의 랜드마크, 성공의 상징' },
-  { id: 'h2', title: '판교 타운하우스', price: 1200000000, monthlyCost: 450, img: '🏡', desc: '마당이 있는 여유로운 삶' },
-  { id: 'h3', title: '역세권 신축 빌라', price: 500000000, monthlyCost: 200, img: '🏙️', desc: '실속 있고 편리한 도시 생활' },
-  { id: 'h4', title: '낭만 가득 캠핑카', price: 100000000, monthlyCost: 50, img: '🚐', desc: '전국이 나의 집, 자유로운 영혼' },
-];
-
-// 2. 차량 옵션 (할부+유지비+보험료 포함 월 비용)
-const CAR_OPTIONS = [
-  { id: 'c1', title: '슈퍼카 (포르쉐급)', monthlyCost: 250, img: '🏎️', desc: '하차감 1위, 도로의 주인공' },
-  { id: 'c2', title: '패밀리 SUV', monthlyCost: 100, img: '🚙', desc: '가족 여행에 딱, 안전하고 튼튼함' },
-  { id: 'c3', title: '친환경 전기차', monthlyCost: 60, img: '🔋', desc: '유지비 절약하고 지구도 지킴' },
-  { id: 'c4', title: '대중교통/따릉이', monthlyCost: 10, img: '🚲', desc: '가장 합리적인 선택, 운동은 덤' },
-];
-
-// 3. 라이프스타일 (여행+식비+취미 등 월 평균 지출)
-const LIFE_LEVELS = [
-  { level: 1, label: '알뜰살뜰형', monthlyCost: 80, desc: '집밥 러버, 넷플릭스 취미' },
-  { level: 2, label: '소확행형', monthlyCost: 150, desc: '가끔 호캉스, 맛집 탐방' },
-  { level: 3, label: '플렉스형', monthlyCost: 300, desc: '연 2회 해외여행, 매주 오마카세' },
-];
-
-// 4. 직업 데이터베이스
-const JOB_DATA = [
-  { 
-    id: 'j1', name: 'AI 데이터 사이언티스트', 
-    type: 'logic', style: 'focus', 
-    minSal: 6000, maxSal: 15000, 
-    desc: '세상의 흐름을 데이터로 읽어내는 21세기의 예언가',
-    missions: ['관심 있는 아이돌/게임 순위를 엑셀로 정리해보기', '일주일 용돈 지출 내역 그래프 그리기'] 
-  },
-  { 
-    id: 'j2', name: '글로벌 마케터', 
-    type: 'social', style: 'people', 
-    minSal: 5000, maxSal: 12000, 
-    desc: '사람의 마음을 움직여 상품을 파는 심리 전략가',
-    missions: ['당근마켓에 안 쓰는 물건 판매글 매력적으로 써보기', '친구 3명에게 좋아하는 간식 설문조사하기'] 
-  },
-  { 
-    id: 'j3', name: '웹툰/콘텐츠 작가', 
-    type: 'art', style: 'creative', 
-    minSal: 3500, maxSal: 20000, // 상한선 높음
-    desc: '상상 속의 이야기를 현실로 만드는 창조주',
-    missions: ['4컷 만화 그려서 친구에게 보여주기', '좋아하는 유튜브 영상의 재미 포인트 3가지 적기'] 
-  },
-  { 
-    id: 'j4', name: '친환경 건축가', 
-    type: 'tech', style: 'make', 
-    minSal: 5500, maxSal: 13000, 
-    desc: '자연과 사람이 함께 사는 공간을 짓는 예술가',
-    missions: ['내 방 가구 배치를 새롭게 그려보기', '레고나 상자로 미래의 집 만들어보기'] 
-  },
-  { 
-    id: 'j5', name: '금융 자산운용사', 
-    type: 'logic', style: 'focus', 
-    minSal: 7000, maxSal: 30000, 
-    desc: '돈의 흐름을 읽어 거대한 부를 만드는 금융 전문가',
-    missions: ['모의 주식 투자 게임 해보기', '환율이 오르면 좋은 점 찾아보기'] 
-  },
-  { 
-    id: 'j6', name: '응급의학과 의사', 
-    type: 'tech', style: 'people', 
-    minSal: 12000, maxSal: 30000, 
-    desc: '가장 긴박한 순간에 생명을 구하는 히어로',
-    missions: ['심폐소생술(CPR) 영상 보고 따라해보기', '인체 모형도 그려보고 장기 위치 익히기'] 
-  }
-];
-
-// --- 컴포넌트 시작 ---
-
-export default function Project45() {
-  const [step, setStep] = useState('intro'); // intro, dream, receipt, match, mission
-  const [user, setUser] = useState({ name: '', house: null, car: null, life: 1 });
-  const [result, setResult] = useState({ monthlyNeed: 0, yearNeed: 0 });
-  const [selectedJob, setSelectedJob] = useState(null);
-
-  // 진행 상태바 계산
-  const getProgress = () => {
-    switch(step) {
-      case 'intro': return 0;
-      case 'dream': return 30;
-      case 'receipt': return 60;
-      case 'match': return 80;
-      case 'mission': return 100;
-      default: return 0;
-    }
-  };
-
-  // 비용 계산 로직
-  const calculateCost = () => {
-    if (!user.house || !user.car) return;
-
-    const houseCost = user.house.monthlyCost;
-    const carCost = user.car.monthlyCost;
-    const lifeCost = LIFE_LEVELS[user.life - 1].monthlyCost;
-    const savingCost = 100; // 기본 저축/세금 대비 여유분 (가정)
-
-    const totalMonthly = houseCost + carCost + lifeCost + savingCost;
-    // 연봉 역산 (세금 고려하여 대략 1.2~1.4배 곱함)
-    // 월 500이하: x13개월 / 월 1000이상: x15개월 (누진세 간략 반영)
-    let taxMultiplier = totalMonthly > 800 ? 1.5 : 1.3;
-    const totalYearly = Math.round((totalMonthly * 12 * taxMultiplier) / 100) * 100; // 만원 단위 반올림
-
-    setResult({
-      monthlyNeed: totalMonthly,
-      yearNeed: totalYearly
-    });
-    setStep('receipt');
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-800 flex justify-center items-start pt-10 pb-10">
-      <div className="w-full max-w-md bg-white shadow-xl rounded-3xl overflow-hidden border border-gray-100 min-h-[800px] relative flex flex-col">
-        
-        {/* 상단 진행바 */}
-        {step !== 'intro' && (
-          <div className="w-full h-2 bg-gray-100">
-            <div 
-              className="h-full bg-blue-500 transition-all duration-500 ease-out"
-              style={{ width: `${getProgress()}%` }}
-            ></div>
-          </div>
-        )}
-
-        {/* --- 1. 인트로 화면 --- */}
-        {step === 'intro' && (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-gradient-to-b from-blue-50 to-white">
-            <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-6 animate-bounce">
-              <span className="text-4xl">🚀</span>
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Project 45</h1>
-            <p className="text-gray-500 mb-8">45살의 내 인생 가격표를<br/>미리 확인해 보세요!</p>
-            
-            <div className="w-full mb-6">
-              <label className="block text-left text-sm font-bold text-gray-700 mb-2 pl-1">미래의 내 이름</label>
-              <input 
-                type="text" 
-                placeholder="예: 억만장자 김코딩"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-                onChange={(e) => setUser({...user, name: e.target.value})}
-              />
-            </div>
-
-            <button 
-              onClick={() => user.name ? setStep('dream') : alert('멋진 닉네임을 지어주세요!')}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transform transition active:scale-95 flex items-center justify-center gap-2"
-            >
-              타임머신 탑승하기 <ArrowRight size={20}/>
-            </button>
-          </div>
-        )}
-
-        {/* --- 2. 드림 보드 (입력) --- */}
-        {step === 'dream' && (
-          <DreamBoard 
-            user={user} 
-            setUser={setUser} 
-            onNext={calculateCost} 
-            onBack={() => setStep('intro')} // 인트로로 돌아가기
-            housingOptions={HOUSING_OPTIONS}
-            carOptions={CAR_OPTIONS}
-            lifeLevels={LIFE_LEVELS}
-          />
-        )}
-
-        {/* --- 3. 영수증 (결과) --- */}
-        {step === 'receipt' && (
-          <Receipt 
-            user={user} 
-            result={result} 
-            onNext={() => setStep('match')}
-            onBack={() => setStep('dream')} // 다시 선택 화면으로
-            onRetry={() => setStep('dream')}
-          />
-        )}
-
-        {/* --- 4. 직업 매칭 --- */}
-        {step === 'match' && (
-          <CareerMatch 
-            result={result} 
-            jobData={JOB_DATA}
-            onSelect={(job) => {
-              setSelectedJob(job);
-              setStep('mission');
-            }}
-            onBack={() => setStep('receipt')} // 영수증 화면으로
-          />
-        )}
-
-        {/* --- 5. 미션 (액션플랜) --- */}
-        {step === 'mission' && selectedJob && (
-          <MissionCard 
-            user={user}
-            job={selectedJob} 
-            onShare={() => alert('친구에게 공유할 수 있는 링크가 복사되었습니다! (가상)')}
-            onBack={() => setStep('match')} // 직업 선택 화면으로
-          />
-        )}
-
-      </div>
-    </div>
-  );
-}
-
-// --- 하위 컴포넌트들 ---
-
-function DreamBoard({ user, setUser, onNext, onBack, housingOptions, carOptions, lifeLevels }) {
-  const [page, setPage] = useState(1); // 1: House, 2: Car, 3: Life
-
-  const nextPage = () => {
-    if (page === 1 && !user.house) return alert('살고 싶은 집을 골라주세요!');
-    if (page === 2 && !user.car) return alert('타고 싶은 차를 골라주세요!');
-    if (page < 3) setPage(page + 1);
-    else onNext();
-  };
-
-  const handleBack = () => {
-    if (page > 1) setPage(page - 1); // 내부 페이지 뒤로가기
-    else onBack(); // 외부 단계(인트로) 뒤로가기
-  };
-
-  return (
-    <div className="flex-1 flex flex-col p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-2">
-          <button onClick={handleBack} className="p-2 -ml-2 text-gray-400 hover:text-gray-900 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft size={24} />
-          </button>
-          <h2 className="text-xl font-bold text-gray-900 leading-tight">
-            {page === 1 && "어디서 살고 싶나요?"}
-            {page === 2 && "무엇을 타고 갈까요?"}
-            {page === 3 && "어떤 생활을 할까요?"}
-          </h2>
-        </div>
-        <span className="text-xs font-medium text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Step {page}/3</span>
-      </div>
-
-      <div className="flex-1 overflow-y-auto pb-20 scrollbar-hide">
-        {page === 1 && (
-          <div className="grid grid-cols-1 gap-4">
-            {housingOptions.map((house) => (
-              <SelectionCard 
-                key={house.id} 
-                title={house.title} 
-                emoji={house.img}
-                priceDesc={`약 ${house.price / 100000000}억 원`}
-                subDesc={house.desc}
-                isSelected={user.house?.id === house.id}
-                onClick={() => setUser({...user, house: house})}
-              />
-            ))}
-          </div>
-        )}
-
-        {page === 2 && (
-          <div className="grid grid-cols-2 gap-3">
-            {carOptions.map((car) => (
-              <div 
-                key={car.id}
-                onClick={() => setUser({...user, car: car})}
-                className={`cursor-pointer p-4 rounded-2xl border-2 transition-all duration-200 flex flex-col items-center text-center gap-2
-                  ${user.car?.id === car.id ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' : 'border-gray-100 bg-white hover:border-blue-300'}`}
-              >
-                <div className="text-4xl mb-1">{car.img}</div>
-                <h3 className="font-bold text-gray-800 text-sm">{car.title}</h3>
-                <p className="text-xs text-gray-500">{car.desc}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {page === 3 && (
-          <div className="space-y-8 px-2">
-            <div className="text-center mb-4">
-              <span className="text-6xl mb-4 block">
-                {lifeLevels[user.life-1].level === 1 && '🍜'}
-                {lifeLevels[user.life-1].level === 2 && '🍝'}
-                {lifeLevels[user.life-1].level === 3 && '🥩'}
-              </span>
-              <p className="text-lg font-bold text-blue-600">{lifeLevels[user.life-1].label}</p>
-              <p className="text-gray-500 text-sm mt-1">{lifeLevels[user.life-1].desc}</p>
-            </div>
-            
-            <input 
-              type="range" 
-              min="1" 
-              max="3" 
-              step="1" 
-              value={user.life}
-              onChange={(e) => setUser({...user, life: parseInt(e.target.value)})}
-              className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-            />
-            <div className="flex justify-between text-xs text-gray-400 px-1">
-              <span>알뜰형</span>
-              <span>균형형</span>
-              <span>플렉스</span>
-            </div>
-            <div className="bg-gray-50 p-4 rounded-xl text-sm text-gray-600 mt-6">
-              <p>💡 <b>Tip:</b> 숨만 쉬어도 나가는 돈(세금, 보험료)도 자동으로 계산돼요.</p>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-white via-white to-transparent max-w-md mx-auto">
-        <button 
-          onClick={nextPage}
-          className="w-full bg-black text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition"
-        >
-          {page === 3 ? '계산 결과 보기 🧾' : '다음으로'}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function SelectionCard({ title, emoji, priceDesc, subDesc, isSelected, onClick }) {
-  return (
-    <div 
-      onClick={onClick}
-      className={`relative cursor-pointer p-5 rounded-2xl border-2 transition-all duration-200 flex items-center gap-4
-        ${isSelected ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' : 'border-gray-100 bg-white hover:border-blue-300'}`}
-    >
-      <div className="text-4xl">{emoji}</div>
-      <div>
-        <h3 className="font-bold text-gray-900">{title}</h3>
-        <p className="text-sm text-blue-600 font-medium">{priceDesc}</p>
-        <p className="text-xs text-gray-400 mt-1">{subDesc}</p>
-      </div>
-      {isSelected && <div className="absolute top-4 right-4 text-blue-500"><CheckCircle size={20} fill="currentColor" className="text-white"/></div>}
-    </div>
-  );
-}
-
-function Receipt({ user, result, onNext, onBack, onRetry }) {
-  const [showTaxModal, setShowTaxModal] = useState(false);
-
-  return (
-    <div className="flex-1 flex flex-col p-6 bg-gray-100 relative">
-      
-      {/* 뒤로가기 버튼 영역 */}
-      <div className="flex items-center mb-4">
-         <button onClick={onBack} className="p-2 -ml-2 text-gray-500 hover:text-gray-900 rounded-full hover:bg-gray-200 transition">
-            <ArrowLeft size={24} />
-         </button>
-         <span className="ml-2 font-bold text-gray-500 text-sm">다시 선택하기</span>
-      </div>
-
-      <div className="bg-white p-6 rounded-b-xl shadow-sm border-b-4 border-dashed border-gray-300 relative mx-2 animate-slide-down">
-        <div className="text-center mb-6">
-          <p className="text-gray-400 text-xs uppercase tracking-widest mb-1">Receipt for {user.name}</p>
-          <h2 className="text-2xl font-bold text-gray-900">45세 인생 견적서</h2>
-        </div>
-
-        <div className="space-y-3 mb-6">
-          <ReceiptRow label="🏠 주거비 (대출상환)" value={user.house.monthlyCost} />
-          <ReceiptRow label="🚗 차량 유지비" value={user.car.monthlyCost} />
-          <ReceiptRow label="✈️ 생활/여가비" value={LIFE_LEVELS[user.life-1].monthlyCost} />
-          <ReceiptRow label="🏦 저축 및 세금" value={100} isGray />
-        </div>
-
-        <div className="border-t-2 border-gray-900 pt-4 mb-2">
-          <div className="flex justify-between items-end">
-            <span className="font-bold text-lg">월 필요 소득</span>
-            <span className="font-black text-3xl text-blue-600">{result.monthlyNeed}만원</span>
-          </div>
-          <p className="text-right text-sm text-gray-500 mt-1">
-            (연봉 환산 시: 약 <span className="font-bold text-gray-800">{result.yearNeed / 100}억 {result.yearNeed % 100 > 0 ? result.yearNeed % 100+'만' : ''}원</span>)
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-6 space-y-3 px-2">
-        <button 
-          onClick={() => setShowTaxModal(true)}
-          className="w-full py-3 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 flex items-center justify-center gap-2"
-        >
-          <DollarSign size={16}/> 세금이 왜 이렇게 많아요?
-        </button>
-
-        <button 
-          onClick={onRetry}
-          className="w-full py-3 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 flex items-center justify-center gap-2"
-        >
-          <RefreshCw size={16}/> 너무 비싸요! 초기화
-        </button>
-
-        <button 
-          onClick={onNext}
-          className="w-full py-4 bg-blue-600 text-white font-bold rounded-xl shadow-lg mt-4 active:scale-95 transition"
-        >
-          이 돈 벌 수 있는 직업 찾기 👉
-        </button>
-      </div>
-
-      {showTaxModal && (
-        <div className="absolute inset-0 bg-black/50 flex items-center justify-center p-6 z-50">
-          <div className="bg-white p-6 rounded-2xl max-w-sm w-full">
-            <h3 className="text-xl font-bold mb-2">세금의 비밀 🤫</h3>
-            <p className="text-gray-600 text-sm mb-4 leading-relaxed">
-              연봉이 1억이라고 통장에 1억이 다 들어오지 않아요.<br/>
-              국가 운영을 위한 <b>소득세</b>와 미래를 위한 <b>국민연금</b>, 아플 때를 대비한 <b>건강보험</b> 등을 미리 내야 하거든요. <br/><br/>
-              많이 벌수록 세금도 많이 낸답니다! (노블레스 오블리주 ✨)
-            </p>
-            <button 
-              onClick={() => setShowTaxModal(false)}
-              className="w-full bg-gray-900 text-white py-3 rounded-xl font-bold"
-            >
-              아하, 이해했어요!
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ReceiptRow({ label, value, isGray }) {
-  return (
-    <div className={`flex justify-between items-center ${isGray ? 'text-gray-400' : 'text-gray-700'}`}>
-      <span className="text-sm font-medium">{label}</span>
-      <span className="font-bold">{value}만원</span>
-    </div>
-  );
-}
-
-function CareerMatch({ result, jobData, onSelect, onBack }) {
-  const [filterType, setFilterType] = useState('all'); // all, people, logic, creative
-
-  // 직업 추천 로직: 필요 연봉이 직업의 max 연봉보다 낮으면 추천 (도달 가능성 있음)
-  const matchedJobs = jobData.filter(job => {
-    // 1. 연봉 조건: 내 목표 연봉이 직업의 Max 연봉 안쪽인가? (혹은 Min 연봉보다는 높은가?)
-    // 여기서는 "노력하면 닿을 수 있는 범위"로 설정 (Min Salary의 0.8배 이상이면 보여줌)
-    const isSalaryPossible = result.yearNeed <= job.maxSal * 1.2; 
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 45: 나만의 미래 쇼핑몰</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM & Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
-    // 2. 성향 필터
-    if (filterType === 'all') return isSalaryPossible;
-    if (filterType === 'people') return isSalaryPossible && (job.type === 'social' || job.style === 'people');
-    if (filterType === 'logic') return isSalaryPossible && (job.type === 'logic' || job.type === 'tech');
-    if (filterType === 'creative') return isSalaryPossible && (job.type === 'art' || job.style === 'creative');
-    return false;
-  });
+    <!-- Lucide Icons (CDN) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        /* 커스텀 스크롤바 숨기기 등 추가 스타일 */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        @keyframes slide-down {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-down {
+            animation: slide-down 0.5s ease-out forwards;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(-5%); }
+            50% { transform: translateY(0); }
+        }
+        .animate-bounce {
+            animation: bounce 1s infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <div id="root"></div>
 
-  return (
-    <div className="flex-1 flex flex-col p-6 bg-white">
-      <div className="flex items-center gap-2 mb-6">
-         <button onClick={onBack} className="p-2 -ml-2 text-gray-500 hover:text-gray-900 rounded-full hover:bg-gray-100 transition">
-            <ArrowLeft size={24} />
-         </button>
-        <div>
-          <h2 className="text-xl font-bold text-gray-900">직업 매칭소 💼</h2>
-          <p className="text-gray-500 text-xs">
-            목표 연봉 <span className="text-blue-600 font-bold">{Math.round(result.yearNeed/1000)*1000/100}억</span>원 달성 가능!
-          </p>
-        </div>
-      </div>
-
-      {/* 필터 탭 */}
-      <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide mb-2">
-        {['all', 'people', 'logic', 'creative'].map(type => (
-          <button
-            key={type}
-            onClick={() => setFilterType(type)}
-            className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition
-              ${filterType === type ? 'bg-black text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
-          >
-            {type === 'all' && '전체 보기'}
-            {type === 'people' && '사람이 좋아'}
-            {type === 'logic' && '논리가 좋아'}
-            {type === 'creative' && '창작이 좋아'}
-          </button>
-        ))}
-      </div>
-
-      <div className="flex-1 overflow-y-auto pb-4 space-y-4">
-        {matchedJobs.length > 0 ? (
-          matchedJobs.map(job => (
-            <div 
-              key={job.id} 
-              onClick={() => onSelect(job)}
-              className="group cursor-pointer border border-gray-100 rounded-2xl p-5 hover:border-blue-500 hover:shadow-md transition bg-white"
-            >
-              <div className="flex justify-between items-start mb-2">
-                <span className={`px-2 py-1 rounded-md text-xs font-bold 
-                  ${job.type === 'logic' ? 'bg-purple-100 text-purple-600' : 
-                    job.type === 'art' ? 'bg-pink-100 text-pink-600' : 
-                    'bg-green-100 text-green-600'}`}>
-                  {job.type === 'logic' && '논리/분석'}
-                  {job.type === 'art' && '예술/창작'}
-                  {job.type === 'social' && '소통/리더십'}
-                  {job.type === 'tech' && '기술/공학'}
-                </span>
-                <span className="text-xs text-gray-400">평균 연봉 {job.minSal/100}~{job.maxSal/100}억</span>
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition">{job.name}</h3>
-              <p className="text-sm text-gray-500 mt-1">{job.desc}</p>
-              <div className="mt-3 flex items-center text-blue-500 text-sm font-bold opacity-0 group-hover:opacity-100 transition">
-                미션 확인하기 <ArrowRight size={16} className="ml-1"/>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="text-center py-10 bg-gray-50 rounded-2xl">
-            <p className="text-gray-500 mb-2">조건에 맞는 직업을 찾기 어려워요 😅</p>
-            <p className="text-sm text-gray-400">생활비 목표를 조금 낮춰보거나<br/>다른 성향을 선택해보세요!</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function MissionCard({ user, job, onShare, onBack }) {
-  return (
-    <div className="flex-1 flex flex-col p-6 bg-blue-600 text-white relative">
-      {/* 뒤로가기 버튼 */}
-      <button 
-        onClick={onBack} 
-        className="absolute top-6 left-6 p-2 -ml-2 text-blue-200 hover:text-white rounded-full hover:bg-white/10 transition"
-      >
-        <ArrowLeft size={24} />
-      </button>
-
-      <div className="flex-1 flex flex-col items-center justify-center text-center mt-8">
-        <div className="bg-white/10 p-4 rounded-full mb-6">
-          <Zap size={48} className="text-yellow-300 fill-current"/>
-        </div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
         
-        <h2 className="text-2xl font-bold mb-2">오늘의 미션 도착!</h2>
-        <p className="text-blue-100 mb-8">
-          미래의 <b>{job.name}</b> {user.name}님,<br/>
-          지금 당장 시작할 수 있는 일이 있어요.
-        </p>
+        // Lucide 아이콘 컴포넌트 래퍼 (CDN 버전의 lucide 객체를 React 컴포넌트로 사용하기 위함)
+        const IconWrapper = ({ name, size = 24, className, fill = "none" }) => {
+            const iconRef = React.useRef(null);
+            
+            React.useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons({
+                        root: iconRef.current,
+                        name: name,
+                        attrs: {
+                            width: size,
+                            height: size,
+                            class: className,
+                            fill: fill,
+                            stroke: "currentColor"
+                        }
+                    });
+                }
+            }, [name, size, className, fill]);
 
-        <div className="w-full bg-white text-gray-800 rounded-2xl p-6 shadow-xl text-left space-y-4">
-          <h3 className="font-bold text-gray-500 text-xs uppercase tracking-wider border-b pb-2 mb-2">Daily Missions</h3>
-          
-          {job.missions.map((mission, idx) => (
-            <label key={idx} className="flex items-start gap-3 cursor-pointer group">
-              <input type="checkbox" className="w-5 h-5 mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
-              <span className="text-sm group-hover:text-blue-600 transition leading-snug">
-                <span className="font-bold text-blue-500 mr-1">Lv.{idx+1}</span>
-                {mission}
-              </span>
-            </label>
-          ))}
-        </div>
-      </div>
+            return <i ref={iconRef} data-lucide={name} className={className}></i>;
+        };
 
-      <div className="mt-8 space-y-3">
-        <button 
-          onClick={onShare}
-          className="w-full bg-white text-blue-600 font-bold py-4 rounded-xl shadow-lg active:scale-95 transition flex items-center justify-center gap-2"
-        >
-          친구들에게 자랑하기 <Heart size={18} className="text-red-500 fill-current"/>
-        </button>
-        <p className="text-center text-xs text-blue-200 mt-4 opacity-70">
-          Project 45 • Life Reverse Engineering
-        </p>
-      </div>
-    </div>
-  );
-}
+        // 아이콘들을 컴포넌트로 정의
+        const ShoppingCart = (props) => <IconWrapper name="shopping-cart" {...props} />;
+        const Car = (props) => <IconWrapper name="car" {...props} />;
+        const Home = (props) => <IconWrapper name="home" {...props} />;
+        const Plane = (props) => <IconWrapper name="plane" {...props} />;
+        const Calculator = (props) => <IconWrapper name="calculator" {...props} />;
+        const Briefcase = (props) => <IconWrapper name="briefcase" {...props} />;
+        const CheckCircle = (props) => <IconWrapper name="check-circle" {...props} />;
+        const ArrowRight = (props) => <IconWrapper name="arrow-right" {...props} />;
+        const ArrowLeft = (props) => <IconWrapper name="arrow-left" {...props} />;
+        const RefreshCw = (props) => <IconWrapper name="refresh-cw" {...props} />;
+        const User = (props) => <IconWrapper name="user" {...props} />;
+        const DollarSign = (props) => <IconWrapper name="dollar-sign" {...props} />;
+        const Heart = (props) => <IconWrapper name="heart" {...props} />;
+        const Zap = (props) => <IconWrapper name="zap" {...props} />;
+
+        // --- 데이터 세트 (Data Mockup) ---
+
+        // 1. 주거 옵션
+        const HOUSING_OPTIONS = [
+            { id: 'h1', title: '한강 뷰 아파트', price: 2500000000, monthlyCost: 850, img: '🏢', desc: '서울의 랜드마크, 성공의 상징' },
+            { id: 'h2', title: '판교 타운하우스', price: 1200000000, monthlyCost: 450, img: '🏡', desc: '마당이 있는 여유로운 삶' },
+            { id: 'h3', title: '역세권 신축 빌라', price: 500000000, monthlyCost: 200, img: '🏙️', desc: '실속 있고 편리한 도시 생활' },
+            { id: 'h4', title: '낭만 가득 캠핑카', price: 100000000, monthlyCost: 50, img: '🚐', desc: '전국이 나의 집, 자유로운 영혼' },
+        ];
+
+        // 2. 차량 옵션
+        const CAR_OPTIONS = [
+            { id: 'c1', title: '슈퍼카 (포르쉐급)', monthlyCost: 250, img: '🏎️', desc: '하차감 1위, 도로의 주인공' },
+            { id: 'c2', title: '패밀리 SUV', monthlyCost: 100, img: '🚙', desc: '가족 여행에 딱, 안전하고 튼튼함' },
+            { id: 'c3', title: '친환경 전기차', monthlyCost: 60, img: '🔋', desc: '유지비 절약하고 지구도 지킴' },
+            { id: 'c4', title: '대중교통/따릉이', monthlyCost: 10, img: '🚲', desc: '가장 합리적인 선택, 운동은 덤' },
+        ];
+
+        // 3. 라이프스타일
+        const LIFE_LEVELS = [
+            { level: 1, label: '알뜰살뜰형', monthlyCost: 80, desc: '집밥 러버, 넷플릭스 취미' },
+            { level: 2, label: '소확행형', monthlyCost: 150, desc: '가끔 호캉스, 맛집 탐방' },
+            { level: 3, label: '플렉스형', monthlyCost: 300, desc: '연 2회 해외여행, 매주 오마카세' },
+        ];
+
+        // 4. 직업 데이터베이스
+        const JOB_DATA = [
+            { 
+                id: 'j1', name: 'AI 데이터 사이언티스트', 
+                type: 'logic', style: 'focus', 
+                minSal: 6000, maxSal: 15000, 
+                desc: '세상의 흐름을 데이터로 읽어내는 21세기의 예언가',
+                missions: ['관심 있는 아이돌/게임 순위를 엑셀로 정리해보기', '일주일 용돈 지출 내역 그래프 그리기'] 
+            },
+            { 
+                id: 'j2', name: '글로벌 마케터', 
+                type: 'social', style: 'people', 
+                minSal: 5000, maxSal: 12000, 
+                desc: '사람의 마음을 움직여 상품을 파는 심리 전략가',
+                missions: ['당근마켓에 안 쓰는 물건 판매글 매력적으로 써보기', '친구 3명에게 좋아하는 간식 설문조사하기'] 
+            },
+            { 
+                id: 'j3', name: '웹툰/콘텐츠 작가', 
+                type: 'art', style: 'creative', 
+                minSal: 3500, maxSal: 20000, 
+                desc: '상상 속의 이야기를 현실로 만드는 창조주',
+                missions: ['4컷 만화 그려서 친구에게 보여주기', '좋아하는 유튜브 영상의 재미 포인트 3가지 적기'] 
+            },
+            { 
+                id: 'j4', name: '친환경 건축가', 
+                type: 'tech', style: 'make', 
+                minSal: 5500, maxSal: 13000, 
+                desc: '자연과 사람이 함께 사는 공간을 짓는 예술가',
+                missions: ['내 방 가구 배치를 새롭게 그려보기', '레고나 상자로 미래의 집 만들어보기'] 
+            },
+            { 
+                id: 'j5', name: '금융 자산운용사', 
+                type: 'logic', style: 'focus', 
+                minSal: 7000, maxSal: 30000, 
+                desc: '돈의 흐름을 읽어 거대한 부를 만드는 금융 전문가',
+                missions: ['모의 주식 투자 게임 해보기', '환율이 오르면 좋은 점 찾아보기'] 
+            },
+            { 
+                id: 'j6', name: '응급의학과 의사', 
+                type: 'tech', style: 'people', 
+                minSal: 12000, maxSal: 30000, 
+                desc: '가장 긴박한 순간에 생명을 구하는 히어로',
+                missions: ['심폐소생술(CPR) 영상 보고 따라해보기', '인체 모형도 그려보고 장기 위치 익히기'] 
+            }
+        ];
+
+        // --- 메인 컴포넌트 ---
+        function Project45() {
+            const [step, setStep] = useState('intro');
+            const [user, setUser] = useState({ name: '', house: null, car: null, life: 1 });
+            const [result, setResult] = useState({ monthlyNeed: 0, yearNeed: 0 });
+            const [selectedJob, setSelectedJob] = useState(null);
+
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            });
+
+            const getProgress = () => {
+                switch(step) {
+                    case 'intro': return 0;
+                    case 'dream': return 30;
+                    case 'receipt': return 60;
+                    case 'match': return 80;
+                    case 'mission': return 100;
+                    default: return 0;
+                }
+            };
+
+            const calculateCost = () => {
+                if (!user.house || !user.car) return;
+
+                const houseCost = user.house.monthlyCost;
+                const carCost = user.car.monthlyCost;
+                const lifeCost = LIFE_LEVELS[user.life - 1].monthlyCost;
+                const savingCost = 100; 
+
+                const totalMonthly = houseCost + carCost + lifeCost + savingCost;
+                let taxMultiplier = totalMonthly > 800 ? 1.5 : 1.3;
+                const totalYearly = Math.round((totalMonthly * 12 * taxMultiplier) / 100) * 100; 
+
+                setResult({
+                    monthlyNeed: totalMonthly,
+                    yearNeed: totalYearly
+                });
+                setStep('receipt');
+            };
+
+            return (
+                <div className="min-h-screen bg-gray-50 font-sans text-gray-800 flex justify-center items-start pt-10 pb-10">
+                    <div className="w-full max-w-md bg-white shadow-xl rounded-3xl overflow-hidden border border-gray-100 min-h-[800px] relative flex flex-col">
+                        
+                        {step !== 'intro' && (
+                        <div className="w-full h-2 bg-gray-100">
+                            <div 
+                                className="h-full bg-blue-500 transition-all duration-500 ease-out"
+                                style={{ width: `${getProgress()}%` }}
+                            ></div>
+                        </div>
+                        )}
+
+                        {step === 'intro' && (
+                        <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-gradient-to-b from-blue-50 to-white">
+                            <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-6 animate-bounce">
+                                <span className="text-4xl">🚀</span>
+                            </div>
+                            <h1 className="text-3xl font-bold text-gray-900 mb-2">Project 45</h1>
+                            <p className="text-gray-500 mb-8">45살의 내 인생 가격표를<br/>미리 확인해 보세요!</p>
+                            
+                            <div className="w-full mb-6">
+                                <label className="block text-left text-sm font-bold text-gray-700 mb-2 pl-1">미래의 내 이름</label>
+                                <input 
+                                    type="text" 
+                                    placeholder="예: 억만장자 김코딩"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
+                                    onChange={(e) => setUser({...user, name: e.target.value})}
+                                />
+                            </div>
+
+                            <button 
+                                onClick={() => user.name ? setStep('dream') : alert('멋진 닉네임을 지어주세요!')}
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transform transition active:scale-95 flex items-center justify-center gap-2"
+                            >
+                                타임머신 탑승하기 <ArrowRight size={20}/>
+                            </button>
+                        </div>
+                        )}
+
+                        {step === 'dream' && (
+                        <DreamBoard 
+                            user={user} 
+                            setUser={setUser} 
+                            onNext={calculateCost} 
+                            onBack={() => setStep('intro')}
+                            housingOptions={HOUSING_OPTIONS}
+                            carOptions={CAR_OPTIONS}
+                            lifeLevels={LIFE_LEVELS}
+                        />
+                        )}
+
+                        {step === 'receipt' && (
+                        <Receipt 
+                            user={user} 
+                            result={result} 
+                            onNext={() => setStep('match')}
+                            onBack={() => setStep('dream')}
+                            onRetry={() => setStep('dream')}
+                        />
+                        )}
+
+                        {step === 'match' && (
+                        <CareerMatch 
+                            result={result} 
+                            jobData={JOB_DATA}
+                            onSelect={(job) => {
+                                setSelectedJob(job);
+                                setStep('mission');
+                            }}
+                            onBack={() => setStep('receipt')}
+                        />
+                        )}
+
+                        {step === 'mission' && selectedJob && (
+                        <MissionCard 
+                            user={user}
+                            job={selectedJob} 
+                            onShare={() => alert('친구에게 공유할 수 있는 링크가 복사되었습니다! (가상)')}
+                            onBack={() => setStep('match')}
+                        />
+                        )}
+
+                    </div>
+                </div>
+            );
+        }
+
+        // --- 하위 컴포넌트들 ---
+
+        function DreamBoard({ user, setUser, onNext, onBack, housingOptions, carOptions, lifeLevels }) {
+            const [page, setPage] = useState(1); 
+
+            useEffect(() => {
+                if (window.lucide) window.lucide.createIcons();
+            }, [page]);
+
+            const nextPage = () => {
+                if (page === 1 && !user.house) return alert('살고 싶은 집을 골라주세요!');
+                if (page === 2 && !user.car) return alert('타고 싶은 차를 골라주세요!');
+                if (page < 3) setPage(page + 1);
+                else onNext();
+            };
+
+            const handleBack = () => {
+                if (page > 1) setPage(page - 1);
+                else onBack();
+            };
+
+            return (
+                <div className="flex-1 flex flex-col p-6">
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="flex items-center gap-2">
+                        <button onClick={handleBack} className="p-2 -ml-2 text-gray-400 hover:text-gray-900 rounded-full hover:bg-gray-100 transition">
+                            <ArrowLeft size={24} />
+                        </button>
+                        <h2 className="text-xl font-bold text-gray-900 leading-tight">
+                            {page === 1 && "어디서 살고 싶나요?"}
+                            {page === 2 && "무엇을 타고 갈까요?"}
+                            {page === 3 && "어떤 생활을 할까요?"}
+                        </h2>
+                        </div>
+                        <span className="text-xs font-medium text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Step {page}/3</span>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto pb-20 scrollbar-hide">
+                        {page === 1 && (
+                        <div className="grid grid-cols-1 gap-4">
+                            {housingOptions.map((house) => (
+                            <SelectionCard 
+                                key={house.id} 
+                                title={house.title} 
+                                emoji={house.img}
+                                priceDesc={`약 ${house.price / 100000000}억 원`}
+                                subDesc={house.desc}
+                                isSelected={user.house?.id === house.id}
+                                onClick={() => setUser({...user, house: house})}
+                            />
+                            ))}
+                        </div>
+                        )}
+
+                        {page === 2 && (
+                        <div className="grid grid-cols-2 gap-3">
+                            {carOptions.map((car) => (
+                            <div 
+                                key={car.id}
+                                onClick={() => setUser({...user, car: car})}
+                                className={`cursor-pointer p-4 rounded-2xl border-2 transition-all duration-200 flex flex-col items-center text-center gap-2
+                                ${user.car?.id === car.id ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' : 'border-gray-100 bg-white hover:border-blue-300'}`}
+                            >
+                                <div className="text-4xl mb-1">{car.img}</div>
+                                <h3 className="font-bold text-gray-800 text-sm">{car.title}</h3>
+                                <p className="text-xs text-gray-500">{car.desc}</p>
+                            </div>
+                            ))}
+                        </div>
+                        )}
+
+                        {page === 3 && (
+                        <div className="space-y-8 px-2">
+                            <div className="text-center mb-4">
+                            <span className="text-6xl mb-4 block">
+                                {lifeLevels[user.life-1].level === 1 && '🍜'}
+                                {lifeLevels[user.life-1].level === 2 && '🍝'}
+                                {lifeLevels[user.life-1].level === 3 && '🥩'}
+                            </span>
+                            <p className="text-lg font-bold text-blue-600">{lifeLevels[user.life-1].label}</p>
+                            <p className="text-gray-500 text-sm mt-1">{lifeLevels[user.life-1].desc}</p>
+                            </div>
+                            
+                            <input 
+                                type="range" 
+                                min="1" 
+                                max="3" 
+                                step="1" 
+                                value={user.life}
+                                onChange={(e) => setUser({...user, life: parseInt(e.target.value)})}
+                                className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                            />
+                            <div className="flex justify-between text-xs text-gray-400 px-1">
+                                <span>알뜰형</span>
+                                <span>균형형</span>
+                                <span>플렉스</span>
+                            </div>
+                            <div className="bg-gray-50 p-4 rounded-xl text-sm text-gray-600 mt-6">
+                                <p>💡 <b>Tip:</b> 숨만 쉬어도 나가는 돈(세금, 보험료)도 자동으로 계산돼요.</p>
+                            </div>
+                        </div>
+                        )}
+                    </div>
+
+                    <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-white via-white to-transparent max-w-md mx-auto">
+                        <button 
+                            onClick={nextPage}
+                            className="w-full bg-black text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition"
+                        >
+                            {page === 3 ? '계산 결과 보기 🧾' : '다음으로'}
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        function SelectionCard({ title, emoji, priceDesc, subDesc, isSelected, onClick }) {
+            return (
+                <div 
+                onClick={onClick}
+                className={`relative cursor-pointer p-5 rounded-2xl border-2 transition-all duration-200 flex items-center gap-4
+                    ${isSelected ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' : 'border-gray-100 bg-white hover:border-blue-300'}`}
+                >
+                <div className="text-4xl">{emoji}</div>
+                <div>
+                    <h3 className="font-bold text-gray-900">{title}</h3>
+                    <p className="text-sm text-blue-600 font-medium">{priceDesc}</p>
+                    <p className="text-xs text-gray-400 mt-1">{subDesc}</p>
+                </div>
+                {isSelected && <div className="absolute top-4 right-4 text-blue-500"><CheckCircle size={20} className="text-blue-500" fill="currentColor" stroke="white" /></div>}
+                </div>
+            );
+        }
+
+        function Receipt({ user, result, onNext, onBack, onRetry }) {
+            const [showTaxModal, setShowTaxModal] = useState(false);
+
+            useEffect(() => {
+                if (window.lucide) window.lucide.createIcons();
+            }, []);
+
+            return (
+                <div className="flex-1 flex flex-col p-6 bg-gray-100 relative">
+                
+                <div className="flex items-center mb-4">
+                    <button onClick={onBack} className="p-2 -ml-2 text-gray-500 hover:text-gray-900 rounded-full hover:bg-gray-200 transition">
+                        <ArrowLeft size={24} />
+                    </button>
+                    <span className="ml-2 font-bold text-gray-500 text-sm">다시 선택하기</span>
+                </div>
+
+                <div className="bg-white p-6 rounded-b-xl shadow-sm border-b-4 border-dashed border-gray-300 relative mx-2 animate-slide-down">
+                    <div className="text-center mb-6">
+                    <p className="text-gray-400 text-xs uppercase tracking-widest mb-1">Receipt for {user.name}</p>
+                    <h2 className="text-2xl font-bold text-gray-900">45세 인생 견적서</h2>
+                    </div>
+
+                    <div className="space-y-3 mb-6">
+                    <ReceiptRow label="🏠 주거비 (대출상환)" value={user.house.monthlyCost} />
+                    <ReceiptRow label="🚗 차량 유지비" value={user.car.monthlyCost} />
+                    <ReceiptRow label="✈️ 생활/여가비" value={LIFE_LEVELS[user.life-1].monthlyCost} />
+                    <ReceiptRow label="🏦 저축 및 세금" value={100} isGray />
+                    </div>
+
+                    <div className="border-t-2 border-gray-900 pt-4 mb-2">
+                    <div className="flex justify-between items-end">
+                        <span className="font-bold text-lg">월 필요 소득</span>
+                        <span className="font-black text-3xl text-blue-600">{result.monthlyNeed}만원</span>
+                    </div>
+                    <p className="text-right text-sm text-gray-500 mt-1">
+                        (연봉 환산 시: 약 <span className="font-bold text-gray-800">{result.yearNeed / 100}억 {result.yearNeed % 100 > 0 ? result.yearNeed % 100+'만' : ''}원</span>)
+                    </p>
+                    </div>
+                </div>
+
+                <div className="mt-6 space-y-3 px-2">
+                    <button 
+                        onClick={() => setShowTaxModal(true)}
+                        className="w-full py-3 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 flex items-center justify-center gap-2"
+                    >
+                        <DollarSign size={16}/> 세금이 왜 이렇게 많아요?
+                    </button>
+
+                    <button 
+                        onClick={onRetry}
+                        className="w-full py-3 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 flex items-center justify-center gap-2"
+                    >
+                        <RefreshCw size={16}/> 너무 비싸요! 초기화
+                    </button>
+
+                    <button 
+                        onClick={onNext}
+                        className="w-full py-4 bg-blue-600 text-white font-bold rounded-xl shadow-lg mt-4 active:scale-95 transition"
+                    >
+                        이 돈 벌 수 있는 직업 찾기 👉
+                    </button>
+                </div>
+
+                {showTaxModal && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center p-6 z-50">
+                    <div className="bg-white p-6 rounded-2xl max-w-sm w-full">
+                        <h3 className="text-xl font-bold mb-2">세금의 비밀 🤫</h3>
+                        <p className="text-gray-600 text-sm mb-4 leading-relaxed">
+                        연봉이 1억이라고 통장에 1억이 다 들어오지 않아요.<br/>
+                        국가 운영을 위한 <b>소득세</b>와 미래를 위한 <b>국민연금</b>, 아플 때를 대비한 <b>건강보험</b> 등을 미리 내야 하거든요. <br/><br/>
+                        많이 벌수록 세금도 많이 낸답니다! (노블레스 오블리주 ✨)
+                        </p>
+                        <button 
+                            onClick={() => setShowTaxModal(false)}
+                            className="w-full bg-gray-900 text-white py-3 rounded-xl font-bold"
+                        >
+                            아하, 이해했어요!
+                        </button>
+                    </div>
+                    </div>
+                )}
+                </div>
+            );
+        }
+
+        function ReceiptRow({ label, value, isGray }) {
+            return (
+                <div className={`flex justify-between items-center ${isGray ? 'text-gray-400' : 'text-gray-700'}`}>
+                <span className="text-sm font-medium">{label}</span>
+                <span className="font-bold">{value}만원</span>
+                </div>
+            );
+        }
+
+        function CareerMatch({ result, jobData, onSelect, onBack }) {
+            const [filterType, setFilterType] = useState('all'); 
+
+            useEffect(() => {
+                if (window.lucide) window.lucide.createIcons();
+            }, [filterType]);
+
+            const matchedJobs = jobData.filter(job => {
+                const isSalaryPossible = result.yearNeed <= job.maxSal * 1.2; 
+                if (filterType === 'all') return isSalaryPossible;
+                if (filterType === 'people') return isSalaryPossible && (job.type === 'social' || job.style === 'people');
+                if (filterType === 'logic') return isSalaryPossible && (job.type === 'logic' || job.type === 'tech');
+                if (filterType === 'creative') return isSalaryPossible && (job.type === 'art' || job.style === 'creative');
+                return false;
+            });
+
+            return (
+                <div className="flex-1 flex flex-col p-6 bg-white">
+                <div className="flex items-center gap-2 mb-6">
+                    <button onClick={onBack} className="p-2 -ml-2 text-gray-500 hover:text-gray-900 rounded-full hover:bg-gray-100 transition">
+                        <ArrowLeft size={24} />
+                    </button>
+                    <div>
+                    <h2 className="text-xl font-bold text-gray-900">직업 매칭소 💼</h2>
+                    <p className="text-gray-500 text-xs">
+                        목표 연봉 <span className="text-blue-600 font-bold">{Math.round(result.yearNeed/1000)*1000/100}억</span>원 달성 가능!
+                    </p>
+                    </div>
+                </div>
+
+                <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide mb-2">
+                    {['all', 'people', 'logic', 'creative'].map(type => (
+                    <button
+                        key={type}
+                        onClick={() => setFilterType(type)}
+                        className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition
+                        ${filterType === type ? 'bg-black text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                    >
+                        {type === 'all' && '전체 보기'}
+                        {type === 'people' && '사람이 좋아'}
+                        {type === 'logic' && '논리가 좋아'}
+                        {type === 'creative' && '창작이 좋아'}
+                    </button>
+                    ))}
+                </div>
+
+                <div className="flex-1 overflow-y-auto pb-4 space-y-4">
+                    {matchedJobs.length > 0 ? (
+                    matchedJobs.map(job => (
+                        <div 
+                        key={job.id} 
+                        onClick={() => onSelect(job)}
+                        className="group cursor-pointer border border-gray-100 rounded-2xl p-5 hover:border-blue-500 hover:shadow-md transition bg-white"
+                        >
+                        <div className="flex justify-between items-start mb-2">
+                            <span className={`px-2 py-1 rounded-md text-xs font-bold 
+                            ${job.type === 'logic' ? 'bg-purple-100 text-purple-600' : 
+                                job.type === 'art' ? 'bg-pink-100 text-pink-600' : 
+                                'bg-green-100 text-green-600'}`}>
+                            {job.type === 'logic' && '논리/분석'}
+                            {job.type === 'art' && '예술/창작'}
+                            {job.type === 'social' && '소통/리더십'}
+                            {job.type === 'tech' && '기술/공학'}
+                            </span>
+                            <span className="text-xs text-gray-400">평균 연봉 {job.minSal/100}~{job.maxSal/100}억</span>
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition">{job.name}</h3>
+                        <p className="text-sm text-gray-500 mt-1">{job.desc}</p>
+                        <div className="mt-3 flex items-center text-blue-500 text-sm font-bold opacity-0 group-hover:opacity-100 transition">
+                            미션 확인하기 <ArrowRight size={16} className="ml-1"/>
+                        </div>
+                        </div>
+                    ))
+                    ) : (
+                    <div className="text-center py-10 bg-gray-50 rounded-2xl">
+                        <p className="text-gray-500 mb-2">조건에 맞는 직업을 찾기 어려워요 😅</p>
+                        <p className="text-sm text-gray-400">생활비 목표를 조금 낮춰보거나<br/>다른 성향을 선택해보세요!</p>
+                    </div>
+                    )}
+                </div>
+                </div>
+            );
+        }
+
+        function MissionCard({ user, job, onShare, onBack }) {
+            useEffect(() => {
+                if (window.lucide) window.lucide.createIcons();
+            }, []);
+
+            return (
+                <div className="flex-1 flex flex-col p-6 bg-blue-600 text-white relative">
+                <button 
+                    onClick={onBack} 
+                    className="absolute top-6 left-6 p-2 -ml-2 text-blue-200 hover:text-white rounded-full hover:bg-white/10 transition"
+                >
+                    <ArrowLeft size={24} />
+                </button>
+
+                <div className="flex-1 flex flex-col items-center justify-center text-center mt-8">
+                    <div className="bg-white/10 p-4 rounded-full mb-6">
+                    <Zap size={48} className="text-yellow-300 fill-current"/>
+                    </div>
+                    
+                    <h2 className="text-2xl font-bold mb-2">오늘의 미션 도착!</h2>
+                    <p className="text-blue-100 mb-8">
+                    미래의 <b>{job.name}</b> {user.name}님,<br/>
+                    지금 당장 시작할 수 있는 일이 있어요.
+                    </p>
+
+                    <div className="w-full bg-white text-gray-800 rounded-2xl p-6 shadow-xl text-left space-y-4">
+                    <h3 className="font-bold text-gray-500 text-xs uppercase tracking-wider border-b pb-2 mb-2">Daily Missions</h3>
+                    
+                    {job.missions.map((mission, idx) => (
+                        <label key={idx} className="flex items-start gap-3 cursor-pointer group">
+                        <input type="checkbox" className="w-5 h-5 mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+                        <span className="text-sm group-hover:text-blue-600 transition leading-snug">
+                            <span className="font-bold text-blue-500 mr-1">Lv.{idx+1}</span>
+                            {mission}
+                        </span>
+                        </label>
+                    ))}
+                    </div>
+                </div>
+
+                <div className="mt-8 space-y-3">
+                    <button 
+                    onClick={onShare}
+                    className="w-full bg-white text-blue-600 font-bold py-4 rounded-xl shadow-lg active:scale-95 transition flex items-center justify-center gap-2"
+                    >
+                    친구들에게 자랑하기 <Heart size={18} className="text-red-500 fill-current"/>
+                    </button>
+                    <p className="text-center text-xs text-blue-200 mt-4 opacity-70">
+                    Project 45 • Life Reverse Engineering
+                    </p>
+                </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Project45 />);
+    </script>
+</body>
+</html>
