@@ -190,4 +190,306 @@
             const [combo, setCombo] = useState(0);
             const [score, setScore] = useState(0);
             const [timer, setTimer] = useState(10);
-            const [feedback, setFeedback] = useState(null); // 'correct'
+            const [feedback, setFeedback] = useState(null); // 'correct' or 'wrong'
+
+            // Refs for timer
+            const timerRef = useRef(null);
+
+            const handleLogin = (school) => {
+                if (!school) return;
+                setMySchool(school);
+                setIsLoggedIn(true);
+            };
+
+            // --- Game Logic ---
+
+            const startGame = () => {
+                setGameState('playing');
+                setScore(0);
+                setCombo(0);
+                setTimer(10);
+                setCurrentQuizIndex(Math.floor(Math.random() * QUIZ_POOL.length));
+                setFeedback(null);
+            };
+
+            useEffect(() => {
+                if (gameState === 'playing' && !feedback) {
+                    timerRef.current = setInterval(() => {
+                        setTimer((prev) => {
+                            if (prev <= 1) {
+                                handleGameOver();
+                                return 0;
+                            }
+                            return prev - 1;
+                        });
+                    }, 1000);
+                }
+                return () => clearInterval(timerRef.current);
+            }, [gameState, feedback]);
+
+            const handleAnswer = (idx) => {
+                clearInterval(timerRef.current);
+                const isCorrect = idx === QUIZ_POOL[currentQuizIndex].a;
+
+                if (isCorrect) {
+                    setFeedback('correct');
+                    setScore((prev) => prev + 100 + (combo * 10)); // Combo bonus
+                    setCombo((prev) => prev + 1);
+                    setTimeout(() => {
+                        nextQuestion();
+                    }, 800);
+                } else {
+                    setFeedback('wrong');
+                    setTimeout(() => {
+                        handleGameOver();
+                    }, 1000);
+                }
+            };
+
+            const nextQuestion = () => {
+                setFeedback(null);
+                setTimer(10); // Reset Timer
+                setCurrentQuizIndex((prev) => (prev + 1) % QUIZ_POOL.length);
+            };
+
+            const handleGameOver = () => {
+                clearInterval(timerRef.current);
+                setGameState('result');
+            };
+
+            // --- Render Sections ---
+
+            const renderLogin = () => (
+                <div className="flex flex-col items-center justify-center h-full p-8 space-y-8 animate-fade-in bg-slate-950">
+                    <div className="text-center">
+                        <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600 italic tracking-tighter">
+                            CAREER<br/>RUSH
+                        </h1>
+                        <p className="text-slate-400 mt-2 font-medium">우리 학교의 명예를 걸고.</p>
+                    </div>
+                    <div className="w-full space-y-4">
+                        <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+                            <label className="text-xs font-bold text-slate-500 mb-2 block">SCHOOL NAME</label>
+                            <input 
+                                id="schoolInput"
+                                type="text" 
+                                placeholder="학교 검색 (예: 서울고)" 
+                                className="w-full bg-slate-800 text-white p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all font-bold"
+                                onKeyPress={(e) => e.key === 'Enter' && handleLogin(e.target.value || '서울고')}
+                            />
+                        </div>
+                        <button 
+                            onClick={() => handleLogin(document.getElementById('schoolInput').value || '서울고')}
+                            className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-black rounded-xl text-lg shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all active:scale-95"
+                        >
+                            입장하기
+                        </button>
+                    </div>
+                </div>
+            );
+
+            const renderGameTab = () => {
+                if (gameState === 'ready') {
+                    return (
+                        <div className="h-full flex flex-col items-center justify-center p-6 text-center space-y-8">
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-cyan-500 blur-3xl opacity-20 rounded-full"></div>
+                                <Zap size={80} className="text-cyan-400 relative z-10 animate-pulse" />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-white">READY?</h2>
+                                <p className="text-slate-400 mt-2">연속으로 정답을 맞혀 콤보를 쌓으세요.<br/>한 번이라도 틀리면 끝납니다.</p>
+                            </div>
+                            <button 
+                                onClick={startGame}
+                                className="w-full py-5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl font-black text-xl text-white shadow-lg transform transition active:scale-95"
+                            >
+                                START QUIZ
+                            </button>
+                        </div>
+                    );
+                }
+
+                if (gameState === 'result') {
+                    return (
+                        <div className="h-full flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+                            <Trophy size={64} className="text-yellow-400 mb-4" />
+                            <h2 className="text-4xl font-black text-white mb-2">{score.toLocaleString()} PTS</h2>
+                            <div className="flex gap-2 mb-8">
+                                <span className="bg-slate-800 px-3 py-1 rounded-lg text-slate-300 text-sm font-bold">최대 콤보 {combo}</span>
+                                <span className="bg-cyan-900/50 px-3 py-1 rounded-lg text-cyan-300 text-sm font-bold">{mySchool} 기여 완료</span>
+                            </div>
+                            <button 
+                                onClick={() => setGameState('ready')}
+                                className="px-8 py-3 bg-slate-800 text-white font-bold rounded-xl border border-slate-700 active:bg-slate-700"
+                            >
+                                다시 도전하기
+                            </button>
+                        </div>
+                    );
+                }
+
+                // Playing State
+                const quiz = QUIZ_POOL[currentQuizIndex];
+                return (
+                    <div className="h-full flex flex-col p-6 relative">
+                        {/* Header Stats */}
+                        <div className="flex justify-between items-end mb-8">
+                            <div>
+                                <div className="text-xs font-bold text-slate-500 mb-1">CURRENT SCORE</div>
+                                <div className="text-3xl font-black text-white">{score}</div>
+                            </div>
+                            <div className="flex flex-col items-end">
+                                <div className="flex items-center gap-1 text-orange-400 font-black text-xl italic animate-bounce">
+                                    <Flame size={20} fill="currentColor" /> {combo} COMBO
+                                </div>
+                                <div className={`text-sm font-bold mt-1 ${timer <= 3 ? 'text-red-500' : 'text-slate-400'}`}>
+                                    남은 시간 {timer}초
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Question Card */}
+                        <div className="flex-1 flex flex-col justify-center">
+                            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-6 rounded-2xl mb-6 shadow-xl relative overflow-hidden">
+                                {/* Timer Bar */}
+                                <div className="absolute top-0 left-0 h-1 bg-cyan-500 transition-all duration-1000 ease-linear" style={{ width: `${(timer/10)*100}%` }}></div>
+                                
+                                <span className="inline-block px-3 py-1 bg-slate-700 rounded-full text-xs font-bold text-cyan-300 mb-4">
+                                    {quiz.category}
+                                </span>
+                                <h3 className="text-2xl font-bold text-white leading-relaxed">
+                                    {quiz.q}
+                                </h3>
+                            </div>
+
+                            {/* Options */}
+                            <div className="grid grid-cols-1 gap-3">
+                                {quiz.o.map((option, idx) => {
+                                    let btnStyle = "bg-slate-800 border-slate-700 hover:bg-slate-700 text-slate-200";
+                                    if (feedback === 'correct' && idx === quiz.a) btnStyle = "bg-green-500 border-green-600 text-white";
+                                    if (feedback === 'wrong' && idx !== quiz.a) btnStyle = "opacity-50";
+                                    if (feedback === 'wrong' && idx === quiz.a) btnStyle = "bg-green-500 border-green-600 text-white"; // Show answer if wrong
+                                    
+                                    return (
+                                        <button
+                                            key={idx}
+                                            disabled={feedback !== null}
+                                            onClick={() => handleAnswer(idx)}
+                                            className={`p-4 rounded-xl font-bold text-left border-2 transition-all active:scale-98 ${btnStyle}`}
+                                        >
+                                            {option}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Feedback Overlay */}
+                        {feedback && (
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                                {feedback === 'correct' ? (
+                                    <CheckCircle size={100} className="text-green-400 drop-shadow-2xl animate-ping-short" />
+                                ) : (
+                                    <XCircle size={100} className="text-red-500 drop-shadow-2xl animate-shake" />
+                                )}
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+
+            const renderRankTab = () => (
+                <div className="h-full p-4 overflow-y-auto pb-20">
+                    <div className="mb-6">
+                        <h2 className="text-2xl font-black text-white">SCHOOL RANKING</h2>
+                        <p className="text-slate-400 text-sm">실시간 전국 고교 대항전</p>
+                    </div>
+
+                    <div className="space-y-3">
+                        {SCHOOL_RANKINGS.map((item, idx) => (
+                            <div key={idx} className="bg-slate-800 p-4 rounded-xl border border-slate-700 flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-lg ${idx === 0 ? 'bg-yellow-400 text-slate-900' : 'bg-slate-700 text-slate-400'}`}>
+                                        {idx + 1}
+                                    </div>
+                                    <div>
+                                        <div className="text-white font-bold">{item.name}</div>
+                                        <div className="text-xs text-slate-500">{item.active}명 접속 중</div>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-cyan-400 font-bold">{item.score.toLocaleString()}</div>
+                                    <div className="text-xs text-slate-500">점수</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+
+            const renderCommunityTab = () => (
+                <div className="h-full flex flex-col pb-20">
+                    <div className="p-4 border-b border-slate-800 bg-slate-900/80 backdrop-blur z-10 sticky top-0">
+                        <h2 className="text-xl font-black text-white">COMMUNITY</h2>
+                        <div className="flex gap-2 mt-2">
+                            <button className="px-3 py-1 rounded-full bg-cyan-600 text-white text-xs font-bold">전체</button>
+                            <button className="px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-xs font-bold">우리학교</button>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                        {COMMUNITY_POSTS.map((post) => (
+                            <div key={post.id} className="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <span className="px-2 py-0.5 rounded bg-slate-700 text-cyan-300 text-[10px] font-bold border border-slate-600">{post.school}</span>
+                                    <span className="text-slate-400 text-xs font-bold">{post.user}</span>
+                                    <span className="text-slate-600 text-[10px] ml-auto">{post.time}</span>
+                                </div>
+                                <p className="text-slate-200 text-sm font-medium leading-relaxed">{post.content}</p>
+                                <div className="flex gap-4 mt-3">
+                                    <button className="flex items-center gap-1 text-slate-500 text-xs font-bold hover:text-red-400 transition-colors">
+                                        ♥ {post.likes}
+                                    </button>
+                                    <button className="flex items-center gap-1 text-slate-500 text-xs font-bold">
+                                        댓글달기
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="p-4 border-t border-slate-800 bg-slate-900 absolute bottom-16 left-0 right-0">
+                        <div className="relative">
+                            <input type="text" placeholder="우리 학교를 응원해주세요!" className="w-full bg-slate-800 text-white py-3 pl-4 pr-12 rounded-full border border-slate-700 focus:border-cyan-500 focus:outline-none text-sm" />
+                            <button className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-cyan-500 rounded-full text-slate-900 hover:bg-cyan-400">
+                                <Send size={14} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="w-full h-full max-w-md mx-auto bg-slate-950 text-slate-100 overflow-hidden relative font-sans shadow-2xl">
+                    {!isLoggedIn ? (
+                        renderLogin()
+                    ) : (
+                        <React.Fragment>
+                            <div className="h-full overflow-hidden">
+                                {activeTab === 'game' && renderGameTab()}
+                                {activeTab === 'rank' && renderRankTab()}
+                                {activeTab === 'community' && renderCommunityTab()}
+                            </div>
+                            <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
+                        </React.Fragment>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<CareerRushApp />);
+    </script>
+</body>
+</html>
