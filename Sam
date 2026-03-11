@@ -1,0 +1,648 @@
+import React, { useState, useEffect, useRef } from "react";
+
+// ─── Design Tokens ───
+const T = {
+  bg: "#0F1923",
+  bgCard: "#1A2733",
+  bgElevated: "#223344",
+  bgInput: "#162230",
+  accent: "#00D4AA",
+  accentDim: "rgba(0,212,170,0.12)",
+  accentSoft: "rgba(0,212,170,0.08)",
+  orange: "#FF8C42",
+  orangeDim: "rgba(255,140,66,0.15)",
+  purple: "#A78BFA",
+  purpleDim: "rgba(167,139,250,0.12)",
+  blue: "#60A5FA",
+  blueDim: "rgba(96,165,250,0.12)",
+  red: "#F87171",
+  redDim: "rgba(248,113,113,0.12)",
+  text: "#E8EDF2",
+  textDim: "#8899AA",
+  textMuted: "#556677",
+  border: "rgba(255,255,255,0.06)",
+  borderAccent: "rgba(0,212,170,0.25)",
+  shadow: "0 8px 32px rgba(0,0,0,0.4)",
+  radius: 16,
+  radiusSm: 10,
+  font: "'Pretendard', 'Noto Sans KR', -apple-system, sans-serif",
+};
+
+// ─── Layout Components ───
+
+function PhoneFrame({ children, title, subtitle, onBack, showNav = true, activeTab, setTab }) {
+  return (
+    <div className="relative mx-auto" style={{
+      width: 375, height: 780, background: T.bg,
+      borderRadius: 40, border: `8px solid #222`,
+      boxShadow: T.shadow, overflow: "hidden",
+      display: "flex", flexDirection: "column",
+      fontFamily: T.font
+    }}>
+      {/* Notch */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-7 bg-[#222] rounded-b-2xl z-50 flex items-center justify-center">
+        <div className="w-12 h-1 bg-[#111] rounded-full"></div>
+      </div>
+
+      {/* Status bar */}
+      <div style={{
+        padding: "32px 24px 8px", display: "flex",
+        justifyContent: "space-between", fontSize: 12, color: T.textDim,
+      }}>
+        <span className="font-bold">9:41</span>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          <span className="text-[10px]">📶 5G</span>
+          <span>🔋 100%</span>
+        </div>
+      </div>
+
+      {/* Header */}
+      {(title || onBack) && (
+        <div style={{
+          padding: "12px 20px 16px", borderBottom: `1px solid ${T.border}`,
+          display: "flex", alignItems: "center", gap: 12
+        }}>
+          {onBack && (
+            <button onClick={onBack} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/5 transition-colors">
+              <span className="text-xl text-white">←</span>
+            </button>
+          )}
+          <div className="flex-1">
+            <div style={{ fontSize: 18, fontWeight: 800, color: T.text, letterSpacing: -0.5 }}>
+              {title}
+            </div>
+            {subtitle && (
+              <div style={{ fontSize: 11, color: T.textDim, marginTop: 1 }}>{subtitle}</div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Content */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "0 0 20px" }} className="hide-scrollbar">
+        {children}
+      </div>
+
+      {/* Navigation Bar */}
+      {showNav && (
+        <div style={{
+          height: 70, borderTop: `1px solid ${T.border}`,
+          background: T.bgCard, display: "flex", justifyContent: "space-around",
+          alignItems: "center", paddingBottom: 10
+        }}>
+          {[
+            { id: "home", icon: "🏠", label: "Home" },
+            { id: "chat", icon: "💬", label: "Chat" },
+            { id: "visa", icon: "📋", label: "Visa" },
+            { id: "academic", icon: "📚", label: "Study" },
+          ].map(item => (
+            <button 
+              key={item.id}
+              onClick={() => setTab(item.id)}
+              className="flex flex-col items-center gap-1 opacity-60 transition-all"
+              style={{ opacity: activeTab === item.id ? 1 : 0.4 }}
+            >
+              <span className="text-xl">{item.icon}</span>
+              <span className="text-[10px] font-bold">{item.label}</span>
+              {activeTab === item.id && (
+                <div className="w-1 h-1 rounded-full bg-[#00D4AA]"></div>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Pill({ children, active, color, onClick }) {
+  const c = color || T.accent;
+  return (
+    <button onClick={onClick} style={{
+      padding: "6px 14px", borderRadius: 20,
+      background: active ? c : "transparent",
+      color: active ? T.bg : T.textDim,
+      border: `1px solid ${active ? c : T.border}`,
+      fontSize: 12, fontWeight: 600, cursor: "pointer",
+      transition: "all 0.2s",
+    }}>
+      {children}
+    </button>
+  );
+}
+
+// ─── Screens ───
+
+function ScreenOnboarding({ onStart }) {
+  const [lang, setLang] = useState(null);
+  const langs = [
+    { code: "vi", flag: "🇻🇳", name: "Tiếng Việt", sub: "베트남어" },
+    { code: "ko", flag: "🇰🇷", name: "한국어", sub: "Korean" },
+    { code: "en", flag: "🇺🇸", name: "English", sub: "영어" },
+  ];
+
+  return (
+    <div style={{ padding: "60px 24px 24px", textAlign: "center", height: "100%", display: "flex", flexDirection: "column" }}>
+      <div className="flex-1">
+        <div style={{
+          width: 80, height: 80, borderRadius: 24,
+          background: `linear-gradient(135deg, ${T.accent}, #00A88A)`,
+          margin: "0 auto 24px", display: "flex",
+          alignItems: "center", justifyContent: "center",
+          fontSize: 32, fontWeight: 900, color: T.bg,
+          boxShadow: `0 12px 32px rgba(0,212,170,0.4)`,
+        }}>
+          SHU
+        </div>
+        <div style={{ fontSize: 24, fontWeight: 800, color: T.text, letterSpacing: -0.8 }}>
+          Global Care AI
+        </div>
+        <div style={{ fontSize: 13, color: T.textDim, marginTop: 8, lineHeight: 1.6 }}>
+          삼육보건대학교 외국인 유학생<br />통합 AI 어시스턴트
+        </div>
+
+        <div style={{ marginTop: 48, textAlign: "left" }}>
+          <div style={{ fontSize: 11, color: T.textMuted, fontWeight: 700, marginBottom: 16, textTransform: "uppercase", letterSpacing: 1 }}>
+            Select Language · 언어 선택
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {langs.map((l) => (
+              <button key={l.code} onClick={() => setLang(l.code)} style={{
+                display: "flex", alignItems: "center", gap: 16,
+                padding: "16px", borderRadius: T.radiusSm,
+                background: lang === l.code ? T.accentDim : T.bgCard,
+                border: `1.5px solid ${lang === l.code ? T.accent : T.border}`,
+                cursor: "pointer", transition: "all 0.2s",
+              }}>
+                <span className="text-2xl">{l.flag}</span>
+                <div style={{ textAlign: "left" }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: T.text }}>{l.name}</div>
+                  <div style={{ fontSize: 11, color: T.textDim }}>{l.sub}</div>
+                </div>
+                {lang === l.code && <div className="ml-auto text-accent text-xl">✓</div>}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <button 
+        onClick={() => lang && onStart(lang)}
+        disabled={!lang}
+        style={{
+          width: "100%", padding: "18px",
+          borderRadius: T.radiusSm, border: "none",
+          background: lang ? `linear-gradient(135deg, ${T.accent}, #00A88A)` : T.bgElevated,
+          color: lang ? T.bg : T.textMuted,
+          fontSize: 16, fontWeight: 800, cursor: lang ? "pointer" : "default",
+          transition: "all 0.3s",
+          boxShadow: lang ? `0 8px 24px rgba(0,212,170,0.3)` : "none",
+        }}
+      >
+        {lang === "vi" ? "Bắt đầu →" : lang === "en" ? "Get Started →" : "시작하기 →"}
+      </button>
+    </div>
+  );
+}
+
+function ScreenHome({ user, onNavigate }) {
+  const quickActions = [
+    { icon: "📚", label: "Học tập", sub: "학업", color: T.accent, id: "academic" },
+    { icon: "🏠", label: "Sinh hoạt", sub: "생활", color: T.orange, id: "life" },
+    { icon: "📋", label: "Visa", sub: "비자", color: T.purple, id: "visa" },
+    { icon: "💬", label: "Chat AI", sub: "AI 상담", color: T.blue, id: "chat" },
+  ];
+
+  return (
+    <div style={{ padding: "16px 20px" }}>
+      {/* Welcome Card */}
+      <div style={{
+        padding: "20px", borderRadius: T.radius,
+        background: `linear-gradient(135deg, rgba(0,212,170,0.1), rgba(0,212,170,0.02))`,
+        border: `1px solid ${T.borderAccent}`,
+        display: "flex", alignItems: "center", gap: 16, marginBottom: 24
+      }}>
+        <div className="w-14 h-14 rounded-2xl bg-accent-dim flex items-center justify-center text-3xl shadow-inner border border-white/5">
+          {user.avatar}
+        </div>
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 800, color: T.text }}>
+            Xin chào, {user.name}!
+          </div>
+          <div style={{ fontSize: 12, color: T.textDim, marginTop: 4 }}>
+            {user.dept} · {user.year}
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
+        {quickActions.map(a => (
+          <button key={a.id} onClick={() => onNavigate(a.id)} style={{
+            padding: "20px 16px", borderRadius: T.radiusSm, background: T.bgCard,
+            border: `1px solid ${T.border}`, textAlign: "left", transition: "all 0.2s"
+          }} className="active:scale-95">
+            <div className="text-3xl mb-3">{a.icon}</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.text }}>{a.label}</div>
+            <div style={{ fontSize: 11, color: T.textDim, marginTop: 2 }}>{a.sub}</div>
+          </button>
+        ))}
+      </div>
+
+      {/* Alerts Section */}
+      <div style={{ marginBottom: 24 }}>
+        <div className="flex justify-between items-center mb-3">
+          <div style={{ fontSize: 12, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: 0.5 }}>
+            📌 Cần làm ngay · 알림
+          </div>
+          <button className="text-[10px] text-accent font-bold">Xem tất cả</button>
+        </div>
+        <div className="space-y-2">
+          {[
+            { icon: "⚡", text: "D-12: Hạn đăng ký cư trú", urgent: true },
+            { icon: "📝", text: "Hướng dẫn đóng bảo hiểm y tế", urgent: false },
+          ].map((item, i) => (
+            <div key={i} className="flex items-center gap-3 p-4 rounded-xl border" style={{
+              background: item.urgent ? T.redDim : T.bgCard,
+              borderColor: item.urgent ? "rgba(248,113,113,0.2)" : T.border
+            }}>
+              <span className="text-lg">{item.icon}</span>
+              <span className="text-[13px] font-medium flex-1">{item.text}</span>
+              <span className="text-white/20">›</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Progress Card */}
+      <div>
+        <div className="flex justify-between items-center mb-3">
+          <div style={{ fontSize: 12, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: 0.5 }}>
+            🗓 Lộ trình · 나의 경로
+          </div>
+        </div>
+        <div style={{ padding: "20px", borderRadius: T.radiusSm, background: T.bgCard, border: `1px solid ${T.border}` }}>
+           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+              <span className="text-[10px] text-accent font-bold uppercase">Nhập học</span>
+              <span className="text-[10px] text-white/20 font-bold uppercase">Chứng chỉ</span>
+              <span className="text-[10px] text-white/20 font-bold uppercase">Việc làm</span>
+            </div>
+            <div className="h-2 w-full bg-white/5 rounded-full mb-3 overflow-hidden">
+              <div className="h-full bg-accent w-[20%] rounded-full shadow-[0_0_10px_rgba(0,212,170,0.5)]"></div>
+            </div>
+            <div className="text-[11px] text-text-dim leading-relaxed">
+              Bạn đang ở học kỳ 1 năm thứ 1. Mục tiêu tiếp theo: <span className="text-accent">TOPIK 3</span>
+            </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ScreenChat() {
+  const [messages, setMessages] = useState([
+    { role: "ai", text: "Xin chào Nguyễn Thị Mai! Tôi có thể giúp gì cho bạn hôm nay?", textKo: "안녕하세요! 무엇을 도와드릴까요?" }
+  ]);
+  const [input, setInput] = useState("");
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [messages]);
+
+  const handleSend = () => {
+    if (!input.trim()) return;
+    const userMsg = { role: "user", text: input };
+    setMessages(prev => [...prev, userMsg]);
+    setInput("");
+
+    // Simple auto-reply simulation
+    setTimeout(() => {
+      setMessages(prev => [...prev, {
+        role: "ai",
+        text: "Tôi đã nhận được câu hỏi của bạn. Để tốt nghiệp ngành Dịch vụ Chăm sóc Toàn cầu, bạn cần đạt chứng chỉ Hộ lý và TOPIK cấp 3.",
+        textKo: "글로벌요양서비스과 졸업을 위해서는 요양보호사 자격증과 TOPIK 3급이 필요합니다."
+      }]);
+    }, 1000);
+  };
+
+  return (
+    <div className="flex flex-col h-full overflow-hidden">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.map((m, i) => (
+          <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
+            <div className={`max-w-[85%] p-4 rounded-2xl ${
+              m.role === 'user' 
+                ? 'bg-accent text-bg rounded-tr-none font-bold' 
+                : 'bg-card border border-border rounded-tl-none'
+            }`}>
+              <div className="text-[14px] leading-relaxed">{m.text}</div>
+              {m.textKo && <div className="text-[11px] opacity-60 mt-2 italic border-t border-white/10 pt-2">{m.textKo}</div>}
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      <div className="p-4 border-t border-border bg-bg/50 backdrop-blur-md">
+        <div className="flex gap-2">
+          <input 
+            className="flex-1 bg-input border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-accent"
+            placeholder="Đặt câu hỏi... 질문을 입력하세요"
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyPress={e => e.key === 'Enter' && handleSend()}
+          />
+          <button 
+            onClick={handleSend}
+            className="w-12 h-12 rounded-xl bg-accent text-bg flex items-center justify-center font-bold"
+          >
+            ↑
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ScreenAcademic() {
+  const courses = [
+    { name: "요양보호개론", nameVi: "Tổng quan Hộ lý", hours: 3, tag: "필기시험" },
+    { name: "한국어 I", nameVi: "Tiếng Hàn I", hours: 4, tag: "TOPIK" },
+    { name: "노인복지론", nameVi: "Phúc lợi Người cao tuổi", hours: 2, tag: null },
+    { name: "기초간호학", nameVi: "Điều dưỡng Cơ bản", hours: 3, tag: "실기시험" },
+  ];
+
+  return (
+    <div className="p-4 space-y-4">
+      <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+        {["1-1", "1-2", "2-1", "2-2"].map((s, i) => (
+          <Pill key={s} active={i === 0}>{s} 학기</Pill>
+        ))}
+      </div>
+      <div className="space-y-3">
+        {courses.map((c, i) => (
+          <div key={i} className="p-4 bg-card rounded-2xl border border-border">
+            <div className="flex justify-between items-start">
+              <div>
+                <div className="font-bold text-sm">{c.name}</div>
+                <div className="text-[11px] text-text-dim mt-1">{c.nameVi}</div>
+              </div>
+              <div className="text-[10px] bg-white/5 px-2 py-1 rounded-md text-text-muted">{c.hours} 학점</div>
+            </div>
+            {c.tag && (
+              <div className="mt-3 inline-block bg-accent/10 text-accent text-[10px] font-bold px-2 py-1 rounded">
+                #{c.tag}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 p-4 rounded-2xl border border-borderAccent bg-accent/5">
+        <div className="text-xs font-bold mb-3 uppercase text-accent">📖 Từ vựng · 주요 용어</div>
+        <div className="space-y-2">
+          {[
+            { ko: "혈압 측정", vi: "Đo huyết áp" },
+            { ko: "욕창 예방", vi: "Phòng ngừa loét" }
+          ].map((v, i) => (
+            <div key={i} className="flex justify-between text-xs py-1 border-b border-white/5">
+              <span className="font-bold">{v.ko}</span>
+              <span className="text-accent">{v.vi}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ScreenVisa() {
+  const steps = [
+    { label: "D-2 Nhập học", sub: "비자 발급 및 입국", icon: "🎓", done: true },
+    { label: "Lấy chứng chỉ", sub: "요양보호사 자격 취득", icon: "📜", current: true },
+    { label: "D-10 Tìm việc", sub: "졸업 후 구직 활동", icon: "🔍" },
+    { label: "E-7 취업", sub: "전문인력 취업", icon: "💼" },
+  ];
+
+  return (
+    <div className="p-5">
+      <div className="relative pl-8 space-y-8">
+        <div className="absolute left-4 top-2 bottom-2 w-[2px] bg-white/5"></div>
+        {steps.map((s, i) => (
+          <div key={i} className="relative">
+            <div className={`absolute -left-[25px] top-1 w-5 h-5 rounded-full border-4 border-bg flex items-center justify-center ${
+              s.done ? 'bg-accent' : s.current ? 'bg-orange animate-pulse' : 'bg-elevated'
+            }`}>
+            </div>
+            <div className={`p-4 rounded-2xl border ${s.current ? 'border-orange bg-orange/5' : 'border-border bg-card'}`}>
+              <div className="flex gap-3 items-center mb-2">
+                <span className="text-xl">{s.icon}</span>
+                <span className={`text-sm font-bold ${s.current ? 'text-orange' : 'text-text'}`}>{s.label}</span>
+              </div>
+              <p className="text-[11px] text-text-dim leading-relaxed">{s.sub}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-8 p-5 bg-accent rounded-2xl text-bg font-bold flex items-center justify-between">
+        <div className="text-sm">Xác minh điều kiện Visa E-7-2</div>
+        <div className="text-xl">➔</div>
+      </div>
+    </div>
+  );
+}
+
+function ScreenAdmin() {
+  const stats = [
+    { label: "전체 유학생", val: "128", sub: "명 재학중", color: T.accent },
+    { label: "AI 상담 이용률", val: "84%", sub: "↑12% 이번주", color: T.blue },
+    { label: "상담 만족도", val: "4.6", sub: "/ 5.0", color: T.orange },
+    { label: "집중 케어 필요", val: "3", sub: "명", color: T.red },
+  ];
+
+  const topQuestions = [
+    { q: "E-7-2 비자 전환 조건 및 필요 서류", count: 142, pct: 45, color: T.purple },
+    { q: "요양보호사 자격증 실습 일정 안내", count: 85, pct: 25, color: T.accent },
+    { q: "외국인 건강보험료 자동이체 신청", count: 54, pct: 15, color: T.orange },
+    { q: "TOPIK(한국어능력시험) 단체 접수", count: 32, pct: 10, color: T.blue },
+  ];
+
+  const riskStudents = [
+    { name: "Trần Văn H.", dept: "글로벌요양서비스과 1학년", risk: "2주 연속 AI 서비스 및 LMS 미접속", level: "주의", action: "메시지 발송하기" },
+    { name: "Lê Thị N.", dept: "글로벌요양서비스과 2학년", risk: "D-2 비자 만료 D-15 (갱신 미신청 상태)", level: "긴급", action: "담당자 전화 연결" },
+    { name: "Phạm Minh T.", dept: "글로벌요양서비스과 1학년", risk: "한국어 배치고사 성적 하위 5% 구간", level: "주의", action: "교수진 면담 예약" },
+  ];
+
+  return (
+    <div className="p-5 space-y-6">
+      {/* 1. 핵심 지표 요약 */}
+      <div className="grid grid-cols-2 gap-3">
+        {stats.map((s, i) => (
+          <div key={i} className="p-4 bg-card rounded-2xl border border-border shadow-sm">
+            <div className="text-[11px] text-text-muted font-bold uppercase mb-2">{s.label}</div>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-2xl font-black" style={{ color: s.color }}>{s.val}</span>
+              <span className="text-[10px] text-text-dim">{s.sub}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* 2. AI 빈출 질문 (학생들의 주요 관심사/어려움 파악) */}
+      <div>
+        <div className="flex justify-between items-center mb-3">
+          <div className="text-xs font-bold text-text-muted uppercase">💬 주간 AI 빈출 질문 분석</div>
+          <button className="text-[10px] text-accent font-bold">상세보기</button>
+        </div>
+        <div className="p-4 bg-card rounded-2xl border border-border space-y-4">
+          {topQuestions.map((q, i) => (
+            <div key={i}>
+              <div className="flex justify-between text-[11px] mb-1.5">
+                <span className="text-text font-medium truncate pr-2">{q.q}</span>
+                <span className="text-text-dim flex-shrink-0">{q.count}건</span>
+              </div>
+              <div className="h-1.5 w-full bg-elevated rounded-full overflow-hidden">
+                <div className="h-full rounded-full" style={{ width: `${q.pct}%`, background: q.color }}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      {/* 3. 집중 케어 (위험 감지) 학생 목록 */}
+      <div>
+        <div className="flex justify-between items-center mb-3">
+          <div className="text-xs font-bold text-text-muted uppercase flex items-center gap-1">
+            ⚠️ 집중 케어 대상 
+            <span className="bg-red/20 text-red text-[9px] px-1.5 py-0.5 rounded-full">3명</span>
+          </div>
+        </div>
+        <div className="space-y-3">
+          {riskStudents.map((a, i) => (
+            <div key={i} className="p-4 bg-card rounded-xl border border-border flex flex-col gap-3">
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-text">{a.name}</span>
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
+                      a.level === '긴급' ? 'bg-red text-white' : 'bg-orange text-bg'
+                    }`}>
+                      {a.level}
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-text-muted mt-1">{a.dept}</div>
+                </div>
+              </div>
+              <div className="text-[11px] text-red-400 bg-red/5 p-2 rounded-lg border border-red/10 flex gap-2 items-start">
+                <span>🚨</span>
+                <span className="leading-relaxed">{a.risk}</span>
+              </div>
+              <button className="w-full py-2 bg-elevated hover:bg-white/10 rounded-lg text-[11px] font-bold text-text transition-colors border border-border">
+                {a.action}
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main App ───
+
+export default function App() {
+  const [currentScreen, setCurrentScreen] = useState("onboarding");
+  const [language, setLanguage] = useState("ko");
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const user = {
+    name: "Nguyễn Thị Mai",
+    nameKo: "응우옌 티 마이",
+    dept: "Global Care Service",
+    year: "1학년 1학기",
+    avatar: "🇻🇳"
+  };
+
+  const handleStart = (lang) => {
+    setLanguage(lang);
+    setCurrentScreen("home");
+  };
+
+  const getTitle = () => {
+    switch(currentScreen) {
+      case "home": return "SHU Global AI";
+      case "chat": return "AI Consultation";
+      case "academic": return "Study Guide";
+      case "visa": return "Visa Pathway";
+      case "life": return "Life in Korea";
+      case "admin": return "Admin Dashboard";
+      default: return "";
+    }
+  };
+
+  const getSubtitle = () => {
+    switch(currentScreen) {
+      case "home": return "Sahmyook Health Univ.";
+      case "chat": return "Hỏi bất cứ điều gì";
+      case "academic": return "글로벌요양서비스과";
+      case "visa": return "졸업 후 취업까지";
+      case "life": return "정착 가이드";
+      default: return "";
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#080E14] flex flex-col items-center justify-center p-4">
+      {/* Top Toggle for Admin/User Demo */}
+      <div className="mb-6 flex gap-4 bg-white/5 p-2 rounded-2xl border border-white/5">
+        <button 
+          onClick={() => { setIsAdmin(false); setCurrentScreen(currentScreen === "admin" ? "home" : currentScreen); }}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${!isAdmin ? 'bg-accent text-bg shadow-lg' : 'text-text-dim'}`}
+        >
+          STUDENT VIEW
+        </button>
+        <button 
+          onClick={() => { setIsAdmin(true); setCurrentScreen("admin"); }}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${isAdmin ? 'bg-purple text-bg shadow-lg' : 'text-text-dim'}`}
+        >
+          FACULTY VIEW
+        </button>
+      </div>
+
+      <PhoneFrame 
+        title={getTitle()} 
+        subtitle={getSubtitle()}
+        onBack={currentScreen !== "onboarding" && currentScreen !== "home" && !isAdmin ? () => setCurrentScreen("home") : null}
+        showNav={currentScreen !== "onboarding" && !isAdmin}
+        activeTab={currentScreen}
+        setTab={setCurrentScreen}
+      >
+        {currentScreen === "onboarding" && <ScreenOnboarding onStart={handleStart} />}
+        {currentScreen === "home" && <ScreenHome user={user} onNavigate={setCurrentScreen} />}
+        {currentScreen === "chat" && <ScreenChat />}
+        {currentScreen === "academic" && <ScreenAcademic />}
+        {currentScreen === "visa" && <ScreenVisa />}
+        {currentScreen === "life" && <ScreenAcademic />} {/* Shared template for demo */}
+        {currentScreen === "admin" && <ScreenAdmin />}
+      </PhoneFrame>
+
+      <div className="mt-8 text-center max-w-sm">
+        <p className="text-[10px] text-text-muted uppercase tracking-widest font-bold">Project Details</p>
+        <p className="text-xs text-text-dim mt-2 leading-relaxed">
+          이 프로토타입은 삼육보건대 외국인 유학생의 한국 생활 및 학업 적응을 돕기 위해 설계되었습니다. 
+          AI는 비자 상담, 전공 용어 번역, 긴급 상황 대응 등의 기능을 지원합니다.
+        </p>
+      </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
+      `}} />
+    </div>
+  );
+}
