@@ -1,0 +1,637 @@
+import { useState, useEffect, useRef } from "react";
+import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
+
+// ═══ DESIGN TOKENS ═══
+const C = {
+  red:"#EA5645",navy:"#202B45",mint:"#4A9B8F",mintLight:"#E8F3F0",
+  gold:"#90C6B4",orange:"#E8782A",danger:"#E8452E",dangerLight:"#FDE8E8",
+  white:"#FFFFFF",cream:"#F8FAF9",bg:"#F3F5F4",
+  text:"#1E2D25",dim:"#5A6E62",muted:"#8A9A8E",border:"#D1D9D3",sidebar:"#1A2336",
+};
+
+const css = `
+*{box-sizing:border-box}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeLeft{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeRight{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
+@keyframes pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideOut{to{opacity:0;transform:translateY(-20px);max-height:0;margin:0;padding:0}}
+@keyframes drawCheck{from{stroke-dashoffset:20}to{stroke-dashoffset:0}}
+@keyframes toastIn{from{transform:translateX(120%)}to{transform:translateX(0)}}
+@keyframes toastOut{to{transform:translateX(120%)}}
+@keyframes sideIn{from{transform:translateX(-210px)}to{transform:translateX(0)}}
+@keyframes badgePulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes gradShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes goldGlow{0%,100%{box-shadow:0 0 0 0 rgba(234,86,69,0)}50%{box-shadow:0 0 16px 4px rgba(234,86,69,0.3)}}
+@keyframes typing{0%{opacity:.3}50%{opacity:1}100%{opacity:.3}}
+@keyframes ringPulse{0%{transform:scale(1);opacity:.5}100%{transform:scale(2);opacity:0}}
+@keyframes phoneIn{from{opacity:0;transform:translateX(50px) rotate(3deg)}to{opacity:1;transform:translateX(0) rotate(2deg)}}
+html{scroll-behavior:smooth}
+`;
+
+// ═══ SHARED HOOKS ═══
+function useCountUp(t,d=1000,a=true){const[v,setV]=useState(0);useEffect(()=>{if(!a)return;let s=null;const fn=ts=>{if(!s)s=ts;const p=Math.min((ts-s)/d,1);setV(Number.isInteger(t)?Math.round(t*(1-Math.pow(1-p,3))):Math.round(t*(1-Math.pow(1-p,3))*10)/10);if(p<1)requestAnimationFrame(fn);};requestAnimationFrame(fn);},[t,d,a]);return v;}
+function useInView(th=.15){const r=useRef();const[v,setV]=useState(false);useEffect(()=>{const el=r.current;if(!el)return;const o=new IntersectionObserver(([e])=>{if(e.isIntersecting)setV(true);},{threshold:th});o.observe(el);return()=>o.disconnect();},[th]);return[r,v];}
+
+function Toast({msg,vis,onDone}){useEffect(()=>{if(vis){const t=setTimeout(onDone,3500);return()=>clearTimeout(t);}},[vis]);if(!vis)return null;return<div style={{position:"fixed",top:20,right:20,zIndex:999,padding:"10px 18px",borderRadius:8,background:C.red,color:C.white,fontSize:12,fontWeight:600,boxShadow:"0 4px 16px rgba(0,0,0,.2)",animation:"toastIn .3s,toastOut .3s 3s forwards"}}>✅ {msg}</div>;}
+
+// ═══════════════════════════════════════════
+// PAGE 1: LANDING
+// ═══════════════════════════════════════════
+function Landing(){
+  const[s1,setS1]=useState(false);const[s2,setS2]=useState(false);const[s3,setS3]=useState(false);const[ph,setPh]=useState(false);const[m1,setM1]=useState(false);const[m2,setM2]=useState(false);
+  useEffect(()=>{setTimeout(()=>setS1(true),200);setTimeout(()=>setS2(true),500);setTimeout(()=>setS3(true),900);setTimeout(()=>setPh(true),1100);setTimeout(()=>setM1(true),1600);setTimeout(()=>setM2(true),2200);},[]);
+  const[r1,iv1]=useInView();const[r2,iv2]=useInView();const[r3,iv3]=useInView();const[r4,iv4]=useInView();
+
+  const Stg=({ch,show,dl=0,dir="up"})=>{const tf={up:"translateY(20px)",left:"translateX(-20px)"};return<div style={{opacity:show?1:0,transform:show?"none":tf[dir],transition:`all .5s ease ${dl}s`}}>{ch}</div>;};
+  const problems=[{i:"📊",t:"학생 이수 학점 모름"},{i:"📋",t:"비자 상태 모름"},{i:"🎓",t:"졸업요건 모름"},{i:"🌐",t:"모국어 질문 불가"}];
+  const principles=[{i:"👤",t:"학생별 데이터 참고",d:"학사 API 연동으로 개인화 답변"},{i:"🛡️",t:"부적절한 질문 거부",d:"대학 공식 AI 가드레일"},{i:"🚫",t:"모르면 추측 안 함",d:"담당자 에스컬레이션"},{i:"📈",t:"사용할수록 감소",d:"AI 학습 플라이휠"}];
+  const stats=[{v:85,s:"%+",l:"답변 정확도"},{v:20,s:"%↓",l:"중도탈락 감소"},{v:24,s:"h",l:"다국어 상담"},{v:24,s:"개",l:"양성대학 확장"}];
+  const rows=[["타깃","전체 학생","외국인 유학생 (다국어)"],["비자 검증","✕","✅ CSP 구조적 검증"],["자격증 연계","✕","✅ 시험↔교과 매핑"],["학생 데이터","학사 DB만","학사+비자+TOPIK+실습"],["확장 모델","개별 구축","멀티테넌트 SaaS"]];
+
+  return(
+    <div style={{overflowY:"auto",height:"100%",fontFamily:"'Pretendard',system-ui,sans-serif"}}>
+      {/* Hero */}
+      <section style={{minHeight:"90vh",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${C.navy},#1A2336,${C.navy})`,backgroundSize:"300% 300%",animation:"gradShift 10s ease infinite",padding:"40px 24px"}}>
+        <div style={{maxWidth:1000,width:"100%",display:"flex",alignItems:"center",gap:40,flexWrap:"wrap"}}>
+          <div style={{flex:1,minWidth:300}}>
+            <div style={{opacity:s1?1:0,transform:s1?"none":"translateY(16px)",transition:"all .5s"}}><div style={{fontSize:"clamp(26px,3.5vw,38px)",fontWeight:800,color:C.white,lineHeight:1.3}}>학교 정보를 아는 챗봇은<br/>이미 있습니다</div></div>
+            <div style={{opacity:s2?1:0,transition:"all .5s .1s",marginTop:14}}><div style={{fontSize:"clamp(13px,1.6vw,16px)",color:C.mintLight,lineHeight:1.7}}>학생의 비자 만료일을 알고, 졸업까지 남은 학점을 계산해서,<br/>자격시험 준비까지 코칭해주는 챗봇은 <strong style={{color:C.red}}>CareBot</strong>뿐입니다.</div></div>
+            <div style={{opacity:s3?1:0,transform:s3?"scale(1)":"scale(0)",transition:"all .4s cubic-bezier(.34,1.56,.64,1)",marginTop:24}}><button style={{padding:"12px 32px",borderRadius:10,border:"none",fontSize:15,fontWeight:700,background:C.red,color:C.white,cursor:"pointer",animation:s3?"goldGlow 2s infinite":"none"}}>무료 데모 신청 →</button></div>
+          </div>
+          <div style={{width:240,flexShrink:0,opacity:ph?1:0,animation:ph?"phoneIn .5s forwards":"none"}}>
+            <div style={{background:"#0C1A2E",borderRadius:24,padding:"10px 8px 14px",boxShadow:"0 16px 48px rgba(0,0,0,.3)",transform:"rotate(2deg)"}}>
+              <div style={{background:C.navy,borderRadius:"10px 10px 0 0",padding:"6px 10px",display:"flex",gap:5,alignItems:"center"}}><div style={{width:18,height:18,borderRadius:5,background:C.red,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8}}>🤖</div><span style={{fontSize:10,fontWeight:700,color:C.white}}>CareBot</span></div>
+              <div style={{background:C.bg,borderRadius:"0 0 10px 10px",padding:"8px 6px",minHeight:150}}>
+                <div style={{display:"flex",justifyContent:"flex-end",marginBottom:6,opacity:m1?1:0,transition:"all .3s"}}><div style={{background:C.mintLight,borderRadius:"8px 2px 8px 8px",padding:"5px 8px",fontSize:8,color:C.text,maxWidth:"75%"}}>졸업 가능한가요? 🇻🇳</div></div>
+                <div style={{display:"flex",gap:3,opacity:m2?1:0,transition:"all .3s"}}><div style={{width:14,height:14,borderRadius:4,background:C.red,display:"flex",alignItems:"center",justifyContent:"center",fontSize:6,color:C.white,fontWeight:800}}>AI</div><div style={{background:C.white,borderRadius:"2px 8px 8px 8px",padding:"5px 8px",fontSize:8,border:`1px solid ${C.border}`}}><div style={{fontSize:7,color:C.red,fontWeight:600,marginBottom:2}}>📚 학업</div>52/70학점. 18학점 추가 필요.<br/><span style={{color:C.red,fontWeight:600}}>✅ 경로 검증 완료</span></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Problems */}
+      <section ref={r1} style={{padding:"60px 24px",background:C.white}}>
+        <div style={{maxWidth:800,margin:"0 auto"}}>
+          <Stg show={iv1} ch={<div style={{fontSize:"clamp(20px,3vw,28px)",fontWeight:800,color:C.text,marginBottom:24}}>학생들은 결국 행정실에 전화합니다</div>}/>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:12}}>
+            {problems.map((p,i)=><Stg key={i} show={iv1} dl={.3+i*.12} ch={<div style={{background:C.cream,borderRadius:12,padding:"16px",textAlign:"center",border:`1px solid ${C.border}`}}><div style={{fontSize:24,marginBottom:6}}>{p.i}</div><div style={{fontSize:12,fontWeight:600,color:C.text}}>{p.t}</div></div>}/>)}
+          </div>
+        </div>
+      </section>
+
+      {/* Principles */}
+      <section ref={r2} style={{padding:"60px 24px",background:C.mintLight}}>
+        <div style={{maxWidth:900,margin:"0 auto"}}>
+          <Stg show={iv2} ch={<div style={{fontSize:"clamp(18px,2.5vw,26px)",fontWeight:800,color:C.text,marginBottom:28,textAlign:"center"}}>4가지 설계 원칙</div>}/>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:14}}>
+            {principles.map((p,i)=><Stg key={i} show={iv2} dl={.2+i*.12} ch={<div style={{background:C.white,borderRadius:12,padding:"20px 18px",borderTop:`3px solid ${C.red}`}}><div style={{fontSize:24,marginBottom:10}}>{p.i}</div><div style={{fontSize:14,fontWeight:700,color:C.text,marginBottom:4}}>{p.t}</div><div style={{fontSize:11,color:C.dim,lineHeight:1.5}}>{p.d}</div></div>}/>)}
+          </div>
+        </div>
+      </section>
+
+      {/* Comparison */}
+      <section ref={r3} style={{padding:"60px 24px",background:C.white}}>
+        <div style={{maxWidth:700,margin:"0 auto"}}>
+          <Stg show={iv3} ch={<div style={{fontSize:"clamp(18px,2.5vw,26px)",fontWeight:800,color:C.text,marginBottom:20,textAlign:"center"}}>차별화 비교</div>}/>
+          <div style={{borderRadius:12,overflow:"hidden",border:`1px solid ${C.border}`}}>
+            <div style={{display:"grid",gridTemplateColumns:"1.5fr 1.5fr 2fr",background:C.cream}}><div style={{padding:"10px 14px",fontSize:11,fontWeight:700,color:C.muted}}/><div style={{padding:"10px 14px",fontSize:11,fontWeight:700,color:C.dim}}>범용 챗봇</div><div style={{padding:"10px 14px",fontSize:11,fontWeight:700,color:C.red}}>CareBot v2 ✨</div></div>
+            {rows.map((r,i)=><Stg key={i} show={iv3} dl={.2+i*.08} ch={<div style={{display:"grid",gridTemplateColumns:"1.5fr 1.5fr 2fr",borderTop:`1px solid ${C.border}`}}><div style={{padding:"8px 14px",fontSize:11,fontWeight:600,color:C.text}}>{r[0]}</div><div style={{padding:"8px 14px",fontSize:11,color:C.muted}}>{r[1]}</div><div style={{padding:"8px 14px",fontSize:11,color:C.red,fontWeight:600}}>{r[2]}</div></div>}/>)}
+          </div>
+        </div>
+      </section>
+
+      {/* Numbers */}
+      <section ref={r4} style={{padding:"50px 24px",background:C.red}}>
+        <div style={{maxWidth:800,margin:"0 auto",display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:16}}>
+          {stats.map((s,i)=><Stg key={i} show={iv4} dl={i*.1} ch={<div style={{textAlign:"center"}}><div style={{fontSize:"clamp(32px,4vw,44px)",fontWeight:800,color:C.white}}>{iv4?<CountUpSpan target={s.v} suffix={s.s}/>:`0${s.s}`}</div><div style={{fontSize:12,color:C.mintLight,fontWeight:600,marginTop:3}}>{s.l}</div></div>}/>)}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section style={{padding:"60px 24px",textAlign:"center",background:`linear-gradient(135deg,${C.navy},#1A2336)`}}>
+        <div style={{fontSize:"clamp(20px,3vw,30px)",fontWeight:800,color:C.white,marginBottom:10}}>삼육보건대학교에서 검증하고,<br/>전국으로 확장합니다</div>
+        <div style={{fontSize:14,color:C.mintLight,marginBottom:24}}>선착순 <strong style={{color:C.red,fontSize:18}}>5</strong>개 대학 무료 파일럿</div>
+        <button style={{padding:"14px 40px",borderRadius:12,border:"none",fontSize:16,fontWeight:700,background:C.red,color:C.white,cursor:"pointer",animation:"goldGlow 2s infinite"}}>무료 데모 신청 →</button>
+        <div style={{marginTop:20,fontSize:12,color:C.muted}}>메이저맵 · majormap.net</div>
+      </section>
+    </div>
+  );
+}
+function CountUpSpan({target,suffix}){const v=useCountUp(target,1500);return<span>{v}{suffix}</span>;}
+
+// ═══════════════════════════════════════════
+// PAGE 2: ONBOARDING (full, data-rich)
+// ═══════════════════════════════════════════
+function Onboarding(){
+  const[step,setStep]=useState(1);
+  const[lang,setLang]=useState(null);
+  const[sid,setSid]=useState("");
+  const[searching,setSearching]=useState(false);
+  const[found,setFound]=useState(false);
+  const[confirmed,setConfirmed]=useState(false);
+  const[topik,setTopik]=useState("");
+  const[visa,setVisa]=useState("");
+  const[cert,setCert]=useState(false);
+  const[clicked,setClicked]=useState(null);
+  const[chatMode,setChatMode]=useState(false);
+  const[aiTyping,setAiTyping]=useState(false);
+  const[aiDone,setAiDone]=useState(false);
+
+  // Student ID lookup
+  const handleSidChange=(v)=>{
+    const clean=v.replace(/\D/g,"").slice(0,8);
+    setSid(clean);
+    setFound(false);setConfirmed(false);setSearching(false);
+    if(clean.length===8){
+      setSearching(true);
+      setTimeout(()=>{setSearching(false);setFound(true);},1200);
+    }
+  };
+
+  const langs=[
+    {c:"vi",f:"🇻🇳",n:"Tiếng Việt",sub:"베트남어"},
+    {c:"ko",f:"🇰🇷",n:"한국어",sub:"Korean"},
+    {c:"en",f:"🇺🇸",n:"English",sub:"영어"},
+    {c:"zh",f:"🇨🇳",n:"中文",sub:"중국어"},
+  ];
+
+  const profile=[
+    {l:"이름",v:"Nguyễn Thị Mai (응우옌 티 마이)"},
+    {l:"전공",v:"글로벌요양서비스과"},
+    {l:"학년",v:"2학년 1학기"},
+    {l:"이수 학점",v:"52 / 70학점"},
+    {l:"실습 시간",v:"120 / 240시간"},
+    {l:"비자",v:"D-2 유학 (만료 2027.06.30)"},
+  ];
+
+  const qs=[
+    {i:"📚",t:"이번 학기 시간표가 어떻게 되나요?",cat:"학업"},
+    {i:"🎓",t:"졸업까지 남은 학점은?",cat:"학업"},
+    {i:"🏥",t:"건강보험 어떻게 가입하나요?",cat:"생활"},
+    {i:"🏠",t:"학교 근처 편의시설 안내",cat:"생활"},
+    {i:"📋",t:"비자 연장 절차가 궁금해요",cat:"비자"},
+    {i:"📜",t:"요양보호사 시험은 언제 볼 수 있나요?",cat:"학업"},
+  ];
+
+  // AI response data per question
+  const aiResponses=[
+    {cat:"📚 학업",body:"응우옌 님, 2026-1학기 시간표입니다.\n\n월: 요양보호개론 (09:00~10:30)\n화: 한국어IV (10:00~11:30)\n수: 현장실습II (종일)\n목: 요양보호실무II (09:00~12:00)\n금: 의사소통 (13:00~14:30)\n\n총 18학점 수강 중입니다."},
+    {cat:"📚 학업",body:"응우옌 님의 졸업 요건 분석입니다.\n\n✅ 이수: 52/70학점 (18학점 부족)\n⚠️ 미이수 전필: 요양보호실무II, 한국어IV, 현장실습II\n⚠️ 실습: 120/240시간 (120시간 부족)\n\n이번 학기 위 3과목 수강 시 졸업 가능합니다."},
+    {cat:"🏠 생활",body:"건강보험 가입 안내입니다.\n\n외국인 유학생은 입국 후 6개월 이내 국민건강보험 가입 의무가 있습니다.\n\n📋 필요 서류:\n- 여권\n- 외국인등록증\n- 재학증명서\n\n🏥 가입처: 국민건강보험공단 지사 또는 온라인(nhis.or.kr)"},
+    {cat:"🏠 생활",body:"삼육보건대 주변 편의시설입니다.\n\n🏪 편의점: CU (도보 2분), GS25 (도보 3분)\n🍽️ 식당: 학생식당 (B1층), 베트남 쌀국수 (도보 5분)\n🏥 병원: 삼육서울병원 (캠퍼스 내)\n🏦 은행: 하나은행 ATM (학생회관 1층)\n🚌 버스: 삼육보건대 정류장 (도보 1분)"},
+    {cat:"📋 비자",body:"D-2 유학비자 연장 절차입니다.\n\n📅 신청 시기: 만료 4개월 전 ~ 만료일\n🏢 신청처: 출입국관리사무소\n\n📋 필요 서류:\n1. 통합신청서\n2. 여권 + 외국인등록증\n3. 재학증명서\n4. 등록금 납부 영수증\n5. 은행 잔고 증명 (미화 $9,000+)\n6. 보험가입 증명서\n\n💡 수수료: 60,000원"},
+    {cat:"📚 학업",body:"요양보호사 자격시험 안내입니다.\n\n📅 2026년 시험 일정:\n- 2차: 2026.06.14 (접수 05.01~05.15)\n- 3차: 2026.09.13 (접수 08.01~08.15)\n- 4차: 2026.12.06 (접수 11.01~11.15)\n\n📝 시험 구성:\n- 필기: 요양보호개론 + 기초지식 (각 60% 이상)\n- 실기: 생활지원 + 신체활동지원 (60% 이상)\n\n💡 삼육보건대 커리큘럼 이수 시 합격률 92%"},
+  ];
+
+  const handleQuestionClick=(idx)=>{
+    setClicked(idx);
+    setTimeout(()=>setChatMode(true),400);
+    setTimeout(()=>setAiTyping(true),1000);
+    setTimeout(()=>{setAiTyping(false);setAiDone(true);},2500);
+  };
+
+  const canNext=step===1?!!lang:step===2?confirmed:false;
+
+  // ── CHAT MODE ──
+  if(chatMode){
+    const q=qs[clicked]||qs[0];
+    const resp=aiResponses[clicked]||aiResponses[0];
+    return(
+      <div style={{maxWidth:420,margin:"0 auto",height:"100%",background:C.bg,display:"flex",flexDirection:"column",fontFamily:"'Pretendard',system-ui,sans-serif"}}>
+        <div style={{padding:"10px 14px",background:C.white,borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div style={{display:"flex",gap:8,alignItems:"center"}}>
+            <div style={{width:28,height:28,borderRadius:8,background:C.red,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>🤖</div>
+            <div>
+              <div style={{fontSize:12,fontWeight:800,color:C.text}}>CareBot</div>
+              <div style={{fontSize:8,color:C.muted}}>삼육보건대학교</div>
+            </div>
+          </div>
+          <div style={{padding:"3px 8px",borderRadius:4,background:C.mintLight,fontSize:9,color:C.mint,fontWeight:600}}>🟢 온라인</div>
+        </div>
+
+        <div style={{flex:1,overflowY:"auto",padding:"12px 10px",display:"flex",flexDirection:"column",gap:8}}>
+          {/* Profile summary */}
+          <div style={{background:C.white,borderRadius:10,padding:"10px 12px",border:`1px solid ${C.border}`,animation:"fadeUp .3s"}}>
+            <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:6}}>
+              <span style={{fontSize:16}}>🇻🇳</span>
+              <div>
+                <div style={{fontSize:11,fontWeight:700}}>Nguyễn Thị Mai</div>
+                <div style={{fontSize:9,color:C.muted}}>요양서비스과 2학년 · 52/70학점 · TOPIK {topik||"3급"}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* User message */}
+          <div style={{display:"flex",justifyContent:"flex-end",animation:"fadeUp .3s .2s both"}}>
+            <div style={{maxWidth:"80%",padding:"10px 14px",borderRadius:"14px 4px 14px 14px",background:C.mintLight,fontSize:12,lineHeight:1.6}}>
+              {q.t}
+            </div>
+          </div>
+
+          {/* AI typing or response */}
+          {aiTyping && (
+            <div style={{display:"flex",gap:6,alignItems:"center",animation:"fadeUp .2s"}}>
+              <div style={{width:24,height:24,borderRadius:6,background:C.red,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:C.white,fontWeight:800}}>AI</div>
+              <div style={{display:"flex",gap:3}}>
+                {[0,1,2].map(i=><div key={i} style={{width:6,height:6,borderRadius:3,background:C.mint,animation:`typing 1s ${i*.2}s infinite`}}/>)}
+              </div>
+            </div>
+          )}
+
+          {aiDone && (
+            <div style={{display:"flex",gap:6,alignItems:"flex-start",animation:"fadeUp .3s"}}>
+              <div style={{width:24,height:24,borderRadius:6,background:C.red,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:C.white,fontWeight:800,flexShrink:0,marginTop:2}}>AI</div>
+              <div style={{flex:1,background:C.white,borderRadius:"4px 14px 14px 14px",border:`1px solid ${C.border}`,borderLeft:`3px solid ${C.red}`,padding:"10px 12px"}}>
+                <div style={{display:"inline-block",padding:"2px 6px",borderRadius:3,background:C.mintLight,fontSize:9,fontWeight:600,color:C.red,marginBottom:8}}>{resp.cat}</div>
+                <div style={{fontSize:11,color:C.text,lineHeight:1.7,whiteSpace:"pre-line"}}>{resp.body}</div>
+                <div style={{marginTop:8,padding:"6px 8px",borderRadius:6,background:C.mintLight,border:`1px solid ${C.mint}`,display:"flex",gap:6,alignItems:"center"}}>
+                  <span style={{fontSize:14}}>🛡️</span>
+                  <div>
+                    <div style={{fontSize:10,fontWeight:700,color:C.red}}>✅ 학사 데이터 기반 답변</div>
+                    <div style={{fontSize:8,color:C.muted}}>응우옌 님의 이수 현황을 참고하여 생성</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div style={{padding:"10px 14px",background:C.white,borderTop:`1px solid ${C.border}`,textAlign:"center"}}>
+          <div style={{fontSize:10,color:C.mint,fontWeight:600,marginBottom:4}}>🎉 온보딩 데모 완료!</div>
+          <div style={{fontSize:9,color:C.muted}}>실제 서비스에서는 응우옌 님의 학사 데이터를 기반으로 개인화된 답변을 제공합니다</div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── WIZARD ──
+  return(
+    <div style={{maxWidth:420,margin:"0 auto",height:"100%",background:C.white,display:"flex",flexDirection:"column",overflow:"hidden",fontFamily:"'Pretendard',system-ui,sans-serif"}}>
+      {/* Progress */}
+      <div style={{padding:"14px 18px 0"}}>
+        <div style={{display:"flex",gap:5}}>
+          {[1,2,3].map(s=><div key={s} style={{flex:1,height:4,borderRadius:2,background:s<=step?C.red:C.border,transition:"background .4s"}}/>)}
+        </div>
+        <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}>
+          {["언어 선택","프로필 설정","첫 질문"].map((l,i)=>(
+            <span key={i} style={{fontSize:9,color:i+1<=step?C.red:C.muted,fontWeight:i+1===step?700:500}}>{l}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{flex:1,overflowY:"auto",padding:"20px 18px"}}>
+
+        {/* ── STEP 1: Language ── */}
+        {step===1&&(
+          <div style={{textAlign:"center",animation:"fadeUp .3s"}}>
+            <div style={{width:60,height:60,borderRadius:18,background:C.red,margin:"0 auto 14px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,boxShadow:"0 6px 20px rgba(234,86,69,.2)"}}>🤖</div>
+            <div style={{fontSize:22,fontWeight:800,color:C.text,marginBottom:4}}>Chào mừng!</div>
+            <div style={{fontSize:22,fontWeight:800,color:C.text,marginBottom:4}}>환영합니다! Welcome!</div>
+            <div style={{fontSize:12,color:C.dim,marginBottom:20}}>사용할 언어를 선택해 주세요</div>
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {langs.map((l)=>(
+                <button key={l.c} onClick={()=>setLang(l.c)} style={{
+                  display:"flex",alignItems:"center",gap:14,padding:"14px 18px",borderRadius:14,
+                  border:`2px solid ${lang===l.c?C.red:C.border}`,
+                  background:lang===l.c?C.mintLight:C.white,cursor:"pointer",width:"100%",
+                  transition:"all .2s",opacity:lang&&lang!==l.c?0.45:1,
+                  boxShadow:lang===l.c?"0 4px 12px rgba(234,86,69,.1)":"none",
+                }}>
+                  <span style={{fontSize:28}}>{l.f}</span>
+                  <div style={{textAlign:"left",flex:1}}>
+                    <div style={{fontSize:15,fontWeight:700,color:C.text}}>{l.n}</div>
+                    <div style={{fontSize:10,color:C.dim}}>{l.sub}</div>
+                  </div>
+                  {lang===l.c && (
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="11" fill={C.red}/>
+                      <path d="M7 12.5l3 3 7-7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{strokeDasharray:20,animation:"drawCheck .3s forwards"}}/>
+                    </svg>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── STEP 2: Profile ── */}
+        {step===2&&(
+          <div style={{animation:"fadeUp .3s"}}>
+            <div style={{fontSize:20,fontWeight:800,color:C.text,marginBottom:4}}>프로필 설정</div>
+            <div style={{fontSize:11,color:C.dim,marginBottom:16}}>학번을 입력하면 학사 정보가 자동으로 연동됩니다</div>
+
+            {/* Student ID */}
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,fontWeight:600,color:C.muted,marginBottom:4}}>학번</div>
+              <input value={sid} onChange={e=>handleSidChange(e.target.value)} placeholder="20260001"
+                style={{width:"100%",padding:"12px 14px",borderRadius:10,border:`1.5px solid ${found?C.red:C.border}`,fontSize:16,fontWeight:600,letterSpacing:2,outline:"none",boxSizing:"border-box",transition:"border-color .2s",color:C.text}}
+              />
+              <div style={{minHeight:20,marginTop:4}}>
+                {searching&&<div style={{display:"flex",gap:5,alignItems:"center",fontSize:10,color:C.dim}}><div style={{width:13,height:13,border:`2px solid ${C.red}`,borderTop:"2px solid transparent",borderRadius:"50%",animation:"spin .6s linear infinite"}}/>학사 시스템 조회 중...</div>}
+                {found&&!confirmed&&<div style={{fontSize:10,color:C.red,fontWeight:600,animation:"pop .3s"}}>✅ 학사 정보 확인됨</div>}
+              </div>
+            </div>
+
+            {/* Auto-loaded Profile */}
+            {found&&(
+              <div style={{background:confirmed?C.mintLight:C.white,borderRadius:14,border:`1.5px solid ${confirmed?C.red:C.border}`,padding:"14px 16px",marginBottom:14,animation:"fadeUp .3s",transition:"background .3s"}}>
+                <div style={{fontSize:12,fontWeight:700,color:C.text,marginBottom:8}}>📋 조회된 학사 정보</div>
+                {profile.map((p,i)=>(
+                  <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:i<profile.length-1?`1px solid ${C.bg}`:"none"}}>
+                    <span style={{fontSize:11,color:C.dim}}>{p.l}</span>
+                    <span style={{fontSize:11,fontWeight:700,color:C.text}}>{p.v}</span>
+                  </div>
+                ))}
+                {!confirmed&&(
+                  <div style={{display:"flex",gap:8,marginTop:12}}>
+                    <button onClick={()=>setConfirmed(true)} style={{flex:1,padding:"10px",borderRadius:8,border:"none",background:C.red,color:C.white,fontSize:12,fontWeight:700,cursor:"pointer"}}>맞습니다 ✅</button>
+                    <button style={{flex:1,padding:"10px",borderRadius:8,border:`1px solid ${C.border}`,background:C.white,color:C.dim,fontSize:12,fontWeight:600,cursor:"pointer"}}>수정이 필요해요 ✏️</button>
+                  </div>
+                )}
+                {confirmed&&(
+                  <div style={{textAlign:"center",marginTop:8,animation:"pop .3s"}}>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill={C.red}/><path d="M7 12.5l3 3 7-7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" style={{strokeDasharray:20,animation:"drawCheck .3s forwards"}}/></svg>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Additional info after confirm */}
+            {confirmed&&(
+              <div style={{display:"flex",flexDirection:"column",gap:14,animation:"fadeUp .3s"}}>
+                {/* TOPIK */}
+                <div>
+                  <div style={{fontSize:10,fontWeight:600,color:C.muted,marginBottom:6}}>TOPIK 등급</div>
+                  <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+                    {["없음","1급","2급","3급","4급","5급","6급"].map(t=>(
+                      <button key={t} onClick={()=>setTopik(t)} style={{
+                        padding:"6px 14px",borderRadius:20,fontSize:11,fontWeight:600,cursor:"pointer",
+                        border:`1.5px solid ${topik===t?C.red:C.border}`,
+                        background:topik===t?C.mintLight:C.white,
+                        color:topik===t?C.red:C.dim,transition:"all .2s",
+                      }}>{t}</button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Visa expiry */}
+                <div>
+                  <div style={{fontSize:10,fontWeight:600,color:C.muted,marginBottom:4}}>비자 만료일 (선택)</div>
+                  <input type="date" value={visa} onChange={e=>setVisa(e.target.value)}
+                    style={{width:"100%",padding:"10px 12px",borderRadius:8,border:`1.5px solid ${C.border}`,fontSize:12,outline:"none",boxSizing:"border-box",color:C.text}}/>
+                </div>
+
+                {/* Cert toggle */}
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0"}}>
+                  <div>
+                    <div style={{fontSize:12,fontWeight:600,color:C.text}}>요양보호사 자격증</div>
+                    <div style={{fontSize:9,color:C.muted}}>이미 취득한 경우 활성화</div>
+                  </div>
+                  <button onClick={()=>setCert(!cert)} style={{
+                    width:48,height:26,borderRadius:13,border:"none",cursor:"pointer",
+                    background:cert?C.red:C.border,position:"relative",transition:"background .2s",
+                  }}>
+                    <div style={{width:22,height:22,borderRadius:11,background:C.white,position:"absolute",top:2,left:cert?24:2,transition:"left .2s",boxShadow:"0 1px 4px rgba(0,0,0,.15)"}}/>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── STEP 3: First Question ── */}
+        {step===3&&(
+          <div style={{textAlign:"center",animation:"fadeUp .3s"}}>
+            <div style={{fontSize:44,marginBottom:8}}>🎉</div>
+            <div style={{fontSize:20,fontWeight:800,color:C.text,marginBottom:4}}>설정 완료!</div>
+            <div style={{fontSize:13,color:C.dim,marginBottom:6}}>응우옌 님, 무엇이 궁금하세요?</div>
+            <div style={{fontSize:10,color:C.muted,marginBottom:20}}>아래 질문을 터치하면 CareBot이 답변합니다</div>
+
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              {qs.map((q,i)=>(
+                <button key={i} onClick={()=>handleQuestionClick(i)} style={{
+                  padding:"16px 10px",borderRadius:12,
+                  border:`1.5px solid ${clicked===i?C.red:C.border}`,
+                  background:clicked===i?C.mintLight:C.white,cursor:"pointer",textAlign:"center",
+                  opacity:clicked!==null&&clicked!==i?0:1,
+                  transform:clicked===i?"scale(.97)":"scale(1)",
+                  transition:"all .25s",
+                  boxShadow:clicked===i?"0 4px 12px rgba(234,86,69,.1)":"0 1px 4px rgba(0,0,0,.03)",
+                }}>
+                  <div style={{fontSize:24,marginBottom:4}}>{q.i}</div>
+                  <div style={{fontSize:11,color:C.text,fontWeight:500,lineHeight:1.4}}>{q.t}</div>
+                  <div style={{fontSize:8,color:C.muted,marginTop:4}}>{q.cat}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom nav */}
+      <div style={{padding:"10px 18px 16px",borderTop:`1px solid ${C.bg}`,display:"flex",gap:8}}>
+        {step>1&&(
+          <button onClick={()=>{setStep(s=>s-1);setClicked(null);}} style={{padding:"11px 20px",borderRadius:10,border:`1px solid ${C.border}`,background:C.white,color:C.dim,fontSize:12,fontWeight:600,cursor:"pointer"}}>← 이전</button>
+        )}
+        {step<3&&(
+          <button onClick={()=>setStep(s=>s+1)} disabled={!canNext} style={{
+            flex:1,padding:"11px",borderRadius:10,border:"none",fontSize:14,fontWeight:700,
+            background:canNext?C.red:C.border,color:canNext?C.white:C.muted,
+            cursor:canNext?"pointer":"default",opacity:canNext?1:.5,transition:"all .3s",
+          }}>다음 →</button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// PAGE 3: CHATBOT
+// ═══════════════════════════════════════════
+function Chatbot(){
+  const[phase,setPhase]=useState(0);const[inp,setInp]=useState("");const[extra,setExtra]=useState([]);const[exReply,setExReply]=useState(false);const scrollRef=useRef();
+  useEffect(()=>{const ds=[[1,600],[2,2000],[3,3500],[4,7500],[5,11000],[6,12500],[7,14000]];const ts=ds.map(([p,d])=>setTimeout(()=>setPhase(pp=>Math.max(pp,p)),d));return()=>ts.forEach(clearTimeout);},[]);
+  useEffect(()=>{scrollRef.current?.scrollTo({top:scrollRef.current.scrollHeight,behavior:"smooth"});},[phase,extra,exReply]);
+  const send=()=>{if(!inp.trim())return;setExtra(m=>[...m,inp]);setInp("");setTimeout(()=>setExReply(true),1500);};
+  const Dots=()=><div style={{display:"flex",gap:3,padding:"10px 14px",alignItems:"center"}}><div style={{width:22,height:22,borderRadius:6,background:C.red,display:"flex",alignItems:"center",justifyContent:"center",color:C.white,fontSize:8,fontWeight:800}}>AI</div><div style={{display:"flex",gap:2,marginLeft:6}}>{[0,1,2].map(i=><div key={i} style={{width:5,height:5,borderRadius:3,background:C.mint,animation:`typing 1s ${i*.2}s infinite`}}/>)}</div></div>;
+  return(
+    <div style={{maxWidth:420,margin:"0 auto",height:"100%",display:"flex",flexDirection:"column",background:C.bg,fontFamily:"'Pretendard',system-ui,sans-serif"}}>
+      <div style={{padding:"10px 14px",background:C.white,borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{display:"flex",gap:6,alignItems:"center"}}><div style={{width:28,height:28,borderRadius:8,background:C.red,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>🤖</div><div><div style={{fontSize:13,fontWeight:800,color:C.text}}>CareBot</div><div style={{fontSize:8,color:C.dim}}>삼육보건대학교</div></div></div></div>
+      <div ref={scrollRef} style={{flex:1,overflowY:"auto",padding:"6px 0"}}>
+        {/* User 1 */}
+        {phase>=1&&<div style={{display:"flex",justifyContent:"flex-end",padding:"3px 14px",opacity:1,animation:"fadeUp .3s"}}><div style={{maxWidth:"80%",padding:"8px 12px",borderRadius:"14px 3px 14px 14px",background:C.mintLight,fontSize:12,lineHeight:1.5}}><div>Tôi có thể tốt nghiệp học kỳ này không?</div><div style={{fontSize:9,color:C.muted,marginTop:2}}>이번 학기 졸업 가능한가요?</div></div></div>}
+        {phase===2&&<Dots/>}
+        {/* AI 1 */}
+        {phase>=3&&<div style={{padding:"3px 10px",display:"flex",gap:6,animation:"fadeLeft .3s"}}><div style={{width:22,height:22,borderRadius:6,background:C.red,display:"flex",alignItems:"center",justifyContent:"center",color:C.white,fontSize:8,fontWeight:800,flexShrink:0,marginTop:2}}>AI</div><div style={{flex:1,background:C.white,borderRadius:"3px 14px 14px 14px",border:`1px solid ${C.border}`,borderLeft:`3px solid ${C.red}`,padding:"10px 12px"}}><div style={{display:"inline-block",padding:"1px 6px",borderRadius:3,background:C.mintLight,fontSize:9,fontWeight:600,color:C.red,marginBottom:6}}>📚 학업</div><div style={{fontSize:12,color:C.text,lineHeight:1.6,marginBottom:8}}>응우옌 님, 현재 이수 학점을 확인했습니다.</div><div style={{background:C.cream,borderRadius:6,padding:"8px 10px",fontSize:11,lineHeight:1.7}}>✅ 총 이수: 52/70학점 (18학점 부족)<br/>⚠️ 미이수 전필: 요양보호실무II, 한국어IV<br/>⚠️ 실습: 120/240시간</div><div style={{fontSize:11,color:C.text,marginTop:6}}>결론: 다음 학기 위 과목 수강 시 졸업 가능</div></div></div>}
+        {/* User 2 */}
+        {phase>=5&&<div style={{display:"flex",justifyContent:"flex-end",padding:"3px 14px",animation:"fadeUp .3s"}}><div style={{maxWidth:"80%",padding:"8px 12px",borderRadius:"14px 3px 14px 14px",background:C.mintLight,fontSize:12,lineHeight:1.5}}><div>졸업 후 한국에서 일할 수 있나요?</div></div></div>}
+        {phase===6&&<Dots/>}
+        {/* AI 2 - Visa */}
+        {phase>=7&&<div style={{padding:"3px 10px",display:"flex",gap:6,animation:"fadeLeft .3s"}}><div style={{width:22,height:22,borderRadius:6,background:C.red,display:"flex",alignItems:"center",justifyContent:"center",color:C.white,fontSize:8,fontWeight:800,flexShrink:0,marginTop:2}}>AI</div><div style={{flex:1,background:C.white,borderRadius:"3px 14px 14px 14px",border:`1px solid ${C.border}`,borderLeft:`3px solid ${C.navy}`,padding:"10px 12px"}}><div style={{display:"inline-block",padding:"1px 6px",borderRadius:3,background:"#E4E7ED",fontSize:9,fontWeight:600,color:C.navy,marginBottom:6}}>📋 비자·자격증</div><div style={{fontSize:12,color:C.text,lineHeight:1.6,marginBottom:8}}>현재 조건으로 검증한 결과입니다.</div><div style={{background:C.cream,borderRadius:6,padding:"8px 10px",fontSize:11,lineHeight:1.8}}>1️⃣ 요양보호사 자격시험 합격<br/>2️⃣ 졸업 → D-10 구직비자 (최대 2년)<br/>3️⃣ 장기요양기관 취업 → E-7-2</div><div style={{padding:"6px 8px",borderRadius:6,background:C.mintLight,fontSize:10,color:C.red,fontWeight:600,marginTop:6}}>💡 전문대학 졸업 = 경력요건 면제!</div><div style={{display:"flex",gap:8,alignItems:"center",padding:"8px 10px",background:C.mintLight,borderRadius:8,marginTop:6,border:`1.5px solid ${C.red}`}}><span style={{fontSize:20}}>🛡️</span><div><div style={{fontSize:11,fontWeight:700,color:C.red}}>✅ 경로 검증 완료</div><div style={{fontSize:8,color:C.dim}}>CSP 엔진이 실현 가능성을 확인</div></div></div></div></div>}
+        {extra.map((m,i)=><div key={i} style={{display:"flex",justifyContent:"flex-end",padding:"3px 14px",animation:"fadeUp .3s"}}><div style={{background:C.mintLight,borderRadius:"14px 3px 14px 14px",padding:"8px 12px",fontSize:12}}>{m}</div></div>)}
+        {extra.length>0&&!exReply&&<Dots/>}
+        {exReply&&<div style={{padding:"3px 10px",display:"flex",gap:6,animation:"fadeLeft .3s"}}><div style={{width:22,height:22,borderRadius:6,background:C.red,fontSize:8,color:C.white,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800}}>AI</div><div style={{background:C.white,borderRadius:"3px 14px 14px 14px",border:`1px solid ${C.border}`,padding:"10px 12px",fontSize:12}}>현재 <strong>데모 모드</strong>입니다. 실제 서비스에서는 맞춤형 답변을 제공합니다.</div></div>}
+      </div>
+      <div style={{padding:"8px 10px 10px",background:C.white,borderTop:`1px solid ${C.border}`,display:"flex",gap:6}}>
+        <input value={inp} onChange={e=>setInp(e.target.value)} onKeyDown={e=>e.key==="Enter"&&send()} placeholder="질문을 입력하세요..." style={{flex:1,padding:"9px 12px",borderRadius:10,border:`1.5px solid ${C.border}`,fontSize:12,outline:"none"}}/>
+        <button onClick={send} style={{width:38,height:38,borderRadius:10,border:"none",background:inp.trim()?C.red:C.border,color:C.white,fontSize:16,cursor:inp.trim()?"pointer":"default",transition:"all .2s"}}>↑</button>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// PAGE 4: VISA PATH (compact)
+// ═══════════════════════════════════════════
+function VisaPath(){
+  const[form,setForm]=useState({nat:"vietnam",visa:"d2",cert:"none",topik:3,credits:52,practice:120});const[result,setResult]=useState(null);const[vKey,setVKey]=useState(0);
+  const up=(k,v)=>setForm(f=>({...f,[k]:v}));
+  useEffect(()=>{const t=setTimeout(()=>{setResult(verify(form));setVKey(k=>k+1);},400);return()=>clearTimeout(t);},[form]);
+  function verify(f){
+    const ch=[];
+    ch.push({i:"✅",t:`국적: ${{vietnam:"베트남",china:"중국"}[f.nat]||"기타"} → E-7-2 가능`,s:"ok"});
+    ch.push(f.visa==="d2"?{i:"✅",t:"비자: D-2 유학 → 정상 경로",s:"ok"}:{i:"⚠️",t:"비자: D-2 변경 필요",s:"warn"});
+    ch.push(f.cert==="pass"?{i:"✅",t:"자격증: 합격 완료",s:"ok"}:{i:"⚠️",t:`자격증: ${f.cert==="written"?"실기 필요":"미취득 → 졸업 전 취득"}`,s:"warn"});
+    ch.push(f.topik>=3?{i:"✅",t:`TOPIK: ${f.topik}급 → 유리`,s:"ok"}:{i:"⚠️",t:`TOPIK: ${f.topik}급 → 향상 권장`,s:"warn"});
+    ch.push(f.credits>=70?{i:"✅",t:`학점: ${f.credits}/70 충족`,s:"ok"}:{i:"⚠️",t:`학점: ${f.credits}/70 → ${70-f.credits}학점 필요`,s:"warn"});
+    ch.push(f.practice>=240?{i:"✅",t:`실습: ${f.practice}/240h 충족`,s:"ok"}:{i:"⚠️",t:`실습: ${f.practice}/240h → ${240-f.practice}시간 필요`,s:"warn"});
+    const steps=[{l:"D-2 유학비자",st:f.visa==="d2"?"done":"current",sub:f.visa==="d2"?"보유":"변경 필요"},{l:"요양보호사 자격",st:f.cert==="pass"?"done":"current",sub:f.cert==="pass"?"합격":"취득 필요"},{l:"졸업",st:f.credits>=70&&f.practice>=240?"done":"future",sub:f.credits>=70?"요건 충족":"진행 중"},{l:"D-10 구직비자",st:"future",sub:"최대 2년"},{l:"E-7-2 취업",st:"future",sub:"장기요양기관"},{l:"F-5 영주",st:"future",sub:"장기 정주"}];
+    return{ch,steps,ok:ch.every(c=>c.s==="ok")};
+  }
+  const Sel=({label,value,opts,onChange})=><div style={{marginBottom:10}}><div style={{fontSize:9,fontWeight:600,color:C.muted,marginBottom:3}}>{label}</div><select value={value} onChange={e=>onChange(e.target.value)} style={{width:"100%",padding:"8px 10px",borderRadius:6,border:`1px solid ${C.border}`,fontSize:11,outline:"none",background:C.white}}>{opts.map(o=><option key={o.v} value={o.v}>{o.l}</option>)}</select></div>;
+  const Sld=({label,value,min,max,unit,onChange})=><div style={{marginBottom:10}}><div style={{display:"flex",justifyContent:"space-between",fontSize:9,color:C.muted,fontWeight:600,marginBottom:2}}><span>{label}</span><span style={{color:C.red,fontWeight:700,fontSize:11}}>{value}{unit}</span></div><input type="range" min={min} max={max} value={value} onChange={e=>onChange(Number(e.target.value))} style={{width:"100%",height:5,borderRadius:3,outline:"none",accentColor:C.red}}/></div>;
+  return(
+    <div style={{display:"flex",height:"100%",fontFamily:"'Pretendard',system-ui,sans-serif",background:C.bg}}>
+      <div style={{width:"34%",minWidth:280,background:C.white,borderRight:`1px solid ${C.border}`,overflowY:"auto",padding:"20px 16px"}}>
+        <div style={{display:"flex",gap:6,alignItems:"center",marginBottom:3}}><span style={{fontSize:18}}>🛡️</span><span style={{fontSize:18,fontWeight:800,color:C.text}}>비자 경로 검증</span></div>
+        <div style={{fontSize:10,color:C.dim,marginBottom:16}}>조건 변경 시 실시간 자동 검증</div>
+        <Sel label="국적" value={form.nat} opts={[{v:"vietnam",l:"🇻🇳 베트남"},{v:"china",l:"🇨🇳 중국"},{v:"uzbekistan",l:"🇺🇿 우즈베키스탄"},{v:"myanmar",l:"🇲🇲 미얀마"},{v:"other",l:"🌐 기타"}]} onChange={v=>up("nat",v)}/>
+        <Sel label="현재 비자" value={form.visa} opts={[{v:"d2",l:"D-2 유학"},{v:"d4",l:"D-4 연수"},{v:"other",l:"기타"}]} onChange={v=>up("visa",v)}/>
+        <Sel label="요양보호사" value={form.cert} opts={[{v:"none",l:"미취득"},{v:"written",l:"필기합격"},{v:"pass",l:"합격"}]} onChange={v=>up("cert",v)}/>
+        <Sel label="TOPIK" value={form.topik} opts={[0,1,2,3,4,5,6].map(n=>({v:n,l:n===0?"없음":n+"급"}))} onChange={v=>up("topik",Number(v))}/>
+        <Sld label="이수 학점" value={form.credits} min={0} max={70} unit="학점" onChange={v=>up("credits",v)}/>
+        <Sld label="실습 시간" value={form.practice} min={0} max={240} unit="시간" onChange={v=>up("practice",v)}/>
+      </div>
+      <div style={{flex:1,overflowY:"auto",padding:"20px 22px"}} key={vKey}>
+        {result&&<div style={{animation:"fadeUp .3s"}}>
+          <div style={{fontSize:15,fontWeight:700,color:C.text,marginBottom:10}}>📋 조건 체크리스트</div>
+          <div style={{display:"flex",flexDirection:"column",gap:4,marginBottom:20}}>{result.ch.map((c,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",padding:"7px 10px",borderRadius:6,background:c.s==="ok"?C.mintLight:c.s==="warn"?"#FFF8E1":C.dangerLight,animation:`fadeLeft .2s ${i*.08}s both`}}><span style={{fontSize:14}}>{c.i}</span><span style={{fontSize:11,color:C.text}}>{c.t}</span></div>)}</div>
+          <div style={{fontSize:15,fontWeight:700,color:C.text,marginBottom:10}}>🗺️ 비자 경로 타임라인</div>
+          {result.steps.map((s,i)=><div key={i} style={{display:"flex",gap:10,animation:`fadeLeft .2s ${.5+i*.1}s both`}}><div style={{display:"flex",flexDirection:"column",alignItems:"center",width:28}}><div style={{width:24,height:24,borderRadius:12,background:s.st==="done"?C.red:s.st==="current"?C.white:C.cream,border:`2px solid ${s.st==="done"?C.red:s.st==="current"?C.red:C.border}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:s.st==="done"?C.white:C.text,position:"relative"}}>{s.st==="done"?"✓":i+1}{s.st==="current"&&<div style={{position:"absolute",inset:-4,borderRadius:16,border:`2px solid ${C.red}`,animation:"ringPulse 1.5s infinite"}}/>}</div>{i<result.steps.length-1&&<div style={{width:2,flex:1,minHeight:12,background:s.st==="done"?C.red:C.border}}/>}</div><div style={{flex:1,paddingBottom:10}}><div style={{background:C.white,borderRadius:8,border:`1px solid ${s.st==="current"?C.red:C.border}`,padding:"8px 12px"}}><div style={{fontSize:12,fontWeight:700,color:C.text}}>{s.l}</div><div style={{fontSize:10,color:s.st==="done"?C.red:C.dim,marginTop:2}}>{s.sub}</div></div></div></div>)}
+          <div style={{display:"flex",gap:10,alignItems:"center",padding:"14px 16px",background:result.ok?C.mintLight:"#FFF8E1",borderRadius:10,border:`2px solid ${result.ok?C.red:C.orange}`,marginTop:12,animation:"pop .4s"}}><span style={{fontSize:28}}>🛡️</span><div><div style={{fontSize:13,fontWeight:700,color:result.ok?C.red:C.orange}}>{result.ok?"✅ 경로 검증 완료":"⚠️ 추가 요건 필요"}</div><div style={{fontSize:9,color:C.muted,marginTop:2}}>현행 규정 기준 · 법적 조언이 아닙니다</div></div></div>
+        </div>}
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// PAGE 5: ADMIN DASHBOARD (compact, all 7 tabs)
+// ═══════════════════════════════════════════
+const STU=[{id:1,nm:"Trần Văn Hùng",fl:"🇻🇳",dp:"요양서비스",yr:1,cr:18,tk:2,vs:"D-2",ve:"2027-01-15",ct:"없음",pr:40,gp:3.2,st:"위험",rk:"비자만료 D-15",la:"2일전",cc:45},{id:2,nm:"Lê Thị Ngọc",fl:"🇻🇳",dp:"요양서비스",yr:2,cr:52,tk:3,vs:"D-2",ve:"2027-06-30",ct:"없음",pr:120,gp:3.5,st:"양호",rk:"",la:"오늘",cc:78},{id:3,nm:"Phạm Minh Tuấn",fl:"🇻🇳",dp:"글로벌융합",yr:1,cr:22,tk:2,vs:"D-2",ve:"2027-08-20",ct:"없음",pr:0,gp:2.8,st:"양호",rk:"",la:"오늘",cc:32},{id:4,nm:"Nguyễn Văn An",fl:"🇻🇳",dp:"요양서비스",yr:2,cr:48,tk:4,vs:"D-2",ve:"2027-03-15",ct:"필기합격",pr:160,gp:3.8,st:"양호",rk:"",la:"1일전",cc:92},{id:5,nm:"Hoàng Thị Linh",fl:"🇻🇳",dp:"글로벌융합",yr:1,cr:15,tk:1,vs:"D-2",ve:"2027-09-01",ct:"없음",pr:0,gp:2.5,st:"주의",rk:"출석률70%",la:"5일전",cc:12},{id:6,nm:"Nguyễn Thị Lan",fl:"🇻🇳",dp:"요양서비스",yr:2,cr:55,tk:3,vs:"D-2",ve:"2027-04-20",ct:"없음",pr:180,gp:3.1,st:"위험",rk:"2주미이용",la:"14일전",cc:56},{id:7,nm:"Bùi Đức Thắng",fl:"🇻🇳",dp:"요양서비스",yr:1,cr:20,tk:2,vs:"D-2",ve:"2027-07-10",ct:"없음",pr:60,gp:3.0,st:"양호",rk:"",la:"오늘",cc:41},{id:8,nm:"Võ Thị Hương",fl:"🇻🇳",dp:"요양서비스",yr:2,cr:62,tk:4,vs:"D-2",ve:"2027-05-25",ct:"합격",pr:240,gp:3.9,st:"우수",rk:"",la:"오늘",cc:105},{id:9,nm:"Đặng Minh Khoa",fl:"🇻🇳",dp:"글로벌융합",yr:1,cr:16,tk:1,vs:"D-2",ve:"2027-10-05",ct:"없음",pr:0,gp:2.3,st:"주의",rk:"GPA미달",la:"3일전",cc:8},{id:10,nm:"Trịnh Thị Mai",fl:"🇻🇳",dp:"요양서비스",yr:2,cr:50,tk:3,vs:"D-2",ve:"2027-02-28",ct:"필기합격",pr:140,gp:3.4,st:"양호",rk:"",la:"오늘",cc:67},{id:11,nm:"Wang Xiaoming",fl:"🇨🇳",dp:"글로벌융합",yr:1,cr:19,tk:2,vs:"D-2",ve:"2027-07-01",ct:"없음",pr:0,gp:3.1,st:"양호",rk:"",la:"2일전",cc:25},{id:12,nm:"Li Mei",fl:"🇨🇳",dp:"요양서비스",yr:2,cr:58,tk:4,vs:"D-2",ve:"2027-06-15",ct:"합격",pr:220,gp:3.7,st:"우수",rk:"",la:"오늘",cc:88},{id:13,nm:"Dilshod Karimov",fl:"🇺🇿",dp:"요양서비스",yr:1,cr:21,tk:2,vs:"D-2",ve:"2027-09-20",ct:"없음",pr:50,gp:2.9,st:"양호",rk:"",la:"오늘",cc:30},{id:14,nm:"Aung Zaw Min",fl:"🇲🇲",dp:"요양서비스",yr:1,cr:17,tk:1,vs:"D-2",ve:"2027-11-01",ct:"없음",pr:30,gp:2.6,st:"주의",rk:"소통어려움",la:"4일전",cc:15},{id:15,nm:"Sokha Chea",fl:"🇰🇭",dp:"글로벌융합",yr:1,cr:14,tk:1,vs:"D-4",ve:"2027-03-30",ct:"없음",pr:0,gp:2.4,st:"주의",rk:"D-4변경필요",la:"6일전",cc:10},{id:16,nm:"Nguyễn T. Tùng",fl:"🇻🇳",dp:"요양서비스",yr:2,cr:60,tk:5,vs:"D-2",ve:"2027-05-10",ct:"합격",pr:230,gp:3.6,st:"우수",rk:"",la:"오늘",cc:95},{id:17,nm:"Trần Thị Hà",fl:"🇻🇳",dp:"요양서비스",yr:1,cr:23,tk:2,vs:"D-2",ve:"2027-08-05",ct:"없음",pr:70,gp:3.0,st:"양호",rk:"",la:"오늘",cc:44},{id:18,nm:"Phan Đức Long",fl:"🇻🇳",dp:"요양서비스",yr:2,cr:45,tk:3,vs:"D-2",ve:"2027-04-01",ct:"없음",pr:100,gp:2.7,st:"주의",rk:"학점부족",la:"2일전",cc:52},{id:19,nm:"Huỳnh Thị Vy",fl:"🇻🇳",dp:"글로벌융합",yr:1,cr:20,tk:2,vs:"D-2",ve:"2027-10-15",ct:"없음",pr:0,gp:3.2,st:"양호",rk:"",la:"1일전",cc:28},{id:20,nm:"Lý Văn Dũng",fl:"🇻🇳",dp:"요양서비스",yr:1,cr:24,tk:3,vs:"D-2",ve:"2027-08-15",ct:"없음",pr:80,gp:3.3,st:"양호",rk:"",la:"1일전",cc:38}];
+const ALRT=[{id:1,nm:"Trần Văn Hùng",fl:"🇻🇳",lv:"긴급",tp:"비자",dt:"비자 만료 D-15",tm:"방금",rd:false},{id:2,nm:"Nguyễn Thị Lan",fl:"🇻🇳",lv:"긴급",tp:"출석",dt:"2주 미이용+출석55%",tm:"1시간전",rd:false},{id:3,nm:"Hoàng Thị Linh",fl:"🇻🇳",lv:"주의",tp:"출석",dt:"출석률 70%",tm:"3시간전",rd:false},{id:4,nm:"Đặng Minh Khoa",fl:"🇻🇳",lv:"주의",tp:"학업",dt:"GPA 2.3 미달",tm:"5시간전",rd:true},{id:5,nm:"Sokha Chea",fl:"🇰🇭",lv:"주의",tp:"비자",dt:"D-4→D-2 미변경",tm:"1일전",rd:true},{id:6,nm:"Aung Zaw Min",fl:"🇲🇲",lv:"정보",tp:"학업",dt:"소통 어려움",tm:"1일전",rd:true},{id:7,nm:"Phan Đức Long",fl:"🇻🇳",lv:"정보",tp:"학업",dt:"25학점 부족",tm:"2일전",rd:true},{id:8,nm:"Trần Văn Hùng",fl:"🇻🇳",lv:"긴급",tp:"심리",dt:"귀국고민 키워드",tm:"3일전",rd:true}];
+const ISS=[{id:1,lv:"urgent",nm:"Trần Văn Hùng",fl:"🇻🇳",tg:"비자만료",q:"Visa sắp hết hạn?",qk:"비자만료?"},{id:2,lv:"medium",nm:"Lê Thị Ngọc",fl:"🇻🇳",tg:"전공변경",q:"Đổi chuyên ngành?",qk:"전공변경?"},{id:3,lv:"low",nm:"Phạm Minh Tuấn",fl:"🇻🇳",tg:"시설",q:"Thư viện mấy giờ?",qk:"도서관?"},{id:4,lv:"medium",nm:"Wang Xiaoming",fl:"🇨🇳",tg:"건강보험",q:"健康保险怎么申请?",qk:"건강보험?"},{id:5,lv:"low",nm:"Bùi Đức Thắng",fl:"🇻🇳",tg:"식당",q:"Căng tin mấy giờ?",qk:"식당?"},{id:6,lv:"medium",nm:"Trịnh Thị Mai",fl:"🇻🇳",tg:"자격시험",q:"Thi hộ lý khi nào?",qk:"자격시험?"}];
+const TRD=[{week:"W1",학업:42,생활:35,비자:28},{week:"W2",학업:48,생활:30,비자:35},{week:"W3",학업:55,생활:28,비자:40},{week:"W4",학업:50,생활:38,비자:45},{week:"W5",학업:62,생활:32,비자:38},{week:"W6",학업:58,생활:40,비자:50},{week:"W7",학업:65,생활:35,비자:48},{week:"W8",학업:60,생활:42,비자:55}];
+const TOPQ=[{q:"졸업 학점?",ct:"학업",n:89,t:"↑"},{q:"비자 연장?",ct:"비자",n:76,t:"↑"},{q:"자격시험?",ct:"학업",n:65,t:"→"},{q:"건강보험?",ct:"생활",n:58,t:"↓"},{q:"E-7 비자?",ct:"비자",n:52,t:"↑"},{q:"아르바이트?",ct:"생활",n:48,t:"→"},{q:"기숙사?",ct:"생활",n:45,t:"↓"},{q:"TOPIK?",ct:"학업",n:42,t:"→"},{q:"전공변경?",ct:"학업",n:38,t:"↑"},{q:"실습장소?",ct:"학업",n:35,t:"→"}];
+const RPT=[{month:"9월",이용률:42,해결률:45},{month:"10월",이용률:55,해결률:58},{month:"11월",이용률:65,해결률:68},{month:"12월",이용률:72,해결률:75},{month:"1월",이용률:76,해결률:78},{month:"2월",이용률:80,해결률:82}];
+const LD=[{w:"W1",r:42},{w:"W2",r:48},{w:"W3",r:55},{w:"W4",r:62},{w:"W5",r:68},{w:"W6",r:72},{w:"W7",r:75},{w:"W8",r:78}];
+
+function Kpi({icon,label,value,suffix,sub,subColor,delay,onClick}){const[sh,setSh]=useState(false);const[ss,setSS]=useState(false);const[hv,setHv]=useState(false);useEffect(()=>{setTimeout(()=>setSh(true),delay);},[]);const cnt=useCountUp(value,1000,sh);useEffect(()=>{if(sh&&cnt>=value-0.1)setTimeout(()=>setSS(true),300);},[cnt,value,sh]);return<div onClick={onClick} onMouseEnter={()=>setHv(true)} onMouseLeave={()=>setHv(false)} style={{flex:1,background:C.white,borderRadius:12,padding:"14px 16px",boxShadow:hv?"0 4px 16px rgba(0,0,0,.08)":"0 1px 6px rgba(0,0,0,.04)",transform:sh?(hv?"translateY(-2px)":"none"):"translateY(12px)",opacity:sh?1:0,transition:"all .4s",cursor:onClick?"pointer":"default"}}><div style={{fontSize:18,marginBottom:3}}>{icon}</div><div style={{fontSize:9,color:C.muted,fontWeight:600,textTransform:"uppercase"}}>{label}</div><div style={{display:"flex",alignItems:"baseline",gap:2,marginTop:3}}><span style={{fontSize:22,fontWeight:800,color:C.text}}>{cnt}</span>{suffix&&<span style={{fontSize:11,color:C.dim}}>{suffix}</span>}</div><div style={{fontSize:9,color:subColor||C.mint,fontWeight:600,marginTop:2,opacity:ss?1:0,transition:"all .3s"}}>{sub}</div></div>;}
+
+function IssCard({iss,delay,onRes}){const[sh,setSh]=useState(false);const[exp,setExp]=useState(false);const[ans,setAns]=useState("");const[sub,setSub]=useState(0);const[rem,setRem]=useState(false);useEffect(()=>{setTimeout(()=>setSh(true),delay);},[]);const lc=iss.lv==="urgent"?C.danger:iss.lv==="medium"?C.gold:C.mint;const lb=iss.lv==="urgent"?C.dangerLight:iss.lv==="medium"?C.mintLight:C.mintLight;const li=iss.lv==="urgent"?"🔴":iss.lv==="medium"?"🟡":"🟢";const go=()=>{setSub(1);setTimeout(()=>setSub(2),800);setTimeout(()=>{setRem(true);setTimeout(()=>onRes(iss.id),500);},1800);};if(rem)return<div style={{animation:"slideOut .5s forwards"}}/>;return<div style={{background:sub===2?C.mintLight:C.white,borderRadius:10,border:`1px solid ${C.border}`,borderLeft:`3px solid ${lc}`,transform:sh?"none":"translateX(-12px)",opacity:sh?1:0,transition:"all .3s",overflow:"hidden"}}><div style={{padding:"8px 12px",display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}><div><div style={{display:"flex",gap:5,alignItems:"center",marginBottom:2}}><span style={{animation:iss.lv==="urgent"?"pulse 1.5s infinite":"none"}}>{li}</span><span style={{fontSize:11,fontWeight:700,color:C.text}}>{iss.nm} {iss.fl}</span><span style={{fontSize:8,padding:"1px 4px",borderRadius:3,background:lb,color:lc,fontWeight:600}}>{iss.tg}</span></div><div style={{fontSize:10,color:C.dim,fontStyle:"italic"}}>"{iss.q}"</div></div>{!exp&&!sub&&<button onClick={()=>setExp(true)} style={{padding:"4px 8px",borderRadius:5,fontSize:9,fontWeight:600,background:C.mintLight,color:C.red,border:`1px solid ${C.red}`,cursor:"pointer",whiteSpace:"nowrap"}}>답변▼</button>}</div><div style={{maxHeight:exp?250:0,overflow:"hidden",transition:"max-height .3s"}}><div style={{padding:"0 12px 10px",borderTop:`1px solid ${C.bg}`}}><textarea value={ans} onChange={e=>setAns(e.target.value)} placeholder="답변..." rows={2} style={{width:"100%",marginTop:6,padding:"6px 8px",borderRadius:5,border:`1px solid ${C.border}`,fontSize:10,outline:"none",boxSizing:"border-box",resize:"vertical"}}/><div style={{display:"flex",justifyContent:"flex-end",marginTop:4}}><button onClick={go} disabled={!ans.trim()||sub} style={{padding:"5px 14px",borderRadius:5,fontSize:10,fontWeight:700,background:sub?C.muted:C.red,color:C.white,border:"none",cursor:ans.trim()&&!sub?"pointer":"default"}}>{sub===0?"제출":sub===1?"...":"✅"}</button></div></div></div></div>;}
+
+function AdminDashboard(){
+  const[pg,setPg]=useState("dash");const[ck,setCk]=useState(0);const[iss,setIss]=useState(ISS);const[ur,setUr]=useState(ISS.length);const[tm,setTm]=useState("");const[tv,setTv]=useState(false);
+  const res=id=>{setIss(p=>p.filter(i=>i.id!==id));setUr(c=>c-1);setTm("답변 완료!");setTv(true);};
+  const go=p=>{setPg(p);setCk(k=>k+1);};
+  const mn=[{k:"dash",i:"📊",l:"대시보드"},{k:"iss",i:"💬",l:"미응답",b:ur},{k:"stu",i:"👤",l:"학생관리",b:STU.length},{k:"alt",i:"⚠️",l:"위기알림",bc:C.danger,b:ALRT.filter(a=>!a.rd).length},{k:"trd",i:"📈",l:"트렌드"},{k:"dat",i:"📝",l:"답변데이터"},{k:"rpt",i:"📋",l:"성과리포트"}];
+  // SubPages
+  const sc={위험:C.danger,주의:C.orange,양호:C.mint,우수:"#2563EB"};const sb={위험:C.dangerLight,주의:"#FFF3E0",양호:C.mintLight,우수:"#EFF6FF"};
+  const StuPg=()=>{const[sr,setSr]=useState("");const[ft,setFt]=useState("all");const[sel,setSel]=useState(null);const fl=STU.filter(s=>{const ms=s.nm.toLowerCase().includes(sr.toLowerCase())||s.dp.includes(sr);const mf=ft==="all"||(ft==="risk"&&(s.st==="위험"||s.st==="주의"))||(ft==="good"&&(s.st==="양호"||s.st==="우수"));return ms&&mf;});const sd=STU.find(x=>x.id===sel);return<div style={{animation:"fadeUp .3s"}}><div style={{fontSize:18,fontWeight:800,color:C.text,marginBottom:10}}>👤 학생별 관리 <span style={{fontSize:12,color:C.dim,fontWeight:500}}>({STU.length}명)</span></div><div style={{display:"flex",gap:6,marginBottom:12}}><input value={sr} onChange={e=>setSr(e.target.value)} placeholder="검색..." style={{flex:1,padding:"7px 10px",borderRadius:6,border:`1px solid ${C.border}`,fontSize:10,outline:"none",boxSizing:"border-box"}}/>{["all","risk","good"].map(f=><button key={f} onClick={()=>setFt(f)} style={{padding:"6px 10px",borderRadius:6,fontSize:9,fontWeight:600,border:`1px solid ${ft===f?C.red:C.border}`,background:ft===f?C.mintLight:C.white,color:ft===f?C.red:C.dim,cursor:"pointer"}}>{f==="all"?"전체":f==="risk"?"위험":"양호"}</button>)}</div><div style={{background:C.white,borderRadius:10,overflow:"hidden",border:`1px solid ${C.border}`}}><div style={{display:"grid",gridTemplateColumns:"2fr 1fr .6fr .5fr .5fr .5fr .7fr",padding:"6px 12px",background:C.cream,fontSize:8,fontWeight:700,color:C.muted}}><span>학생</span><span>학과</span><span>학점</span><span>TK</span><span>비자</span><span>GPA</span><span>상태</span></div><div style={{maxHeight:280,overflowY:"auto"}}>{fl.map((s,i)=><div key={s.id} onClick={()=>setSel(sel===s.id?null:s.id)} style={{display:"grid",gridTemplateColumns:"2fr 1fr .6fr .5fr .5fr .5fr .7fr",padding:"6px 12px",borderTop:`1px solid ${C.bg}`,cursor:"pointer",background:sel===s.id?C.mintLight:"transparent",fontSize:10,animation:`fadeLeft .1s ${Math.min(i,8)*.02}s both`}}><span style={{fontWeight:600}}>{s.fl} {s.nm}</span><span style={{color:C.dim}}>{s.dp}</span><span>{s.cr}/70</span><span style={{color:s.tk>=3?C.mint:C.orange}}>{s.tk}급</span><span>{s.vs}</span><span style={{color:s.gp>=3.5?C.mint:s.gp<2.5?C.danger:C.text}}>{s.gp}</span><span style={{fontSize:8,padding:"1px 4px",borderRadius:3,background:sb[s.st],color:sc[s.st],fontWeight:600,textAlign:"center"}}>{s.st}</span></div>)}</div></div>{sd&&<div style={{marginTop:10,background:C.white,borderRadius:10,padding:"14px",border:`1px solid ${C.border}`,animation:"fadeUp .2s"}}><div style={{fontSize:14,fontWeight:800,color:C.text,marginBottom:2}}>{sd.fl} {sd.nm}</div><div style={{fontSize:10,color:C.dim,marginBottom:8}}>{sd.dp} {sd.yr}학년 · 챗봇 {sd.cc}회 · {sd.la}</div><div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6}}>{[{l:"학점",v:`${sd.cr}/70`,p:sd.cr/70*100},{l:"실습",v:`${sd.pr}/240h`,p:sd.pr/240*100},{l:"TOPIK",v:`${sd.tk}급`,p:sd.tk/6*100},{l:"GPA",v:sd.gp,p:sd.gp/4.5*100}].map((d,i)=><div key={i} style={{background:C.cream,borderRadius:6,padding:"8px"}}><div style={{fontSize:8,color:C.muted}}>{d.l}</div><div style={{fontSize:14,fontWeight:800}}>{d.v}</div><div style={{height:3,borderRadius:2,background:C.border,marginTop:3}}><div style={{height:"100%",borderRadius:2,background:d.p>=70?C.mint:d.p>=40?C.orange:C.danger,width:`${Math.min(d.p,100)}%`,transition:"width .5s"}}/></div></div>)}</div>{sd.rk&&<div style={{marginTop:6,padding:"5px 8px",borderRadius:5,background:C.dangerLight,fontSize:9,color:C.danger,fontWeight:600}}>⚠️ {sd.rk}</div>}</div>}</div>;};
+  const AltPg=()=>{const[als,setAls]=useState(ALRT);const[ft,setFt]=useState("all");const mk=id=>setAls(a=>a.map(x=>x.id===id?{...x,rd:true}:x));const fl=als.filter(a=>ft==="all"||(ft==="unread"&&!a.rd)||ft===a.tp);const lc={긴급:C.danger,주의:C.orange,정보:C.mint};const lb={긴급:C.dangerLight,주의:"#FFF3E0",정보:C.mintLight};return<div style={{animation:"fadeUp .3s"}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}><div style={{fontSize:18,fontWeight:800,color:C.text}}>⚠️ 위기 알림</div><span style={{fontSize:11,color:C.danger,fontWeight:700}}>미확인 {als.filter(a=>!a.rd).length}건</span></div><div style={{display:"flex",gap:4,marginBottom:12,flexWrap:"wrap"}}>{[{k:"all",l:"전체"},{k:"unread",l:"미확인"},{k:"비자",l:"비자"},{k:"출석",l:"출석"},{k:"학업",l:"학업"},{k:"심리",l:"심리"}].map(f=><button key={f.k} onClick={()=>setFt(f.k)} style={{padding:"4px 8px",borderRadius:5,fontSize:9,fontWeight:600,border:`1px solid ${ft===f.k?C.red:C.border}`,background:ft===f.k?C.mintLight:C.white,color:ft===f.k?C.red:C.dim,cursor:"pointer"}}>{f.l}</button>)}</div><div style={{display:"flex",flexDirection:"column",gap:5}}>{fl.map((a,i)=><div key={a.id} onClick={()=>mk(a.id)} style={{background:a.rd?C.white:lb[a.lv],borderRadius:8,border:`1px solid ${a.rd?C.border:lc[a.lv]}`,borderLeft:`3px solid ${lc[a.lv]}`,padding:"10px 12px",cursor:"pointer",opacity:a.rd?.6:1,animation:`fadeLeft .1s ${i*.03}s both`}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:2}}><div style={{display:"flex",gap:4,alignItems:"center"}}><span style={{fontSize:8,padding:"1px 4px",borderRadius:3,background:lb[a.lv],color:lc[a.lv],fontWeight:700}}>{a.lv}</span><span style={{fontSize:11,fontWeight:700}}>{a.fl} {a.nm}</span><span style={{fontSize:8,padding:"1px 4px",borderRadius:3,background:C.cream,color:C.dim}}>{a.tp}</span></div><div style={{display:"flex",gap:4,alignItems:"center"}}><span style={{fontSize:8,color:C.muted}}>{a.tm}</span>{!a.rd&&<span style={{width:6,height:6,borderRadius:3,background:C.danger,animation:"pulse 1.5s infinite"}}/>}</div></div><div style={{fontSize:10,color:C.dim}}>{a.dt}</div></div>)}</div></div>;};
+  const TrdPg=()=>{const cc={학업:C.red,생활:C.gold,비자:C.navy};return<div style={{animation:"fadeUp .3s"}}><div style={{fontSize:18,fontWeight:800,color:C.text,marginBottom:12}}>📈 질문 트렌드</div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}><div style={{background:C.white,borderRadius:10,padding:"12px 16px"}}><div style={{fontSize:12,fontWeight:700,marginBottom:8}}>주간 추이</div><ResponsiveContainer width="100%" height={160}><BarChart data={TRD}><CartesianGrid strokeDasharray="3 3" stroke={C.bg}/><XAxis dataKey="week" tick={{fontSize:8}}/><YAxis tick={{fontSize:8}}/><Tooltip contentStyle={{borderRadius:5,fontSize:9}}/><Legend wrapperStyle={{fontSize:8}}/><Bar dataKey="학업" fill={C.red} radius={[2,2,0,0]}/><Bar dataKey="생활" fill={C.gold} radius={[2,2,0,0]}/><Bar dataKey="비자" fill={C.navy} radius={[2,2,0,0]}/></BarChart></ResponsiveContainer></div><div style={{background:C.white,borderRadius:10,padding:"12px 16px"}}><div style={{fontSize:12,fontWeight:700,marginBottom:8}}>영역별</div><div style={{display:"flex",alignItems:"center",gap:12}}><div style={{position:"relative",width:100,height:100}}><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={[{value:35},{value:27},{value:38}]} dataKey="value" cx="50%" cy="50%" innerRadius={30} outerRadius={46} paddingAngle={3} animationDuration={1200}><Cell fill={C.red}/><Cell fill={C.gold}/><Cell fill={C.navy}/></Pie></PieChart></ResponsiveContainer><div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:800}}>365</div></div><div style={{display:"flex",flexDirection:"column",gap:4}}>{[{n:"학업35%",c:C.red},{n:"생활27%",c:C.gold},{n:"비자38%",c:C.navy}].map((d,i)=><div key={i} style={{display:"flex",gap:4,alignItems:"center",fontSize:10}}><div style={{width:7,height:7,borderRadius:2,background:d.c}}/>{d.n}</div>)}</div></div></div></div><div style={{background:C.white,borderRadius:10,padding:"12px 16px"}}><div style={{fontSize:12,fontWeight:700,marginBottom:8}}>빈출 TOP 10</div>{TOPQ.map((q,i)=><div key={i} style={{display:"grid",gridTemplateColumns:"1.8fr 3fr .5fr .4fr",alignItems:"center",padding:"5px 8px",borderRadius:4,background:i%2===0?C.cream:"transparent",fontSize:10}}><div style={{display:"flex",gap:4,alignItems:"center"}}><span style={{fontWeight:800,color:C.muted,width:16}}>#{i+1}</span><span style={{fontSize:8,padding:"1px 4px",borderRadius:2,background:q.ct==="학업"?"rgba(234,86,69,.1)":q.ct==="생활"?"rgba(144,198,180,.15)":"rgba(32,43,69,.1)",color:cc[q.ct],fontWeight:600}}>{q.ct}</span></div><span>{q.q}</span><span style={{fontWeight:700,textAlign:"right"}}>{q.n}</span><span style={{textAlign:"right",color:q.t==="↑"?C.red:q.t==="↓"?C.danger:C.muted}}>{q.t}</span></div>)}</div></div>;};
+  const RptPg=()=><div style={{animation:"fadeUp .3s"}}><div style={{fontSize:18,fontWeight:800,color:C.text,marginBottom:12}}>📋 성과 리포트</div><div style={{display:"flex",gap:10,marginBottom:14}}><Kpi icon="📊" label="이용률" value={76} suffix="%" sub="목표95%" delay={0}/><Kpi icon="🤖" label="해결률" value={78} suffix="%" sub="+5%p" delay={100}/><Kpi icon="😊" label="만족도" value={4.1} suffix="/5" sub="+0.1" delay={200}/><Kpi icon="📉" label="탈락" value={0} suffix="명" sub="전년2→0" subColor={C.mint} delay={300}/></div><div style={{background:C.white,borderRadius:10,padding:"12px 16px",marginBottom:12}}><div style={{fontSize:12,fontWeight:700,marginBottom:8}}>월별 추이</div><ResponsiveContainer width="100%" height={150}><LineChart data={RPT}><CartesianGrid strokeDasharray="3 3" stroke={C.bg}/><XAxis dataKey="month" tick={{fontSize:8}}/><YAxis tick={{fontSize:8}}/><Tooltip contentStyle={{borderRadius:5,fontSize:9}}/><Legend wrapperStyle={{fontSize:8}}/><Line type="monotone" dataKey="이용률" stroke={C.red} strokeWidth={2} dot={{r:2}}/><Line type="monotone" dataKey="해결률" stroke={C.navy} strokeWidth={2} dot={{r:2}}/></LineChart></ResponsiveContainer></div><div style={{display:"flex",gap:6}}><button style={{padding:"8px 14px",borderRadius:6,background:C.red,color:C.white,border:"none",fontSize:11,fontWeight:700,cursor:"pointer"}}>📄 PDF</button><button style={{padding:"8px 14px",borderRadius:6,background:C.white,color:C.red,border:`1px solid ${C.red}`,fontSize:11,fontWeight:700,cursor:"pointer"}}>📊 엑셀</button></div></div>;
+  const DatPg=()=><div style={{animation:"fadeUp .3s"}}><div style={{fontSize:18,fontWeight:800,color:C.text,marginBottom:12}}>📝 답변 데이터</div><div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:12}}>{[{l:"총 Q&A",v:"347건",c:C.text},{l:"학업",v:"142건",c:C.red},{l:"생활",v:"98건",c:C.gold},{l:"비자",v:"107건",c:C.navy}].map((d,i)=><div key={i} style={{background:C.white,borderRadius:8,padding:"10px",textAlign:"center"}}><div style={{fontSize:8,color:C.muted}}>{d.l}</div><div style={{fontSize:16,fontWeight:800,color:d.c}}>{d.v}</div></div>)}</div><div style={{background:C.white,borderRadius:10,padding:"12px 16px"}}><div style={{fontSize:12,fontWeight:700,marginBottom:8}}>해결률 추이</div><ResponsiveContainer width="100%" height={120}><LineChart data={LD}><CartesianGrid strokeDasharray="3 3" stroke={C.bg}/><XAxis dataKey="w" tick={{fontSize:8}}/><YAxis domain={[30,90]} tick={{fontSize:8}}/><Tooltip contentStyle={{borderRadius:5,fontSize:9}} formatter={v=>v+"%"}/><Line type="monotone" dataKey="r" stroke={C.red} strokeWidth={2} dot={{r:2,fill:C.red}} animationDuration={2000}/></LineChart></ResponsiveContainer></div></div>;
+  const DashPg=()=><div style={{animation:"fadeUp .3s"}}><div style={{fontSize:18,fontWeight:800,color:C.text,marginBottom:12}}>📊 대시보드</div><div style={{display:"flex",gap:10,marginBottom:16}}><Kpi icon="👥" label="유학생" value={STU.length} suffix="/22" sub={`위험 ${STU.filter(s=>s.st==="위험").length}`} subColor={C.danger} delay={0} onClick={()=>go("stu")}/><Kpi icon="🤖" label="해결률" value={78} suffix="%" sub="↑+5%" delay={150}/><Kpi icon="💬" label="미응답" value={ur} suffix="건" subColor={C.danger} sub={`긴급${iss.filter(i=>i.lv==="urgent").length}`} delay={300} onClick={()=>go("iss")}/><Kpi icon="⚠️" label="위기" value={ALRT.filter(a=>!a.rd).length} suffix="명" sub="즉시확인" subColor={C.danger} delay={450} onClick={()=>go("alt")}/></div><div style={{marginBottom:14}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}><span style={{fontSize:13,fontWeight:700}}>💬 미응답 이슈</span><button onClick={()=>go("iss")} style={{background:"none",border:"none",fontSize:10,color:C.red,fontWeight:600,cursor:"pointer"}}>전체 →</button></div><div style={{display:"flex",flexDirection:"column",gap:5}}>{iss.slice(0,3).map((i,idx)=><IssCard key={i.id} iss={i} delay={400+idx*80} onRes={res}/>)}</div></div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}><div style={{background:C.white,borderRadius:10,padding:"12px 16px"}}><div style={{fontSize:12,fontWeight:700,marginBottom:8}}>영역별</div><div style={{display:"flex",alignItems:"center",gap:12}}><div style={{width:100,height:100}}><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={[{value:35},{value:27},{value:38}]} dataKey="value" cx="50%" cy="50%" innerRadius={28} outerRadius={45} paddingAngle={3} animationDuration={1200}><Cell fill={C.red}/><Cell fill={C.gold}/><Cell fill={C.navy}/></Pie></PieChart></ResponsiveContainer></div><div style={{display:"flex",flexDirection:"column",gap:4}}>{[{n:"학업35%",c:C.red},{n:"생활27%",c:C.gold},{n:"비자38%",c:C.navy}].map((d,i)=><div key={i} style={{display:"flex",gap:4,alignItems:"center",fontSize:9}}><div style={{width:6,height:6,borderRadius:2,background:d.c}}/>{d.n}</div>)}</div></div></div><div style={{background:C.white,borderRadius:10,padding:"12px 16px"}}><div style={{fontSize:12,fontWeight:700,marginBottom:8}}>해결률 추이</div><ResponsiveContainer width="100%" height={100}><LineChart data={LD}><CartesianGrid strokeDasharray="3 3" stroke={C.bg}/><XAxis dataKey="w" tick={{fontSize:7}}/><YAxis domain={[30,90]} tick={{fontSize:7}}/><Line type="monotone" dataKey="r" stroke={C.red} strokeWidth={2} dot={{r:2,fill:C.red}} animationDuration={2000}/></LineChart></ResponsiveContainer></div></div></div>;
+  const IssPg=()=><div style={{animation:"fadeUp .3s"}}><div style={{fontSize:18,fontWeight:800,marginBottom:10}}>💬 미응답 이슈 ({iss.length}건)</div><div style={{display:"flex",flexDirection:"column",gap:5}}>{iss.map((i,idx)=><IssCard key={i.id} iss={i} delay={idx*50} onRes={res}/>)}{iss.length===0&&<div style={{padding:30,textAlign:"center",color:C.muted,background:C.white,borderRadius:10}}>🎉 모든 이슈 해결!</div>}</div></div>;
+
+  return(
+    <div style={{display:"flex",height:"100%",fontFamily:"'Pretendard',system-ui,sans-serif",overflow:"hidden",background:C.bg}}>
+      <div style={{width:180,background:C.sidebar,display:"flex",flexDirection:"column",animation:"sideIn .3s",flexShrink:0}}>
+        <div style={{padding:"14px 12px",borderBottom:"1px solid rgba(255,255,255,.08)"}}><div style={{display:"flex",gap:5,alignItems:"center"}}><div style={{width:24,height:24,borderRadius:6,background:C.red,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11}}>🤖</div><div><div style={{fontSize:11,fontWeight:800,color:C.white}}>CareBot</div><div style={{fontSize:7,color:C.muted}}>관리자</div></div></div></div>
+        <div style={{flex:1,padding:"6px 4px",display:"flex",flexDirection:"column",gap:1,overflowY:"auto"}}>{mn.map(m=>{const a=pg===m.k;return<button key={m.k} onClick={()=>go(m.k)} style={{display:"flex",alignItems:"center",gap:6,padding:"7px 8px",borderRadius:5,border:"none",cursor:"pointer",background:a?"rgba(234,86,69,.2)":"transparent",borderLeft:a?`2px solid ${C.red}`:"2px solid transparent",color:a?C.white:"rgba(255,255,255,.5)",fontSize:10,fontWeight:a?700:500,textAlign:"left",width:"100%",transition:"all .15s"}}><span style={{fontSize:12,width:16,textAlign:"center"}}>{m.i}</span><span style={{flex:1}}>{m.l}</span>{m.b!=null&&<span style={{fontSize:7,fontWeight:700,padding:"1px 4px",borderRadius:5,background:m.bc||C.red,color:C.white,animation:m.bc===C.danger?"badgePulse 1.5s infinite":"none"}}>{m.b}</span>}</button>;})}</div>
+        <div style={{padding:"8px 12px",borderTop:"1px solid rgba(255,255,255,.08)",display:"flex",gap:5,alignItems:"center"}}><div style={{width:22,height:22,borderRadius:5,background:C.mint,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:C.white,fontWeight:700}}>김</div><div><div style={{fontSize:9,fontWeight:600,color:C.white}}>김예진 부총장</div><div style={{fontSize:7,color:C.muted}}>국제교육원</div></div></div>
+      </div>
+      <div style={{flex:1,overflowY:"auto",padding:"16px 20px"}} key={ck}>
+        {pg==="dash"&&<DashPg/>}{pg==="iss"&&<IssPg/>}{pg==="stu"&&<StuPg/>}{pg==="alt"&&<AltPg/>}{pg==="trd"&&<TrdPg/>}{pg==="dat"&&<DatPg/>}{pg==="rpt"&&<RptPg/>}
+      </div>
+      <Toast msg={tm} vis={tv} onDone={()=>setTv(false)}/>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// DEMO HUB
+// ═══════════════════════════════════════════
+const demos=[
+  {key:"landing",label:"랜딩페이지",icon:"🌐",desc:"서비스 소개 · 스크롤 애니메이션",group:"도입"},
+  {key:"onboarding",label:"온보딩",icon:"👋",desc:"학생 첫 설정 · 3단계 위저드",group:"학생"},
+  {key:"chatbot",label:"AI 챗봇",icon:"💬",desc:"다국어 상담 · CSP 검증",group:"학생"},
+  {key:"visa",label:"비자 경로 검증",icon:"🛡️",desc:"실시간 CSP 엔진",group:"학생"},
+  {key:"admin",label:"관리자 대시보드",icon:"📊",desc:"7개 탭 · 학생/위기/트렌드/성과",group:"관리자"},
+];
+
+export default function App(){
+  const[cur,setCur]=useState(null);const[hov,setHov]=useState(null);
+  if(cur){
+    const Comp={landing:Landing,onboarding:Onboarding,chatbot:Chatbot,visa:VisaPath,admin:AdminDashboard}[cur];
+    return(
+      <div style={{height:"100vh",display:"flex",flexDirection:"column",fontFamily:"'Pretendard',system-ui,sans-serif"}}>
+        <style>{css}</style>
+        <div style={{padding:"7px 14px",background:C.navy,display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0,zIndex:100}}>
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            <button onClick={()=>setCur(null)} style={{padding:"4px 10px",borderRadius:5,border:"1px solid rgba(255,255,255,.2)",background:"transparent",color:C.white,fontSize:10,fontWeight:600,cursor:"pointer"}}>← 목록</button>
+            <span style={{color:C.white,fontSize:11,fontWeight:700}}>{demos.find(d=>d.key===cur)?.icon} {demos.find(d=>d.key===cur)?.label}</span>
+          </div>
+          <div style={{display:"flex",gap:4}}>{demos.map(d=><button key={d.key} onClick={()=>setCur(d.key)} style={{padding:"3px 8px",borderRadius:4,border:"none",fontSize:9,cursor:"pointer",background:cur===d.key?C.red:"rgba(255,255,255,.1)",color:C.white,fontWeight:cur===d.key?700:500}}>{d.icon}</button>)}</div>
+        </div>
+        <div style={{flex:1,overflow:"hidden"}}><Comp/></div>
+      </div>
+    );
+  }
+  const groups=["도입","학생","관리자"];
+  return(
+    <div style={{minHeight:"100vh",background:C.bg,fontFamily:"'Pretendard',system-ui,sans-serif"}}>
+      <style>{css}</style>
+      <div style={{background:`linear-gradient(135deg,${C.navy},#1A2336)`,padding:"50px 24px 40px",textAlign:"center"}}>
+        <div style={{fontSize:36,marginBottom:10}}>🤖</div>
+        <h1 style={{fontSize:28,fontWeight:800,color:C.white,marginBottom:6}}>CareBot v2</h1>
+        <p style={{fontSize:14,color:C.mintLight,marginBottom:3}}>삼육보건대학교 외국인 유학생 전용 AI 상담 서비스</p>
+        <p style={{fontSize:11,color:C.muted}}>메이저맵 · Interactive Demo</p>
+      </div>
+      <div style={{maxWidth:760,margin:"-20px auto 0",padding:"0 24px 50px"}}>
+        {groups.map(g=>(
+          <div key={g} style={{marginBottom:20}}>
+            <div style={{fontSize:10,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:1,marginBottom:8,paddingLeft:4}}>{g==="도입"?"🌐 서비스 소개":g==="학생"?"👤 학생 서비스":"🏫 대학 관리 서비스"}</div>
+            <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+              {demos.filter(d=>d.group===g).map(d=>(
+                <button key={d.key} onClick={()=>setCur(d.key)} onMouseEnter={()=>setHov(d.key)} onMouseLeave={()=>setHov(null)} style={{flex:g==="관리자"?"1 1 100%":"1 1 calc(33% - 8px)",minWidth:160,padding:"18px 20px",borderRadius:12,border:`1.5px solid ${hov===d.key?C.red:C.border}`,background:C.white,cursor:"pointer",textAlign:"left",boxShadow:hov===d.key?"0 6px 20px rgba(234,86,69,.1)":"0 1px 6px rgba(0,0,0,.03)",transform:hov===d.key?"translateY(-2px)":"none",transition:"all .2s"}}>
+                  <div style={{fontSize:26,marginBottom:6}}>{d.icon}</div>
+                  <div style={{fontSize:14,fontWeight:700,color:C.text,marginBottom:3}}>{d.label}</div>
+                  <div style={{fontSize:11,color:C.dim}}>{d.desc}</div>
+                  <div style={{marginTop:10,fontSize:10,color:C.red,fontWeight:600,opacity:hov===d.key?1:0,transition:"opacity .2s"}}>데모 체험하기 →</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+        <div style={{textAlign:"center",marginTop:28,fontSize:10,color:C.muted}}>© 2026 MajorMap · CareBot v2 · 삼육보건대학교</div>
+      </div>
+    </div>
+  );
+}
