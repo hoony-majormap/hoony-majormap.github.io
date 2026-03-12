@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전문대 취업률 72.2%의 비밀 | 메이저맵 웹툰</title>
+<meta name="description" content="2024년 전문대 취업률 데이터를 웹툰으로! 4년제보다 높은 72.2%, TOP5 대학은 어디?">
+<meta property="og:title" content="전문대 취업률 72.2%의 비밀 | 메이저맵 웹툰">
+<meta property="og:description" content="2024년 전문대 취업률 데이터를 웹툰으로 만나보세요">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --red:#e94560;--dark:#1a1a2e;--dark2:#0f3460;
+  --green:#1b5e20;--green2:#388e3c;
+  --orange:#ff6f00;--yellow:#ffc107;--blue:#1e88e5;
+  --teal:#00897b;--purple:#7b1fa2;
+  --panel-max:620px;
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:var(--dark);color:#fff;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ─── Layout ─── */
+.webtoon{max-width:var(--panel-max);margin:0 auto;position:relative}
+.panel{
+  min-height:100vh;min-height:100dvh;
+  display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+  padding:48px 20px;position:relative;overflow:hidden;
+}
+
+/* ─── Scroll Reveal ─── */
+.reveal{opacity:0;transform:translateY(50px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:.1s}.reveal-d2{transition-delay:.2s}
+.reveal-d3{transition-delay:.3s}.reveal-d4{transition-delay:.4s}
+.reveal-d5{transition-delay:.5s}
+.reveal-left{transform:translateX(-40px)}
+.reveal-left.visible{transform:translateX(0)}
+.reveal-right{transform:translateX(40px)}
+.reveal-right.visible{transform:translateX(0)}
+.reveal-scale{transform:scale(.85);opacity:0}
+.reveal-scale.visible{transform:scale(1);opacity:1}
+
+/* ─── Episode Badge ─── */
+.ep-badge{
+  font-size:11px;font-weight:700;letter-spacing:3px;
+  text-transform:uppercase;margin-bottom:12px;
+  color:var(--red);
+}
+
+/* ─── Panel Title ─── */
+.panel-title{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:clamp(26px,7vw,48px);line-height:1.25;
+  text-align:center;letter-spacing:-1px;
+  text-shadow:0 3px 20px rgba(0,0,0,.25);
+  margin-bottom:8px;
+}
+.panel-sub{
+  color:rgba(255,255,255,.55);font-size:14px;
+  text-align:center;margin-bottom:28px;line-height:1.6;
+}
+
+/* ─── Characters ─── */
+.char-row{display:flex;justify-content:center;gap:36px;margin:28px 0}
+.char{text-align:center}
+.char-icon{
+  width:64px;height:64px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;margin:0 auto 6px;
+  box-shadow:0 4px 24px rgba(0,0,0,.2);
+  border:3px solid rgba(255,255,255,.15);
+  background:#fff;
+}
+.char-name{font-size:12px;font-weight:700;color:rgba(255,255,255,.75)}
+
+/* ─── Speech Bubbles ─── */
+.dialogue{
+  width:100%;max-width:500px;
+  display:flex;flex-direction:column;gap:18px;
+}
+.msg{display:flex;gap:10px;align-items:flex-end}
+.msg.right{flex-direction:row-reverse}
+.msg-avatar{
+  width:42px;height:42px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;background:#fff;flex-shrink:0;
+  box-shadow:0 2px 12px rgba(0,0,0,.12);
+}
+.bubble{
+  position:relative;
+  border-radius:18px;padding:14px 20px;
+  max-width:85%;font-size:14px;line-height:1.75;
+  color:#333;background:#fff;
+  box-shadow:0 4px 24px rgba(0,0,0,.08);
+}
+.bubble::after{
+  content:'';position:absolute;bottom:-8px;
+  width:0;height:0;
+  border-left:10px solid transparent;
+  border-right:10px solid transparent;
+}
+.msg:not(.right) .bubble::after{left:16px;border-top:10px solid #fff}
+.msg.right .bubble::after{right:16px;border-top:10px solid #fff}
+.bubble.yellow{background:#fff3cd}
+.msg.right .bubble.yellow::after{border-top-color:#fff3cd}
+.bubble.green{background:#e8f5e9}
+.msg.right .bubble.green::after{border-top-color:#e8f5e9}
+.bubble.mint{background:#e0f2f1}
+.msg.right .bubble.mint::after{border-top-color:#e0f2f1}
+.bubble .accent{color:var(--red);font-weight:700}
+.bubble .big{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:clamp(18px,5vw,24px);color:var(--red);
+  display:block;margin:6px 0;
+}
+
+/* ─── Chart Card ─── */
+.chart-card{
+  background:#fff;border-radius:20px;
+  padding:24px 28px;width:100%;max-width:480px;
+  box-shadow:0 8px 40px rgba(0,0,0,.1);
+}
+.chart-card h3{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:16px;color:var(--dark);margin-bottom:18px;
+}
+.bar-row{margin-bottom:14px}
+.bar-label{
+  display:flex;justify-content:space-between;
+  font-size:13px;font-weight:700;color:#333;margin-bottom:4px;
+}
+.bar-track{background:rgba(0,0,0,.06);border-radius:8px;height:22px;overflow:hidden}
+.bar-fill{
+  height:100%;border-radius:8px;
+  width:0;transition:width 1.4s cubic-bezier(.25,.46,.45,.94);
+}
+.bar-fill.red{background:var(--red)}
+.bar-fill.gray{background:#aaa}
+.bar-fill.gold{background:var(--yellow)}
+
+/* ─── Insight Box ─── */
+.insight{
+  background:#fff;border-radius:14px;padding:16px 20px;
+  margin-top:18px;max-width:480px;width:100%;
+  border-left:4px solid var(--red);
+  box-shadow:0 4px 20px rgba(0,0,0,.05);
+  font-size:13px;color:#555;line-height:1.8;
+  display:flex;gap:10px;align-items:flex-start;
+}
+.insight-icon{font-size:24px;flex-shrink:0}
+
+/* ─── Rank Cards ─── */
+.rank-list{width:100%;max-width:500px;display:flex;flex-direction:column;gap:12px}
+.rank-card{
+  display:flex;align-items:center;gap:14px;
+  background:#fff;border-radius:16px;padding:14px 18px;
+  box-shadow:0 4px 24px rgba(0,0,0,.08);
+  border-left:5px solid var(--red);
+}
+.rank-card .medal{
+  font-size:clamp(24px,5vw,34px);width:40px;text-align:center;
+  flex-shrink:0;
+}
+.rank-card .medal.num{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:20px;color:#bbb;
+}
+.rank-card .info{flex:1;min-width:0}
+.rank-card .name{
+  font-weight:800;font-size:16px;color:var(--dark);
+  letter-spacing:-.3px;
+}
+.rank-card .detail{font-size:11px;color:#999;margin-top:2px}
+.rank-card .rate{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:clamp(22px,5vw,28px);flex-shrink:0;
+}
+
+/* ─── Dept Chart ─── */
+.dept-chart{
+  background:#fff;border-radius:18px;padding:22px 24px;
+  width:100%;max-width:480px;
+  box-shadow:0 4px 20px rgba(0,0,0,.06);
+}
+.dept-chart h4{font-size:13px;font-weight:700;margin-bottom:14px;letter-spacing:-.3px}
+.dept-row{margin-bottom:12px}
+.dept-row .dept-label{
+  display:flex;justify-content:space-between;
+  font-size:12px;font-weight:700;color:#333;margin-bottom:3px;
+}
+.dept-track{background:#f0f0f0;border-radius:5px;height:12px;overflow:hidden}
+.dept-fill{height:100%;border-radius:5px;width:0;transition:width 1.2s ease}
+
+/* ─── Special Cards ─── */
+.special-list{display:flex;flex-direction:column;gap:14px;width:100%;max-width:500px}
+.special-card{
+  display:flex;gap:14px;align-items:center;
+  padding:16px 20px;border-radius:18px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(8px);
+}
+.special-card .s-icon{
+  width:50px;height:50px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;flex-shrink:0;
+}
+.special-card .s-body{flex:1;min-width:0}
+.special-card .s-top{display:flex;justify-content:space-between;align-items:center}
+.special-card .s-name{font-weight:800;font-size:15px;color:#fff}
+.special-card .s-rate{
+  font-family:'Black Han Sans',sans-serif;font-size:20px;flex-shrink:0;
+}
+.special-card .s-desc{font-size:12px;color:rgba(255,255,255,.5);margin-top:4px;line-height:1.5}
+
+/* ─── Medal Cards ─── */
+.medal-row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:20px}
+.medal-card{
+  background:#fff;border-radius:18px;padding:18px 24px;
+  text-align:center;min-width:110px;flex:1;max-width:150px;
+  box-shadow:0 6px 30px rgba(0,0,0,.12);
+}
+.medal-card .m-rank{font-family:'Black Han Sans',sans-serif;font-size:18px;margin-bottom:2px}
+.medal-card .m-region{font-family:'Black Han Sans',sans-serif;font-size:17px;color:var(--dark)}
+.medal-card .m-rate{font-family:'Black Han Sans',sans-serif;font-size:clamp(24px,6vw,30px);margin-top:4px}
+
+/* ─── Glass Box ─── */
+.glass{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;padding:24px;
+  backdrop-filter:blur(8px);
+  width:100%;max-width:500px;
+}
+.exp-box{
+  background:#fff3e0;border-radius:16px;padding:16px 20px;
+  max-width:480px;width:100%;
+  font-size:13px;color:#5d4037;line-height:1.8;
+}
+
+/* ─── Ulsan Two-Col ─── */
+.ulsan-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:500px}
+.ulsan-card{
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:18px;padding:20px 16px;text-align:center;
+  backdrop-filter:blur(6px);
+}
+.ulsan-card .u-name{font-weight:800;font-size:14px;color:#fff;margin-bottom:4px}
+.ulsan-card .u-rate{font-family:'Black Han Sans',sans-serif;font-size:26px;margin-bottom:10px}
+.ulsan-card .u-dept{font-size:11px;color:rgba(255,255,255,.55);line-height:1.7}
+.ulsan-card .u-dept strong{color:#fff;font-weight:700}
+
+/* ─── Year Comp ─── */
+.year-comp{
+  display:flex;align-items:center;justify-content:center;gap:24px;
+  background:rgba(255,255,255,.06);border-radius:16px;
+  padding:18px 28px;width:100%;max-width:400px;
+  border:1px solid rgba(255,255,255,.08);
+}
+.year-comp .yr{text-align:center}
+.year-comp .yr-label{font-size:11px;color:rgba(255,255,255,.4)}
+.year-comp .yr-val{font-family:'Black Han Sans',sans-serif;font-size:clamp(22px,5vw,28px)}
+.year-comp .yr-old .yr-val{color:rgba(255,255,255,.35)}
+.year-comp .yr-new .yr-label{color:var(--red)}
+.year-comp .yr-new .yr-val{color:#fff}
+.year-comp .arrow{font-size:22px;color:rgba(255,255,255,.2)}
+
+/* ─── Tip Cards ─── */
+.tip-list{display:flex;flex-direction:column;gap:12px;width:100%;max-width:500px}
+.tip-card{
+  background:rgba(255,255,255,.93);border-radius:14px;padding:14px 18px;
+  display:flex;gap:12px;align-items:flex-start;
+  box-shadow:0 3px 16px rgba(0,0,0,.08);
+}
+.tip-card .t-icon{font-size:24px;flex-shrink:0;margin-top:2px}
+.tip-card .t-title{font-weight:800;font-size:14px;color:var(--dark);margin-bottom:3px;letter-spacing:-.3px}
+.tip-card .t-desc{font-size:12px;color:#666;line-height:1.5}
+
+/* ─── Ending ─── */
+.ending-text{text-align:center;margin-bottom:10px}
+.ending-text .line{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:clamp(18px,5vw,28px);line-height:1.5;
+}
+.ending-text .line.accent{color:var(--red)}
+.ending-sub{color:rgba(255,255,255,.45);font-size:14px;text-align:center;margin-bottom:28px}
+.cta-btn{
+  display:inline-block;background:var(--red);color:#fff;
+  padding:14px 36px;border-radius:50px;font-weight:800;
+  font-size:15px;text-decoration:none;letter-spacing:-.3px;
+  box-shadow:0 4px 24px rgba(233,69,96,.4);
+  transition:transform .2s,box-shadow .2s;
+}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(233,69,96,.5)}
+
+/* ─── Footer ─── */
+.footer{
+  text-align:center;padding:32px 20px;
+  font-size:11px;color:rgba(255,255,255,.25);line-height:1.8;
+}
+
+/* ─── Bounce Arrow ─── */
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+.scroll-hint{
+  color:rgba(255,255,255,.3);font-size:18px;
+  animation:bounce 2s infinite;margin-top:24px;text-align:center;
+}
+
+/* ─── Panel BGs ─── */
+.p-cover{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)}
+.p-cover::before{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:radial-gradient(circle at 30% 25%,rgba(233,69,96,.12),transparent 55%),
+             radial-gradient(circle at 75% 60%,rgba(15,52,96,.4),transparent 50%);
+}
+.p-shock{background:linear-gradient(180deg,#0f3460 0%,#e94560 100%)}
+.p-compare{background:linear-gradient(180deg,#fff8e7 0%,#fff3cd 100%)}
+.p-top5{background:linear-gradient(135deg,#1b5e20 0%,#2e7d32 50%,#43a047 100%)}
+.p-secret{background:linear-gradient(180deg,#e3f2fd 0%,#bbdefb 100%)}
+.p-special{background:linear-gradient(135deg,#263238 0%,#37474f 100%)}
+.p-region{background:linear-gradient(180deg,#ff6f00 0%,#ff8f00 50%,#ffa000 100%)}
+.p-ulsan{background:linear-gradient(180deg,#4a148c 0%,#6a1b9a 100%)}
+.p-uturn{background:linear-gradient(135deg,#004d40 0%,#00695c 50%,#00897b 100%)}
+.p-ending{background:linear-gradient(180deg,#1a1a2e 0%,#0f3460 50%,var(--red) 150%)}
+
+/* ─── Responsive ─── */
+@media(max-width:420px){
+  .panel{padding:36px 14px}
+  .bubble{padding:12px 16px;font-size:13px}
+  .chart-card{padding:18px 16px}
+  .rank-card{padding:12px 14px}
+  .ulsan-grid{grid-template-columns:1fr;max-width:280px}
+}
+</style>
+</head>
+<body>
+<div class="webtoon">
+
+<!-- ══════════ COVER ══════════ -->
+<section class="panel p-cover">
+  <div style="position:relative;z-index:1;text-align:center;width:100%">
+    <div class="ep-badge reveal" style="letter-spacing:4px">MAJORMAP WEBTOON</div>
+    <h1 class="panel-title reveal reveal-d1" style="color:#fff">
+      전문대 취업률<br><span style="color:var(--red)">72.2%</span>의 비밀
+    </h1>
+    <p class="panel-sub reveal reveal-d2">2024년 전문대 취업 데이터를 웹툰으로 만나보세요</p>
+    <div class="char-row reveal reveal-d3">
+      <div class="char"><div class="char-icon">🧑‍🎓</div><div class="char-name">수험생 민수</div></div>
+      <div class="char"><div class="char-icon">👩‍🏫</div><div class="char-name">진로쌤</div></div>
+    </div>
+    <div class="scroll-hint reveal reveal-d4">↓ 스크롤해서 읽기 ↓</div>
+  </div>
+</section>
+
+<!-- ══════════ EP01: SHOCK ══════════ -->
+<section class="panel p-shock">
+  <div class="ep-badge reveal" style="color:#fff">EPISODE 01</div>
+  <h2 class="panel-title reveal reveal-d1">"전문대 가면 취업 잘 돼요?"</h2>
+  <div class="dialogue" style="margin-top:28px">
+    <div class="msg reveal reveal-left">
+      <div class="msg-avatar">🧑‍🎓</div>
+      <div class="bubble">
+        <strong>쌤, 저 4년제 가야 할지 전문대 가야 할지 모르겠어요...</strong><br>취업은 어디가 더 잘 돼요? 😥
+      </div>
+    </div>
+    <div class="msg right reveal reveal-right reveal-d1">
+      <div class="msg-avatar">👩‍🏫</div>
+      <div class="bubble yellow">
+        좋은 질문이야! 숫자로 보여줄게.<br>
+        <span class="big">전문대 평균 취업률 72.2%</span>
+        4년제 평균은 62.8%야.
+      </div>
+    </div>
+    <div class="msg reveal reveal-left reveal-d2">
+      <div class="msg-avatar">🧑‍🎓</div>
+      <div class="bubble">
+        <strong>에?! 전문대가 <span class="accent">10%p</span>나 더 높아요?!</strong> 😲
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ COMPARISON ══════════ -->
+<section class="panel p-compare">
+  <h2 class="panel-title reveal" style="color:var(--dark)">📊 전문대 vs 4년제, 한눈에!</h2>
+  <div class="chart-card reveal reveal-d1">
+    <h3>취업률 비교 (2024년 기준)</h3>
+    <div class="bar-row">
+      <div class="bar-label"><span>🏫 전문대 평균</span><span>72.2%</span></div>
+      <div class="bar-track"><div class="bar-fill red" data-width="72.2"></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label"><span>🏛️ 4년제 평균</span><span>62.8%</span></div>
+      <div class="bar-track"><div class="bar-fill gray" data-width="62.8"></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label"><span>⭐ 상위 15개 4년제</span><span>66.8%</span></div>
+      <div class="bar-track"><div class="bar-fill gold" data-width="66.8"></div></div>
+    </div>
+  </div>
+  <div class="insight reveal reveal-d2">
+    <span class="insight-icon">💡</span>
+    <div>서울대·고려대·연세대 등 <strong>상위 15개 대학 평균(66.8%)</strong>과 비교해도 전문대가 높아요! 실무 중심 커리큘럼이 비결이에요.</div>
+  </div>
+</section>
+
+<!-- ══════════ EP02: TOP 5 ══════════ -->
+<section class="panel p-top5">
+  <div class="ep-badge reveal" style="color:rgba(255,255,255,.7)">EPISODE 02</div>
+  <h2 class="panel-title reveal reveal-d1">🏆 취업률 TOP 5 전문대</h2>
+  <p class="panel-sub reveal reveal-d1">2024년 기준, 대학알리미 공시 데이터</p>
+  <div class="rank-list">
+    <div class="rank-card reveal reveal-left" style="border-left-color:var(--red)">
+      <div class="medal">🥇</div>
+      <div class="info"><div class="name">농협대</div><div class="detail">85명 취업 / 졸업자 94명</div></div>
+      <div class="rate" style="color:var(--red)">90.4%</div>
+    </div>
+    <div class="rank-card reveal reveal-left reveal-d1" style="border-left-color:var(--orange)">
+      <div class="medal">🥈</div>
+      <div class="info"><div class="name">기독간호대</div><div class="detail">간호 단일학과 | 122명 / 143명</div></div>
+      <div class="rate" style="color:var(--orange)">85.3%</div>
+    </div>
+    <div class="rank-card reveal reveal-left reveal-d2" style="border-left-color:var(--yellow)">
+      <div class="medal">🥉</div>
+      <div class="info"><div class="name">한국승강기대</div><div class="detail">승강기 특성화 | 222명 / 269명</div></div>
+      <div class="rate" style="color:var(--yellow)">82.5%</div>
+    </div>
+    <div class="rank-card reveal reveal-left reveal-d3" style="border-left-color:var(--green2)">
+      <div class="medal num">4</div>
+      <div class="info"><div class="name">나주대</div><div class="detail">403명 / 489명</div></div>
+      <div class="rate" style="color:var(--green2)">82.4%</div>
+    </div>
+    <div class="rank-card reveal reveal-left reveal-d4" style="border-left-color:var(--blue)">
+      <div class="medal num">5</div>
+      <div class="info"><div class="name">경복대</div><div class="detail">대규모 | 1,421명 / 1,731명</div></div>
+      <div class="rate" style="color:var(--blue)">82.1%</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ EP03: 농협대 ══════════ -->
+<section class="panel p-secret">
+  <div class="ep-badge reveal" style="color:var(--dark)">EPISODE 03</div>
+  <h2 class="panel-title reveal reveal-d1" style="color:var(--dark)">🌾 1위 농협대, 비결이 뭘까?</h2>
+  <div class="dialogue" style="margin-top:20px">
+    <div class="msg reveal reveal-left">
+      <div class="msg-avatar">🧑‍🎓</div>
+      <div class="bubble"><strong>90%?! 어떻게 가능한 거예요?!</strong> 🤯</div>
+    </div>
+    <div class="msg right reveal reveal-right reveal-d1">
+      <div class="msg-avatar">👩‍🏫</div>
+      <div class="bubble green">
+        농협대는 <strong style="color:var(--green)">취업 보장형</strong> 구조야!<br><br>
+        입학 → 교육과정 이수 → 농협 특채 공고 → 고향 지역 농협 <strong>정규직 취업</strong> 🎯<br><br>
+        협동조합디지털경영학과는 졸업자 11명 <strong class="accent">전원 취업(100%)</strong>!
+      </div>
+    </div>
+  </div>
+  <div class="dept-chart reveal reveal-d2" style="margin-top:24px">
+    <h4 style="color:var(--green)">🔎 농협대 학과별 취업률</h4>
+    <div class="dept-row">
+      <div class="dept-label"><span>협동조합디지털경영학과</span><span style="color:var(--red)">100%</span></div>
+      <div class="dept-track"><div class="dept-fill" style="background:var(--red)" data-width="100"></div></div>
+    </div>
+    <div class="dept-row">
+      <div class="dept-label"><span>협동조합산업과(야간)</span><span style="color:var(--orange)">93.3%</span></div>
+      <div class="dept-track"><div class="dept-fill" style="background:var(--orange)" data-width="93.3"></div></div>
+    </div>
+    <div class="dept-row">
+      <div class="dept-label"><span>협동조합산업과(주간)</span><span style="color:var(--green2)">86.8%</span></div>
+      <div class="dept-track"><div class="dept-fill" style="background:var(--green2)" data-width="86.8"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SPECIAL UNIVERSITIES ══════════ -->
+<section class="panel p-special">
+  <h2 class="panel-title reveal">🎯 이런 전문대도 있어요!</h2>
+  <p class="panel-sub reveal reveal-d1">단일학과·특성화 전문대의 강점</p>
+  <div class="special-list">
+    <div class="special-card reveal reveal-left">
+      <div class="s-icon" style="background:rgba(233,69,96,.15)">🏥</div>
+      <div class="s-body">
+        <div class="s-top"><span class="s-name">기독간호대</span><span class="s-rate" style="color:var(--red)">85.3%</span></div>
+        <div class="s-desc">간호학 단일학과 운영. 면허 취득 후 바로 현장 투입!</div>
+      </div>
+    </div>
+    <div class="special-card reveal reveal-left reveal-d1">
+      <div class="s-icon" style="background:rgba(30,136,229,.15)">🛗</div>
+      <div class="s-body">
+        <div class="s-top"><span class="s-name">한국승강기대</span><span class="s-rate" style="color:var(--blue)">82.5%</span></div>
+        <div class="s-desc">현대엘리베이터·오티스 등과 채용 약정형 전공반 운영</div>
+      </div>
+    </div>
+    <div class="special-card reveal reveal-left reveal-d2">
+      <div class="s-icon" style="background:rgba(255,111,0,.15)">🏥</div>
+      <div class="s-body">
+        <div class="s-top"><span class="s-name">춘해보건대</span><span class="s-rate" style="color:var(--orange)">81.5%</span></div>
+        <div class="s-desc">보건의료 특성화 대학! 안경광학과 92.3% 취업률</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ EP04: REGION ══════════ -->
+<section class="panel p-region">
+  <div class="ep-badge reveal" style="color:rgba(255,255,255,.8)">EPISODE 04</div>
+  <h2 class="panel-title reveal reveal-d1">🗺️ 지역별 취업률, 영남 싹쓸이!</h2>
+  <div class="dialogue" style="margin-top:16px;margin-bottom:24px">
+    <div class="msg reveal reveal-left">
+      <div class="msg-avatar">🧑‍🎓</div>
+      <div class="bubble"><strong>지역마다 차이가 있나요?</strong></div>
+    </div>
+  </div>
+  <div class="medal-row reveal reveal-scale reveal-d1">
+    <div class="medal-card">
+      <div class="m-rank" style="color:var(--red)">🥇 1위</div>
+      <div class="m-region">울산</div>
+      <div class="m-rate" style="color:var(--red)">77.1%</div>
+    </div>
+    <div class="medal-card">
+      <div class="m-rank" style="color:var(--orange)">🥈 2위</div>
+      <div class="m-region">경북</div>
+      <div class="m-rate" style="color:var(--orange)">76.4%</div>
+    </div>
+    <div class="medal-card">
+      <div class="m-rank" style="color:#d4a017">🥉 3위</div>
+      <div class="m-region">경남</div>
+      <div class="m-rate" style="color:#d4a017">75.8%</div>
+    </div>
+  </div>
+  <div class="exp-box reveal reveal-d2">
+    영남권은 <strong>조선·자동차·화학·철강</strong> 등 핵심 산업 클러스터가 밀집!<br>
+    현장 투입 가능한 실무형 인재 수요가 높아 전문대 취업률도 자연스럽게 높습니다. 🏭
+  </div>
+</section>
+
+<!-- ══════════ ULSAN ══════════ -->
+<section class="panel p-ulsan">
+  <h2 class="panel-title reveal">🏭 울산의 비밀</h2>
+  <p class="panel-sub reveal reveal-d1">울산 소재 전문대 2개교, 모두 높은 취업률!</p>
+  <div class="ulsan-grid reveal reveal-scale reveal-d1">
+    <div class="ulsan-card">
+      <div class="u-name">🏥 춘해보건대</div>
+      <div class="u-rate" style="color:var(--red)">81.5%</div>
+      <div class="u-dept">
+        안경광학과 <strong>92.3%</strong><br>
+        치위생학과 <strong>90.0%</strong><br>
+        방사선학과 <strong>88.9%</strong>
+      </div>
+    </div>
+    <div class="ulsan-card">
+      <div class="u-name">🏗️ 울산과학대</div>
+      <div class="u-rate" style="color:var(--yellow)">75.1%</div>
+      <div class="u-dept">
+        정주영 현대 창업자 설립<br>
+        화학공학과(야간)<br>
+        <strong style="color:var(--yellow)">96.4%</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ EP05: U-TURN ══════════ -->
+<section class="panel p-uturn">
+  <div class="ep-badge reveal" style="color:rgba(255,255,255,.7)">EPISODE 05</div>
+  <h2 class="panel-title reveal reveal-d1">🔄 매년 1,500명 이상이 U턴!</h2>
+  <div class="dialogue" style="margin-top:20px;margin-bottom:28px">
+    <div class="msg reveal reveal-left">
+      <div class="msg-avatar">🧑‍🎓</div>
+      <div class="bubble"><strong>4년제 졸업하고 전문대 가는 사람도 있어요?!</strong> 😮</div>
+    </div>
+    <div class="msg right reveal reveal-right reveal-d1">
+      <div class="msg-avatar">👩‍🏫</div>
+      <div class="bubble mint">
+        맞아! 매년 <strong class="accent">1,500명 이상</strong>이 4년제를 졸업하고 전문대에 다시 입학해.<br><br>
+        학위보다 <strong>실무 역량</strong>과 <strong>면허·자격증</strong>이 취업에 더 도움이 되는 분야가 분명히 있거든! 💪
+      </div>
+    </div>
+  </div>
+  <div class="year-comp reveal reveal-scale reveal-d2">
+    <div class="yr yr-old">
+      <div class="yr-label">2023년</div>
+      <div class="yr-val">72.5%</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="yr yr-new">
+      <div class="yr-label">2024년</div>
+      <div class="yr-val">72.2%</div>
+    </div>
+  </div>
+  <p class="reveal reveal-d3" style="font-size:12px;color:rgba(255,255,255,.4);margin-top:10px;text-align:center">소폭 하락했지만, 4년제 대비 약 10%p 차이 유지!</p>
+</section>
+
+<!-- ══════════ TIPS + ENDING ══════════ -->
+<section class="panel p-ending" style="padding-bottom:20px">
+  <h2 class="panel-title reveal">✅ 전문대, 이런 학생에게 딱!</h2>
+  <div class="tip-list" style="margin:24px 0 40px">
+    <div class="tip-card reveal reveal-left">
+      <div class="t-icon">⚡</div>
+      <div><div class="t-title">빨리 취업하고 싶은 학생</div><div class="t-desc">실무 중심 교육으로 졸업 후 바로 현장 투입 가능!</div></div>
+    </div>
+    <div class="tip-card reveal reveal-left reveal-d1">
+      <div class="t-icon">📜</div>
+      <div><div class="t-title">면허·자격증 기반 전문직 목표</div><div class="t-desc">간호, 치위생, 안경광학 등 면허 취득 → 취업 직행!</div></div>
+    </div>
+    <div class="tip-card reveal reveal-left reveal-d2">
+      <div class="t-icon">🎯</div>
+      <div><div class="t-title">특정 산업에 확실히 가고 싶은 학생</div><div class="t-desc">승강기, 농업, 보건 등 특화 분야 취업률 최상위!</div></div>
+    </div>
+    <div class="tip-card reveal reveal-left reveal-d3">
+      <div class="t-icon">🔄</div>
+      <div><div class="t-title">4년제 졸업 후에도 취업이 어려운 분</div><div class="t-desc">매년 1,500명 이상 U턴 입학 중. 실무역량이 답!</div></div>
+    </div>
+  </div>
+
+  <div class="ending-text reveal reveal-scale">
+    <div class="line">🎓</div>
+    <div class="line">"어떤 대학이 좋은가"보다</div>
+    <div class="line accent">"가장 효율적인 경로"를</div>
+    <div class="line">먼저 생각해보세요</div>
+  </div>
+  <p class="ending-sub reveal reveal-d1">전문대가 그 답이 될 수도 있습니다.</p>
+  <a href="https://www.majormap.net" target="_blank" class="cta-btn reveal reveal-d2">메이저맵에서 더 알아보기 →</a>
+</section>
+
+<footer class="footer">
+  본 콘텐츠는 대학알리미 2025년 공시(2024년 12월 31일 기준) '졸업생의 취업현황' 데이터를 바탕으로 작성되었습니다.<br>
+  기능대학(폴리텍대)은 제외하고 산출했습니다.<br><br>
+  <a href="https://www.majormap.net" style="color:rgba(255,255,255,.35);text-decoration:none;font-weight:700">www.majormap.net</a>
+</footer>
+
+</div>
+
+<script>
+// ─── Intersection Observer for scroll reveals ───
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      // Animate bars when visible
+      e.target.querySelectorAll('[data-width]').forEach(bar => {
+        bar.style.width = bar.dataset.width + '%';
+      });
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// Animate bars inside chart-card and dept-chart when they become visible
+const barObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('[data-width]').forEach((bar, i) => {
+        setTimeout(() => {
+          bar.style.width = bar.dataset.width + '%';
+        }, i * 150);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.chart-card, .dept-chart').forEach(el => barObs.observe(el));
+</script>
+</body>
+</html>
