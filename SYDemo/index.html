@@ -1,5 +1,28 @@
-import { useState, useEffect, useRef } from "react";
-import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareBot v2 Demo — 삼육보건대학교 × 메이저맵</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard',-apple-system,system-ui,sans-serif;overflow:hidden}
+#root{height:100vh}
+</style>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/recharts@2.15.0/umd/Recharts.js"></script>
+<script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+const { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } = Recharts;
+
 
 // ═══ DESIGN TOKENS ═══
 const C = {
@@ -586,7 +609,7 @@ const demos=[
   {key:"admin",label:"관리자 대시보드",icon:"📊",desc:"7개 탭 · 학생/위기/트렌드/성과",group:"관리자"},
 ];
 
-export default function App(){
+function App(){
   const[cur,setCur]=useState(null);const[hov,setHov]=useState(null);
   if(cur){
     const Comp={landing:Landing,onboarding:Onboarding,chatbot:Chatbot,visa:VisaPath,admin:AdminDashboard}[cur];
@@ -635,3 +658,8 @@ export default function App(){
     </div>
   );
 }
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+</script>
+</body>
+</html>
