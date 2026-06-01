@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>메이저맵 커리어사관학교 · MVP</title>
+<style>
+:root{--ink:#1f2730;--mut:#6b7682;--line:#dde3ea;--navy:#1f3864;--blue:#2e75b6;--bg:#eef1f5;--soft:#f5f7fa;--ok:#3a8a4d;--warn:#c0563b;--gold:#caa64a}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Malgun Gothic","맑은 고딕",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+.top{background:var(--navy);color:#fff;padding:10px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:20}
+.top b{font-size:15px}.top .tag{font-size:11px;background:rgba(255,255,255,.18);padding:2px 8px;border-radius:10px}
+.top .sp{margin-left:auto;display:flex;gap:8px}
+.top button{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:5px 11px;font-size:12px;cursor:pointer}
+.wrap{max-width:1060px;margin:16px auto;padding:0 14px;display:grid;grid-template-columns:210px 1fr;gap:14px}
+.rail{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 10px;align-self:start;position:sticky;top:64px}
+.brand{font-weight:800;color:var(--navy);font-size:13px;padding:4px 8px 12px;border-bottom:1px dashed var(--line);margin-bottom:8px}
+.brand small{display:block;font-weight:500;color:var(--mut);font-size:10.5px;margin-top:3px}
+.nav{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:9px;cursor:pointer;font-size:13px;color:#3a4452;margin-bottom:2px}
+.nav:hover{background:#eef2f7}.nav.active{background:var(--navy);color:#fff;font-weight:700}
+.nav .st{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:10px;flex:none;background:#fff;color:var(--mut)}
+.nav.done .st{background:var(--ok);border-color:var(--ok);color:#fff}.nav.active .st{background:#fff;color:var(--navy);border-color:#fff}
+.rprog{margin-top:12px;font-size:11px;color:var(--mut)}
+.rprog .bar{height:7px;background:#e6eaf0;border-radius:6px;overflow:hidden;margin-top:4px}.rprog .bar>i{display:block;height:100%;background:var(--blue);transition:.3s}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px 24px;min-height:560px}
+.h{display:flex;align-items:flex-end;gap:10px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:8px}
+.h .step{font-size:11px;color:#fff;background:var(--blue);border-radius:6px;padding:2px 8px;font-weight:700}
+.h h2{margin:0;font-size:19px;color:var(--navy)}
+.goal{color:#3a4452;font-size:13px;margin:8px 0}
+.msg{background:#eef4fb;border-left:4px solid var(--blue);padding:10px 12px;border-radius:6px;font-size:12.5px;color:#2b4664;margin:10px 0}
+.lbl{font-size:11px;color:var(--mut);font-weight:700;margin:14px 0 5px}
+label.q{display:block;font-size:13px;margin:10px 0 4px;color:#2b3540}
+input[type=text],textarea,select{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;background:var(--soft)}
+textarea{min-height:60px;resize:vertical}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:140px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:6px 0}
+.chip{font-size:12px;border:1px solid var(--line);border-radius:18px;padding:6px 12px;color:#46505e;background:#fff;cursor:pointer;user-select:none}
+.chip.sel{background:#e7f0fb;border-color:var(--blue);color:var(--navy);font-weight:700}
+.chk{display:flex;align-items:center;gap:9px;font-size:13px;padding:7px 0;border-bottom:1px dotted var(--line);cursor:pointer}
+.chk input{width:16px;height:16px}
+.scaleopt{display:flex;gap:6px;margin-left:auto}
+.scaleopt span{font-size:11px;border:1px solid var(--line);border-radius:12px;padding:2px 9px;color:var(--mut);cursor:pointer}
+.scaleopt span.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12.5px}
+th{background:var(--navy);color:#fff;font-weight:600;padding:7px;text-align:left;font-size:11.5px}
+td{border:1px solid var(--line);padding:6px;vertical-align:top}
+td input,td textarea{background:#fff;border:1px dashed var(--line)}
+.btn{font-size:13px;border-radius:9px;padding:9px 16px;cursor:pointer;border:1px solid var(--line);background:#fff;color:#46505e}
+.btn:hover{background:#f1f4f8}
+.btn.p{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:700}
+.btn.g{background:var(--ok);color:#fff;border-color:var(--ok);font-weight:700}
+.acts{display:flex;gap:8px;margin-top:18px;border-top:1px solid var(--line);padding-top:14px;align-items:center;flex-wrap:wrap}
+.acts .sp{margin-left:auto}
+.saved{font-size:11.5px;color:var(--ok)}
+.jobcard{border:1px solid var(--line);border-radius:11px;padding:12px;margin:8px 0;background:#fff}
+.jobcard h4{margin:0 0 4px;font-size:14px;color:var(--navy)}
+.jobcard .meta{font-size:11px;color:var(--mut);margin:2px 0}
+.jobcard .score{float:right;background:var(--navy);color:#fff;border-radius:10px;padding:2px 9px;font-size:11px;font-weight:700}
+.tagm{display:inline-block;font-size:10.5px;border-radius:10px;padding:1px 7px;margin:2px 3px 0 0;background:#eef2f7;color:#46505e}
+.ai{border:1px dashed var(--blue);background:#f3f8ff;border-radius:11px;padding:12px;margin:12px 0}
+.ai h4{margin:0 0 6px;font-size:13px;color:var(--blue)}
+.ai .out{font-size:12.5px;color:#33475e;line-height:1.65;background:#fff;border:1px solid #d9e6f5;border-radius:7px;padding:10px;white-space:pre-wrap}
+.ai .caution{font-size:11px;color:var(--warn);margin-top:8px}
+.badgepop{text-align:center;padding:26px 10px}
+.seal{width:120px;height:120px;border-radius:50%;margin:0 auto 12px;background:radial-gradient(circle at 50% 38%,#3e6bb0,#1f3864);display:grid;place-items:center;color:#fff;box-shadow:0 8px 22px rgba(31,56,100,.35);border:5px solid var(--gold);font-weight:800;font-size:13px;line-height:1.3;padding:0 10px}
+.cert{border:3px double var(--navy);border-radius:14px;padding:28px;text-align:center;background:linear-gradient(180deg,#fff,#f7f9fc)}
+.cert .gold{color:#b08b2e;font-weight:800;letter-spacing:2px;font-size:12px}.cert h2{color:var(--navy);margin:8px 0}
+.hint{font-size:11px;color:var(--mut);margin-top:4px}
+.pill{display:inline-block;font-size:10.5px;border-radius:10px;padding:2px 8px;margin-left:6px}
+.pill.ok{background:#e4f3e8;color:var(--ok)}.pill.no{background:#f0e2dd;color:var(--warn)}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0}
+.kpi .k{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--soft)}
+.kpi .k b{font-size:20px;color:var(--navy);display:block}.kpi .k small{font-size:11px;color:var(--mut)}
+@media(max-width:760px){.wrap{grid-template-columns:1fr}.rail{position:static}}
+</style></head>
+<body>
+<div class="top"><b>커리어사관학교</b><span class="tag">MVP 프로토타입</span>
+<div class="sp"><button onclick="exportData()">진행 내보내기</button><button onclick="resetAll()">초기화</button></div></div>
+<div class="wrap">
+  <div class="rail">
+    <div class="brand">메이저맵 커리어사관학교<small id="who">학생 모드</small></div>
+    <div id="nav"></div>
+    <div class="rprog">전체 진행률 <b id="ppct">0%</b><div class="bar"><i id="pbar" style="width:0%"></i></div></div>
+  </div>
+  <div class="card"><div id="view"></div></div>
+</div>
+<script>
+const JOBS = [{"id": "OCC001", "name": "사무행정원", "cat": "경영·사무·금융", "def": "문서 작성·자료 정리·일정 관리 등 사무 전반을 지원한다.", "tasks": ["문서 작성·관리", "전화·내방 응대", "일정·비품 관리", "데이터 입력"], "majors": ["경영사무과", "회계과", "사무행정과"], "certs": ["컴퓨터활용능력", "워드프로세서", "전산회계 2급"], "skills": ["문서작성", "엑셀", "꼼꼼함", "소통"], "sal": 2700, "salr": "2400~3200", "out": "유지", "env": "실내·주간", "tags": ["문서·숫자", "안정 근무", "사무"]}, {"id": "OCC002", "name": "전산회계·경리원", "cat": "경영·사무·금융", "def": "전표 처리·장부 기록 등 회계 사무를 담당한다.", "tasks": ["전표 입력", "매출·매입 정리", "급여·세금계산서 보조", "장부 마감"], "majors": ["회계과", "세무과", "경영사무과"], "certs": ["전산회계 1·2급", "전산세무", "FAT/TAT"], "skills": ["회계지식", "엑셀", "정확성", "책임감"], "sal": 2800, "salr": "2500~3400", "out": "유지", "env": "실내·주간", "tags": ["문서·숫자", "자격증 활용", "안정 근무"]}, {"id": "OCC003", "name": "총무·서무 보조", "cat": "경영·사무·금융", "def": "비품·시설·행사 등 조직 운영 지원 업무를 한다.", "tasks": ["비품·자산 관리", "행사·회의 지원", "공문 접수·발송"], "majors": ["경영사무과", "사무행정과"], "certs": ["컴퓨터활용능력", "워드프로세서"], "skills": ["멀티태스킹", "소통", "문서작성"], "sal": 2600, "salr": "2400~3100", "out": "유지", "env": "실내·주간", "tags": ["사무", "안정 근무"]}, {"id": "OCC004", "name": "인사·노무 보조", "cat": "경영·사무·금융", "def": "채용·근태·급여 등 인사 업무를 보조한다.", "tasks": ["근태·급여 자료 정리", "채용 행정 지원", "4대보험 처리 보조"], "majors": ["경영사무과", "회계과"], "certs": ["컴퓨터활용능력", "ERP 정보관리사"], "skills": ["정확성", "규정 이해", "엑셀"], "sal": 2800, "salr": "2500~3400", "out": "유지", "env": "실내·주간", "tags": ["문서·숫자", "안정 근무"]}, {"id": "OCC005", "name": "무역사무원", "cat": "경영·사무·금융", "def": "수출입 서류·통관·물류 관련 무역 사무를 처리한다.", "tasks": ["수출입 서류 작성", "통관·선적 일정 관리", "거래처 응대"], "majors": ["국제통상과", "무역과", "경영사무과"], "certs": ["무역영어", "컴퓨터활용능력", "유통관리사"], "skills": ["영어", "서류처리", "꼼꼼함"], "sal": 3000, "salr": "2700~3800", "out": "유지", "env": "실내·주간", "tags": ["문서·숫자", "성장성"]}, {"id": "OCC006", "name": "금융창구·금융사무 보조", "cat": "경영·사무·금융", "def": "입출금·상품 안내 등 금융 창구 업무를 보조한다.", "tasks": ["창구 입출금 처리", "상품 안내", "서류 검토·정리"], "majors": ["금융과", "경영사무과"], "certs": ["은행텔러", "컴퓨터활용능력", "펀드투자권유"], "skills": ["응대", "정확성", "신뢰감"], "sal": 3000, "salr": "2700~3800", "out": "유지", "env": "실내·주간", "tags": ["사람 응대", "안정 근무", "급여"]}, {"id": "OCC007", "name": "고객상담(CS) 사무원", "cat": "경영·사무·금융", "def": "고객 문의·불만을 응대하고 처리한다.", "tasks": ["전화·채팅 상담", "주문·예약 처리", "불만 접수·이관"], "majors": ["경영사무과", "유통과"], "certs": ["CS Leaders", "컴퓨터활용능력"], "skills": ["응대", "공감", "문제해결"], "sal": 2600, "salr": "2400~3200", "out": "유지", "env": "실내·주간", "tags": ["사람 응대", "사무"]}, {"id": "OCC008", "name": "문서·데이터 관리원", "cat": "경영·사무·금융", "def": "문서·데이터를 입력·분류·보관한다.", "tasks": ["데이터 입력·검수", "문서 스캔·분류", "DB 정리"], "majors": ["사무행정과", "정보처리과"], "certs": ["컴퓨터활용능력", "워드프로세서"], "skills": ["정확성", "집중력", "엑셀"], "sal": 2500, "salr": "2300~2900", "out": "축소", "env": "실내·주간", "tags": ["문서·숫자", "혼자 집중"]}, {"id": "OCC009", "name": "웹 퍼블리셔", "cat": "IT·정보통신", "def": "디자인 시안을 HTML/CSS로 구현해 웹 화면을 만든다.", "tasks": ["HTML/CSS 마크업", "반응형 구현", "웹표준·접근성 적용"], "majors": ["정보처리과", "웹디자인과", "IT과"], "certs": ["웹디자인기능사", "GTQ", "정보처리기능사"], "skills": ["HTML/CSS", "꼼꼼함", "디자인 감각"], "sal": 3000, "salr": "2700~3800", "out": "성장", "env": "실내·주간", "tags": ["문서·숫자", "성장성", "자격증 활용"]}, {"id": "OCC010", "name": "프론트엔드 개발 보조", "cat": "IT·정보통신", "def": "웹·앱의 화면 동작을 개발·수정한다.", "tasks": ["UI 기능 구현", "버그 수정", "API 연동 보조"], "majors": ["정보처리과", "소프트웨어과", "IT과"], "certs": ["정보처리기능사", "리눅스마스터"], "skills": ["JavaScript", "논리력", "학습력"], "sal": 3200, "salr": "2800~4000", "out": "성장", "env": "실내·주간", "tags": ["성장성", "혼자 집중"]}, {"id": "OCC011", "name": "응용SW 개발 보조", "cat": "IT·정보통신", "def": "요구사항에 맞춰 응용 프로그램을 개발·테스트한다.", "tasks": ["코드 작성·수정", "단위 테스트", "문서화"], "majors": ["소프트웨어과", "정보처리과"], "certs": ["정보처리기능사", "SQLD"], "skills": ["프로그래밍", "문제해결", "협업"], "sal": 3300, "salr": "2900~4200", "out": "성장", "env": "실내·주간", "tags": ["성장성", "혼자 집중"]}, {"id": "OCC012", "name": "네트워크·서버 운영 보조", "cat": "IT·정보통신", "def": "서버·네트워크 장비를 설치·운영·점검한다.", "tasks": ["장비 설치·점검", "트래픽 모니터링", "장애 1차 대응"], "majors": ["정보처리과", "정보통신과"], "certs": ["네트워크관리사", "리눅스마스터", "정보처리기능사"], "skills": ["네트워크", "장애대응", "책임감"], "sal": 3100, "salr": "2800~3900", "out": "성장", "env": "실내·교대 가능", "tags": ["성장성", "안정 근무"]}, {"id": "OCC013", "name": "정보보안 관제 보조", "cat": "IT·정보통신", "def": "보안 이벤트를 모니터링하고 1차 대응한다.", "tasks": ["보안 관제", "로그 분석", "침해 1차 대응"], "majors": ["정보보안과", "정보처리과"], "certs": ["정보처리기능사", "정보보안기사(이후)"], "skills": ["보안지식", "집중력", "대응력"], "sal": 3200, "salr": "2900~4200", "out": "성장", "env": "실내·교대", "tags": ["성장성", "혼자 집중"]}, {"id": "OCC014", "name": "데이터 라벨링·관리원", "cat": "IT·정보통신", "def": "AI 학습용 데이터를 가공·검수·관리한다.", "tasks": ["데이터 라벨링", "품질 검수", "데이터셋 정리"], "majors": ["정보처리과", "빅데이터과"], "certs": ["컴퓨터활용능력", "정보처리기능사"], "skills": ["정확성", "집중력", "기본 데이터 이해"], "sal": 2600, "salr": "2400~3200", "out": "성장", "env": "실내·주간", "tags": ["혼자 집중", "성장성"]}, {"id": "OCC015", "name": "IT 헬프데스크·기술지원", "cat": "IT·정보통신", "def": "PC·소프트웨어 문제를 지원하고 해결한다.", "tasks": ["사용자 문의 대응", "PC·SW 설치·점검", "장애 처리"], "majors": ["정보처리과", "IT과"], "certs": ["정보처리기능사", "컴퓨터활용능력"], "skills": ["문제해결", "응대", "IT 기초"], "sal": 2800, "salr": "2500~3500", "out": "유지", "env": "실내·주간", "tags": ["사람 응대", "성장성"]}, {"id": "OCC016", "name": "전산 유지보수원", "cat": "IT·정보통신", "def": "사내 전산 장비·시스템을 유지·보수한다.", "tasks": ["하드웨어 점검", "SW 업데이트", "백업·복구"], "majors": ["정보처리과", "정보통신과"], "certs": ["정보처리기능사", "네트워크관리사"], "skills": ["꼼꼼함", "장애대응", "IT 기초"], "sal": 2900, "salr": "2600~3600", "out": "유지", "env": "실내·주간", "tags": ["안정 근무", "성장성"]}, {"id": "OCC017", "name": "그래픽·편집 디자이너", "cat": "디자인·콘텐츠", "def": "인쇄·홍보물 등 시각물을 디자인한다.", "tasks": ["편집·인쇄물 디자인", "로고·포스터 제작", "시안 수정"], "majors": ["디자인과", "시각디자인과", "웹디자인과"], "certs": ["GTQ", "컴퓨터그래픽스운용기능사", "웹디자인기능사"], "skills": ["디자인 감각", "포토샵·일러스트", "센스"], "sal": 2700, "salr": "2400~3500", "out": "유지", "env": "실내·주간", "tags": ["자격증 활용", "성장성"]}, {"id": "OCC018", "name": "UI/UX 디자인 보조", "cat": "디자인·콘텐츠", "def": "앱·웹 화면의 UI/UX를 설계·제작한다.", "tasks": ["화면 시안 제작", "프로토타입", "디자인 가이드 적용"], "majors": ["디자인과", "웹디자인과"], "certs": ["GTQ", "웹디자인기능사"], "skills": ["UI 감각", "툴 활용", "협업"], "sal": 3000, "salr": "2700~3800", "out": "성장", "env": "실내·주간", "tags": ["성장성", "자격증 활용"]}, {"id": "OCC019", "name": "영상 편집원", "cat": "디자인·콘텐츠", "def": "촬영 소스를 편집해 영상 콘텐츠를 만든다.", "tasks": ["컷 편집·자막", "효과·색보정", "썸네일 제작"], "majors": ["방송영상과", "디자인과", "콘텐츠과"], "certs": ["멀티미디어콘텐츠제작전문가", "GTQ"], "skills": ["편집툴", "감각", "마감 관리"], "sal": 2800, "salr": "2400~3600", "out": "성장", "env": "실내·주간", "tags": ["성장성", "혼자 집중"]}, {"id": "OCC020", "name": "제품·산업 디자인 보조", "cat": "디자인·콘텐츠", "def": "제품 외형·구조를 설계하고 시안을 만든다.", "tasks": ["제품 스케치", "3D 모델링 보조", "목업 제작"], "majors": ["산업디자인과", "디자인과"], "certs": ["제품디자인기사(이후)", "컴퓨터그래픽스운용기능사"], "skills": ["3D툴", "조형감각", "꼼꼼함"], "sal": 2900, "salr": "2600~3700", "out": "유지", "env": "실내·주간", "tags": ["성장성"]}, {"id": "OCC021", "name": "광고·SNS 콘텐츠 제작원", "cat": "디자인·콘텐츠", "def": "SNS·광고용 이미지·영상 콘텐츠를 만든다.", "tasks": ["콘텐츠 기획·제작", "채널 운영", "성과 정리"], "majors": ["콘텐츠과", "디자인과", "마케팅과"], "certs": ["GTQ", "SNS마케팅", "멀티미디어콘텐츠제작"], "skills": ["기획력", "툴 활용", "트렌드 감각"], "sal": 2700, "salr": "2400~3500", "out": "성장", "env": "실내·주간", "tags": ["성장성", "사람 응대"]}, {"id": "OCC022", "name": "일러스트·웹툰 보조", "cat": "디자인·콘텐츠", "def": "일러스트·웹툰 제작을 보조한다.", "tasks": ["밑색·배경 작업", "채색·보정", "컷 정리"], "majors": ["만화애니과", "디자인과"], "certs": ["GTQ", "컴퓨터그래픽스운용기능사"], "skills": ["드로잉", "툴 활용", "끈기"], "sal": 2500, "salr": "2200~3300", "out": "유지", "env": "실내·주간", "tags": ["혼자 집중", "성장성"]}, {"id": "OCC023", "name": "CAD 설계 보조", "cat": "디자인·콘텐츠", "def": "도면을 CAD로 작성·수정한다.", "tasks": ["도면 작성·수정", "치수 검토", "출력·관리"], "majors": ["디자인과", "건축과", "기계과"], "certs": ["전산응용건축제도기능사", "전산응용기계제도기능사", "CAD"], "skills": ["CAD", "도면 이해", "정확성"], "sal": 2900, "salr": "2600~3700", "out": "유지", "env": "실내·주간", "tags": ["문서·숫자", "자격증 활용"]}, {"id": "OCC024", "name": "CNC 가공원", "cat": "기계·금속", "def": "CNC 공작기계로 금속 부품을 가공한다.", "tasks": ["프로그램 입력", "공작기계 운전", "치수 측정"], "majors": ["기계과", "메카트로닉스과"], "certs": ["컴퓨터응용가공산업기사", "기계가공조립기능사"], "skills": ["기계 이해", "정밀측정", "집중력"], "sal": 3200, "salr": "2800~4200", "out": "유지", "env": "공장·교대 가능", "tags": ["몸 쓰는 일", "자격증 활용", "급여"]}, {"id": "OCC025", "name": "기계 조립원", "cat": "기계·금속", "def": "부품을 조립해 기계·설비를 완성한다.", "tasks": ["부품 조립", "동작 점검", "불량 확인"], "majors": ["기계과", "자동화과"], "certs": ["기계조립기능사", "공유압기능사"], "skills": ["손재주", "꼼꼼함", "체력"], "sal": 2900, "salr": "2600~3700", "out": "유지", "env": "공장·교대 가능", "tags": ["몸 쓰는 일"]}, {"id": "OCC026", "name": "금형 제작원", "cat": "기계·금속", "def": "사출·프레스용 금형을 제작·수정한다.", "tasks": ["금형 가공", "조립·수정", "시험사출 점검"], "majors": ["기계과", "금형과"], "certs": ["금형기능사", "컴퓨터응용가공"], "skills": ["정밀가공", "기계 이해", "끈기"], "sal": 3300, "salr": "2900~4300", "out": "유지", "env": "공장·주간", "tags": ["자격증 활용", "급여"]}, {"id": "OCC027", "name": "용접원", "cat": "기계·금속", "def": "금속 부재를 용접해 구조물·제품을 만든다.", "tasks": ["용접 작업", "비드 검사", "안전 점검"], "majors": ["기계과", "조선과", "금속과"], "certs": ["용접기능사", "특수용접기능사"], "skills": ["용접기술", "집중력", "체력"], "sal": 3300, "salr": "2800~4500", "out": "유지", "env": "현장·옥내외", "tags": ["몸 쓰는 일", "급여", "자격증 활용"]}, {"id": "OCC028", "name": "설비 보전원", "cat": "기계·금속", "def": "생산설비를 점검·정비해 가동을 유지한다.", "tasks": ["설비 점검·정비", "고장 수리", "예방보전"], "majors": ["기계과", "자동화과", "전기과"], "certs": ["설비보전기능사", "공유압기능사"], "skills": ["정비 기술", "대응력", "책임감"], "sal": 3200, "salr": "2800~4200", "out": "유지", "env": "공장·교대", "tags": ["몸 쓰는 일", "안정 근무", "급여"]}, {"id": "OCC029", "name": "품질 검사원", "cat": "기계·금속", "def": "제품의 치수·성능을 검사해 품질을 관리한다.", "tasks": ["측정·검사", "불량 분석", "검사기록 작성"], "majors": ["기계과", "품질경영과"], "certs": ["품질경영기능사", "기계가공조립기능사"], "skills": ["정밀측정", "꼼꼼함", "기록"], "sal": 2900, "salr": "2600~3700", "out": "유지", "env": "공장·주간", "tags": ["문서·숫자", "안정 근무"]}, {"id": "OCC030", "name": "사출·프레스 운전원", "cat": "기계·금속", "def": "사출·프레스 기계를 운전해 부품을 생산한다.", "tasks": ["기계 세팅·운전", "금형 교체", "불량 점검"], "majors": ["기계과", "화공과"], "certs": ["사출금형기능사", "기계조립기능사"], "skills": ["기계 조작", "집중력", "체력"], "sal": 2900, "salr": "2600~3700", "out": "유지", "env": "공장·교대", "tags": ["몸 쓰는 일"]}, {"id": "OCC031", "name": "전기 설비 시공원", "cat": "전기·전자·반도체", "def": "건물·설비의 전기 배선·설비를 시공한다.", "tasks": ["배선·배관 시공", "분전반 설치", "점검·시험"], "majors": ["전기과", "전기제어과"], "certs": ["전기기능사", "전기산업기사(이후)"], "skills": ["전기 이해", "시공", "안전"], "sal": 3300, "salr": "2900~4500", "out": "성장", "env": "현장·옥내외", "tags": ["몸 쓰는 일", "자격증 활용", "급여"]}, {"id": "OCC032", "name": "전자기기 조립·검사원", "cat": "전기·전자·반도체", "def": "전자기기를 조립하고 동작을 검사한다.", "tasks": ["기판·부품 조립", "동작 검사", "불량 처리"], "majors": ["전자과", "전자기기과"], "certs": ["전자기기기능사", "전자캐드기능사"], "skills": ["손재주", "꼼꼼함", "집중력"], "sal": 2900, "salr": "2600~3700", "out": "유지", "env": "공장·교대 가능", "tags": ["몸 쓰는 일"]}, {"id": "OCC033", "name": "반도체 장비 운영원", "cat": "전기·전자·반도체", "def": "반도체 제조 장비를 운영·점검한다.", "tasks": ["장비 운전", "공정 모니터링", "이상 대응"], "majors": ["반도체과", "전자과", "전기과"], "certs": ["반도체장비유지보수기능사", "전자기기기능사"], "skills": ["장비 이해", "집중력", "교대 적응"], "sal": 3600, "salr": "3200~4800", "out": "성장", "env": "클린룸·교대", "tags": ["성장성", "급여", "안정 근무"]}, {"id": "OCC034", "name": "디스플레이 공정 운영원", "cat": "전기·전자·반도체", "def": "디스플레이 생산 공정을 운영·관리한다.", "tasks": ["공정 설비 운전", "품질 점검", "데이터 기록"], "majors": ["전자과", "화공과"], "certs": ["전자기기기능사", "품질경영기능사"], "skills": ["공정 이해", "집중력", "교대 적응"], "sal": 3500, "salr": "3100~4600", "out": "성장", "env": "클린룸·교대", "tags": ["성장성", "급여"]}, {"id": "OCC035", "name": "PCB·SMT 작업원", "cat": "전기·전자·반도체", "def": "기판에 부품을 실장하고 검사한다.", "tasks": ["SMT 장비 운전", "납땜·실장", "검사"], "majors": ["전자과", "전자기기과"], "certs": ["전자기기기능사", "전자캐드기능사"], "skills": ["정밀작업", "집중력", "꼼꼼함"], "sal": 2900, "salr": "2600~3700", "out": "유지", "env": "공장·교대", "tags": ["몸 쓰는 일"]}, {"id": "OCC036", "name": "자동제어(PLC) 보조", "cat": "전기·전자·반도체", "def": "자동화 설비의 제어 프로그램을 설정·점검한다.", "tasks": ["PLC 프로그램 보조", "센서·배선 점검", "동작 시험"], "majors": ["전기제어과", "자동화과", "메카트로닉스과"], "certs": ["전기기능사", "승강기기능사"], "skills": ["제어 이해", "논리력", "책임감"], "sal": 3200, "salr": "2800~4200", "out": "성장", "env": "공장·주간", "tags": ["성장성", "자격증 활용"]}, {"id": "OCC037", "name": "신재생에너지 설비 보조", "cat": "전기·전자·반도체", "def": "태양광 등 신재생 설비를 설치·점검한다.", "tasks": ["설비 설치", "점검·정비", "발전량 점검"], "majors": ["전기과", "신재생에너지과"], "certs": ["전기기능사", "신재생에너지발전설비기능사"], "skills": ["전기 이해", "시공", "안전"], "sal": 3100, "salr": "2800~4000", "out": "성장", "env": "현장·옥외", "tags": ["성장성", "몸 쓰는 일"]}, {"id": "OCC038", "name": "건축 시공 기능원", "cat": "건설·토목·인테리어", "def": "건축물 골조·마감 시공을 수행한다.", "tasks": ["시공·마감 작업", "자재 관리", "안전 점검"], "majors": ["건축과", "토목과"], "certs": ["건축도장기능사", "거푸집기능사"], "skills": ["시공 기술", "체력", "안전"], "sal": 3200, "salr": "2800~4500", "out": "유지", "env": "현장·옥외", "tags": ["몸 쓰는 일", "급여"]}, {"id": "OCC039", "name": "실내 인테리어 시공원", "cat": "건설·토목·인테리어", "def": "실내 공간을 도면대로 시공·마감한다.", "tasks": ["목공·마감 시공", "자재 시공", "현장 정리"], "majors": ["인테리어과", "건축과", "디자인과"], "certs": ["실내건축기능사", "건축도장기능사"], "skills": ["손재주", "시공", "미적 감각"], "sal": 3000, "salr": "2600~4000", "out": "유지", "env": "현장·옥내", "tags": ["몸 쓰는 일", "자격증 활용"]}, {"id": "OCC040", "name": "전기공사 기능원", "cat": "건설·토목·인테리어", "def": "건설 현장의 전기 공사를 시공한다.", "tasks": ["배선·배관", "조명·콘센트 설치", "시험·점검"], "majors": ["전기과", "건축전기과"], "certs": ["전기기능사", "전기공사기능사"], "skills": ["전기 이해", "시공", "안전"], "sal": 3300, "salr": "2900~4600", "out": "성장", "env": "현장·옥내외", "tags": ["몸 쓰는 일", "급여", "자격증 활용"]}, {"id": "OCC041", "name": "배관·설비 시공원", "cat": "건설·토목·인테리어", "def": "냉난방·급배수 등 설비 배관을 시공한다.", "tasks": ["배관 시공", "설비 설치", "누수·압력 점검"], "majors": ["건축설비과", "배관과"], "certs": ["배관기능사", "공조냉동기계기능사"], "skills": ["시공", "체력", "꼼꼼함"], "sal": 3200, "salr": "2800~4400", "out": "유지", "env": "현장·옥내외", "tags": ["몸 쓰는 일", "자격증 활용"]}, {"id": "OCC042", "name": "건설 도면 작성원", "cat": "건설·토목·인테리어", "def": "건축·토목 도면을 CAD로 작성한다.", "tasks": ["도면 작성·수정", "수량 산출 보조", "도서 관리"], "majors": ["건축과", "토목과"], "certs": ["전산응용건축제도기능사", "전산응용토목제도기능사"], "skills": ["CAD", "도면 이해", "정확성"], "sal": 2900, "salr": "2600~3700", "out": "유지", "env": "실내·주간", "tags": ["문서·숫자", "자격증 활용"]}, {"id": "OCC043", "name": "자동차 정비원", "cat": "자동차·운송", "def": "자동차를 점검·정비·수리한다.", "tasks": ["고장 진단", "부품 교체·수리", "점검·정비"], "majors": ["자동차과", "자동차정비과"], "certs": ["자동차정비기능사", "자동차보수도장기능사"], "skills": ["정비 기술", "진단력", "체력"], "sal": 3000, "salr": "2600~4000", "out": "유지", "env": "정비소·주간", "tags": ["몸 쓰는 일", "자격증 활용"]}, {"id": "OCC044", "name": "자동차 차체·도장원", "cat": "자동차·운송", "def": "차체를 복원하고 도장 작업을 한다.", "tasks": ["판금·복원", "도장·건조", "마감 점검"], "majors": ["자동차과", "자동차정비과"], "certs": ["자동차차체수리기능사", "자동차보수도장기능사"], "skills": ["손재주", "색감", "집중력"], "sal": 3000, "salr": "2600~4000", "out": "유지", "env": "정비소·주간", "tags": ["몸 쓰는 일", "자격증 활용"]}, {"id": "OCC045", "name": "자동차 부품 조립원", "cat": "자동차·운송", "def": "자동차 부품·모듈을 조립·검사한다.", "tasks": ["부품 조립", "공정 작업", "품질 점검"], "majors": ["자동차과", "기계과"], "certs": ["기계조립기능사", "자동차정비기능사"], "skills": ["손재주", "집중력", "체력"], "sal": 3100, "salr": "2700~4200", "out": "유지", "env": "공장·교대", "tags": ["몸 쓰는 일", "급여"]}, {"id": "OCC046", "name": "지게차·물류장비 운전원", "cat": "자동차·운송", "def": "지게차 등 장비로 화물을 운반·적재한다.", "tasks": ["화물 적재·운반", "입출고 작업", "장비 점검"], "majors": ["물류과", "기계과"], "certs": ["지게차운전기능사", "건설기계운전"], "skills": ["장비 운전", "안전", "체력"], "sal": 2900, "salr": "2600~3800", "out": "유지", "env": "물류센터·교대 가능", "tags": ["몸 쓰는 일", "자격증 활용"]}, {"id": "OCC047", "name": "운송·배송 보조", "cat": "자동차·운송", "def": "화물·상품을 운송하고 배송을 지원한다.", "tasks": ["상품 상하차", "배송 동행", "배차 보조"], "majors": ["물류과", "유통과"], "certs": ["운전면허", "지게차운전기능사"], "skills": ["체력", "책임감", "길 안내"], "sal": 2800, "salr": "2500~3600", "out": "유지", "env": "외부·주간", "tags": ["몸 쓰는 일"]}, {"id": "OCC048", "name": "한식 조리사", "cat": "조리·외식·식품", "def": "한식 메뉴를 조리하고 주방을 운영한다.", "tasks": ["식재료 손질", "조리·플레이팅", "위생 관리"], "majors": ["조리과", "외식조리과"], "certs": ["한식조리기능사", "조리산업기사(이후)"], "skills": ["조리 기술", "손재주", "위생"], "sal": 2800, "salr": "2400~3600", "out": "유지", "env": "주방·교대", "tags": ["몸 쓰는 일", "자격증 활용"]}, {"id": "OCC049", "name": "양·중·일식 조리사", "cat": "조리·외식·식품", "def": "양식·중식·일식 메뉴를 조리한다.", "tasks": ["식재료 준비", "조리·플레이팅", "주방 정리"], "majors": ["조리과", "외식조리과"], "certs": ["양식조리기능사", "중식조리기능사", "일식조리기능사"], "skills": ["조리 기술", "감각", "위생"], "sal": 2900, "salr": "2500~3800", "out": "유지", "env": "주방·교대", "tags": ["몸 쓰는 일", "자격증 활용"]}, {"id": "OCC050", "name": "제과·제빵사", "cat": "조리·외식·식품", "def": "빵·과자·디저트를 제조한다.", "tasks": ["반죽·성형", "굽기·장식", "위생·재고 관리"], "majors": ["제과제빵과", "조리과"], "certs": ["제과기능사", "제빵기능사"], "skills": ["손재주", "정확성", "체력"], "sal": 2700, "salr": "2400~3400", "out": "유지", "env": "주방·이른 근무", "tags": ["몸 쓰는 일", "자격증 활용"]}, {"id": "OCC051", "name": "바리스타·카페 운영", "cat": "조리·외식·식품", "def": "음료를 제조하고 매장을 운영한다.", "tasks": ["음료 제조", "주문·응대", "매장 관리"], "majors": ["조리과", "외식과"], "certs": ["바리스타", "조주기능사"], "skills": ["응대", "손재주", "센스"], "sal": 2500, "salr": "2200~3200", "out": "유지", "env": "매장·교대", "tags": ["사람 응대", "몸 쓰는 일"]}, {"id": "OCC052", "name": "외식 서비스원", "cat": "조리·외식·식품", "def": "홀 서비스·예약·매장 운영을 한다.", "tasks": ["고객 응대", "주문·서빙", "매장 관리"], "majors": ["외식과", "호텔관광과"], "certs": ["외식조리", "CS Leaders"], "skills": ["응대", "체력", "팀워크"], "sal": 2500, "salr": "2200~3200", "out": "유지", "env": "매장·교대", "tags": ["사람 응대", "몸 쓰는 일"]}, {"id": "OCC053", "name": "식품 가공·제조원", "cat": "조리·외식·식품", "def": "식품을 위생적으로 가공·제조한다.", "tasks": ["원료 처리", "제조·포장", "위생·품질 점검"], "majors": ["식품가공과", "조리과"], "certs": ["식품가공기능사", "위생사(이후)"], "skills": ["위생", "꼼꼼함", "체력"], "sal": 2700, "salr": "2400~3500", "out": "유지", "env": "공장·교대 가능", "tags": ["몸 쓰는 일"]}, {"id": "OCC054", "name": "단체급식 조리원", "cat": "조리·외식·식품", "def": "학교·기업 등 대량 급식을 조리한다.", "tasks": ["대량 조리", "배식", "위생·청소"], "majors": ["조리과", "식품과"], "certs": ["한식조리기능사", "위생교육"], "skills": ["조리", "체력", "위생"], "sal": 2600, "salr": "2300~3200", "out": "유지", "env": "급식실·주간", "tags": ["몸 쓰는 일", "안정 근무"]}, {"id": "OCC055", "name": "헤어 디자이너", "cat": "미용·뷰티", "def": "커트·펌·염색 등 헤어 시술을 한다.", "tasks": ["커트·펌·염색", "두피·모발 관리", "고객 응대"], "majors": ["미용과", "뷰티과"], "certs": ["미용사(일반)"], "skills": ["손재주", "감각", "응대"], "sal": 2400, "salr": "2000~3500", "out": "유지", "env": "매장·교대", "tags": ["사람 응대", "자격증 활용"]}, {"id": "OCC056", "name": "피부 미용사", "cat": "미용·뷰티", "def": "피부 관리·에스테틱 시술을 한다.", "tasks": ["피부 관리", "제품 적용", "상담·응대"], "majors": ["미용과", "뷰티과"], "certs": ["미용사(피부)"], "skills": ["손재주", "공감", "위생"], "sal": 2400, "salr": "2000~3400", "out": "유지", "env": "샵·교대", "tags": ["사람 응대", "자격증 활용"]}, {"id": "OCC057", "name": "네일 아티스트", "cat": "미용·뷰티", "def": "네일 케어·아트 시술을 한다.", "tasks": ["네일 케어", "아트·연장", "상담"], "majors": ["미용과", "뷰티과"], "certs": ["미용사(네일)"], "skills": ["손재주", "감각", "집중력"], "sal": 2300, "salr": "2000~3200", "out": "유지", "env": "샵·주간", "tags": ["사람 응대", "혼자 집중", "자격증 활용"]}, {"id": "OCC058", "name": "메이크업 아티스트", "cat": "미용·뷰티", "def": "메이크업 시술과 스타일링을 한다.", "tasks": ["메이크업 시술", "스타일링", "고객 응대"], "majors": ["미용과", "뷰티과"], "certs": ["미용사(메이크업)"], "skills": ["감각", "손재주", "응대"], "sal": 2400, "salr": "2000~3500", "out": "유지", "env": "샵·현장", "tags": ["사람 응대", "자격증 활용"]}, {"id": "OCC059", "name": "간호조무사", "cat": "보건·복지·간호", "def": "의료기관에서 간호·진료를 보조한다.", "tasks": ["진료 보조", "환자 응대", "기구·약품 관리"], "majors": ["보건간호과", "간호과"], "certs": ["간호조무사 자격"], "skills": ["돌봄", "꼼꼼함", "응대"], "sal": 2900, "salr": "2600~3500", "out": "성장", "env": "병원·교대 가능", "tags": ["사람 응대", "안정 근무", "자격증 활용"]}, {"id": "OCC060", "name": "치과위생·치과 보조", "cat": "보건·복지·간호", "def": "치과 진료를 보조하고 위생 관리를 한다.", "tasks": ["진료 보조", "기구 소독", "환자 안내"], "majors": ["보건간호과", "치위생과"], "certs": ["간호조무사 자격"], "skills": ["꼼꼼함", "응대", "위생"], "sal": 2900, "salr": "2600~3500", "out": "유지", "env": "치과·주간", "tags": ["사람 응대", "안정 근무"]}, {"id": "OCC061", "name": "요양보호사", "cat": "보건·복지·간호", "def": "어르신·환자의 일상생활을 돌본다.", "tasks": ["신체·일상 지원", "이동 보조", "상태 관찰"], "majors": ["보건복지과", "사회복지과"], "certs": ["요양보호사 자격"], "skills": ["돌봄", "체력", "공감"], "sal": 2600, "salr": "2300~3200", "out": "성장", "env": "시설·교대 가능", "tags": ["사람 응대", "안정 근무"]}, {"id": "OCC062", "name": "보육교사 보조", "cat": "보건·복지·간호", "def": "어린이집·유치원에서 보육을 보조한다.", "tasks": ["보육 활동 지원", "안전·위생 관리", "부모 소통 보조"], "majors": ["보육과", "아동복지과"], "certs": ["보육교사(이후)", "CS Leaders"], "skills": ["친화력", "책임감", "체력"], "sal": 2500, "salr": "2200~3000", "out": "유지", "env": "어린이집·주간", "tags": ["사람 응대", "안정 근무"]}, {"id": "OCC063", "name": "병원 원무·의료사무원", "cat": "보건·복지·간호", "def": "접수·수납·보험청구 등 의료 사무를 한다.", "tasks": ["접수·수납", "보험 청구", "진료기록 관리"], "majors": ["보건행정과", "의료사무과"], "certs": ["의료정보관리사", "컴퓨터활용능력"], "skills": ["응대", "정확성", "규정 이해"], "sal": 2700, "salr": "2400~3300", "out": "유지", "env": "병원·주간", "tags": ["사람 응대", "문서·숫자", "안정 근무"]}, {"id": "OCC064", "name": "물류 관리원", "cat": "물류·유통·판매", "def": "입출고·재고·배송 등 물류를 관리한다.", "tasks": ["입출고 관리", "재고 점검", "배송 일정 관리"], "majors": ["물류과", "유통과"], "certs": ["물류관리사", "유통관리사"], "skills": ["관리", "엑셀", "체력"], "sal": 2800, "salr": "2500~3600", "out": "성장", "env": "물류센터·교대 가능", "tags": ["문서·숫자", "성장성"]}, {"id": "OCC065", "name": "창고·재고 관리원", "cat": "물류·유통·판매", "def": "창고의 입출고와 재고를 관리한다.", "tasks": ["입출고 처리", "재고 실사", "피킹·패킹"], "majors": ["물류과", "유통과"], "certs": ["지게차운전기능사", "물류관리사"], "skills": ["꼼꼼함", "체력", "정확성"], "sal": 2600, "salr": "2300~3300", "out": "유지", "env": "창고·교대 가능", "tags": ["몸 쓰는 일"]}, {"id": "OCC066", "name": "매장 판매원", "cat": "물류·유통·판매", "def": "상품을 판매하고 고객을 응대한다.", "tasks": ["상품 판매·진열", "고객 응대", "계산·재고"], "majors": ["유통과", "경영사무과"], "certs": ["유통관리사", "CS Leaders"], "skills": ["응대", "센스", "체력"], "sal": 2400, "salr": "2200~3000", "out": "유지", "env": "매장·교대", "tags": ["사람 응대"]}, {"id": "OCC067", "name": "매장 운영 보조(점장 보조)", "cat": "물류·유통·판매", "def": "매장 운영·매출·인력을 관리 보조한다.", "tasks": ["매출·재고 관리", "직원 스케줄 보조", "고객 관리"], "majors": ["유통과", "경영사무과"], "certs": ["유통관리사", "컴퓨터활용능력"], "skills": ["관리", "리더십", "응대"], "sal": 2700, "salr": "2400~3400", "out": "유지", "env": "매장·교대", "tags": ["사람 응대", "성장성"]}, {"id": "OCC068", "name": "상품기획(MD) 보조", "cat": "물류·유통·판매", "def": "상품 기획·발주·진열을 보조한다.", "tasks": ["상품 발주", "진열·관리", "판매 데이터 정리"], "majors": ["유통과", "마케팅과"], "certs": ["유통관리사", "컴퓨터활용능력"], "skills": ["기획력", "엑셀", "트렌드 감각"], "sal": 2800, "salr": "2500~3600", "out": "성장", "env": "사무·매장", "tags": ["문서·숫자", "성장성"]}, {"id": "OCC069", "name": "택배·배송 분류원", "cat": "물류·유통·판매", "def": "택배·상품을 분류하고 상하차한다.", "tasks": ["분류·상하차", "스캔·검수", "구역 정리"], "majors": ["물류과"], "certs": ["지게차운전기능사"], "skills": ["체력", "속도", "정확성"], "sal": 2600, "salr": "2300~3400", "out": "유지", "env": "터미널·교대", "tags": ["몸 쓰는 일"]}, {"id": "OCC070", "name": "호텔 객실·프런트 서비스", "cat": "관광·항공·서비스", "def": "호텔 체크인·객실 서비스를 제공한다.", "tasks": ["체크인·아웃", "고객 응대", "객실 관리 연계"], "majors": ["호텔관광과", "관광과"], "certs": ["호텔서비스사", "CS Leaders"], "skills": ["응대", "외국어 기초", "서비스 마인드"], "sal": 2700, "salr": "2400~3400", "out": "유지", "env": "호텔·교대", "tags": ["사람 응대", "성장성"]}, {"id": "OCC071", "name": "항공 지상·객실 서비스 보조", "cat": "관광·항공·서비스", "def": "공항·기내 서비스 업무를 보조한다.", "tasks": ["탑승 안내", "수속 지원", "서비스 응대"], "majors": ["항공과", "관광과"], "certs": ["항공서비스", "CS Leaders", "TOEIC"], "skills": ["응대", "외국어", "용모"], "sal": 3000, "salr": "2600~3800", "out": "성장", "env": "공항·교대", "tags": ["사람 응대", "성장성"]}, {"id": "OCC072", "name": "여행·여가 서비스원", "cat": "관광·항공·서비스", "def": "여행 상품·여가 시설 서비스를 운영한다.", "tasks": ["상담·예약", "상품 안내", "현장 운영"], "majors": ["관광과", "호텔과"], "certs": ["국내여행안내사", "CS Leaders"], "skills": ["응대", "기획", "외국어 기초"], "sal": 2500, "salr": "2200~3200", "out": "유지", "env": "사무·현장", "tags": ["사람 응대"]}, {"id": "OCC073", "name": "이벤트·행사 운영 보조", "cat": "관광·항공·서비스", "def": "행사·전시의 운영을 준비·진행 보조한다.", "tasks": ["행사 준비", "현장 진행", "참가자 응대"], "majors": ["이벤트과", "관광과"], "certs": ["컴퓨터활용능력", "CS Leaders"], "skills": ["체력", "응대", "순발력"], "sal": 2500, "salr": "2200~3300", "out": "유지", "env": "현장·변동", "tags": ["사람 응대", "몸 쓰는 일"]}, {"id": "OCC074", "name": "스마트팜·원예 재배원", "cat": "농림·수산·환경·화학·섬유", "def": "스마트팜·시설에서 작물을 재배·관리한다.", "tasks": ["작물 재배·관리", "환경 제어 모니터링", "수확·출하"], "majors": ["원예과", "스마트팜과", "농업과"], "certs": ["시설원예기능사", "스마트팜"], "skills": ["재배 지식", "관찰력", "체력"], "sal": 2700, "salr": "2400~3500", "out": "성장", "env": "농장·주간", "tags": ["몸 쓰는 일", "성장성"]}, {"id": "OCC075", "name": "축산·동물관리원", "cat": "농림·수산·환경·화학·섬유", "def": "가축·동물을 사육하고 관리한다.", "tasks": ["사육·급이", "건강 관찰", "시설 관리"], "majors": ["축산과", "동물자원과"], "certs": ["축산기능사"], "skills": ["돌봄", "체력", "책임감"], "sal": 2700, "salr": "2400~3400", "out": "유지", "env": "농장·교대 가능", "tags": ["몸 쓰는 일"]}, {"id": "OCC076", "name": "펫 뷰티·반려동물 케어", "cat": "농림·수산·환경·화학·섬유", "def": "반려동물 미용·돌봄 서비스를 한다.", "tasks": ["미용·목욕", "건강 관찰", "고객 응대"], "majors": ["애완동물과", "펫케어과"], "certs": ["반려동물관리사", "애견미용"], "skills": ["손재주", "돌봄", "응대"], "sal": 2500, "salr": "2200~3300", "out": "성장", "env": "샵·주간", "tags": ["사람 응대", "성장성"]}, {"id": "OCC077", "name": "수산·식품 가공원", "cat": "농림·수산·환경·화학·섬유", "def": "수산물을 가공·포장·관리한다.", "tasks": ["원료 손질", "가공·포장", "위생 점검"], "majors": ["수산과", "식품과"], "certs": ["수산물품질관리", "식품가공기능사"], "skills": ["위생", "체력", "꼼꼼함"], "sal": 2600, "salr": "2300~3300", "out": "유지", "env": "공장·교대 가능", "tags": ["몸 쓰는 일"]}, {"id": "OCC078", "name": "환경·수질 관리 보조", "cat": "농림·수산·환경·화학·섬유", "def": "환경·수질 설비를 점검하고 시료를 채취한다.", "tasks": ["설비 점검", "시료 채취", "측정·기록"], "majors": ["환경과", "화공과"], "certs": ["환경기능사", "수질환경기능사"], "skills": ["측정", "꼼꼼함", "안전"], "sal": 2800, "salr": "2500~3500", "out": "성장", "env": "현장·주간", "tags": ["성장성", "자격증 활용"]}, {"id": "OCC079", "name": "화학·바이오 분석 보조", "cat": "농림·수산·환경·화학·섬유", "def": "시료를 분석하고 실험을 보조한다.", "tasks": ["시료 전처리", "기기 분석", "결과 기록"], "majors": ["화공과", "바이오과"], "certs": ["화학분석기능사", "위험물기능사"], "skills": ["실험", "정확성", "안전"], "sal": 2900, "salr": "2600~3700", "out": "성장", "env": "실험실·주간", "tags": ["문서·숫자", "성장성", "자격증 활용"]}, {"id": "OCC080", "name": "봉제·패션 제작원", "cat": "농림·수산·환경·화학·섬유", "def": "의류·패션 제품을 재단·봉제한다.", "tasks": ["재단·봉제", "검품", "마감"], "majors": ["패션과", "의상과"], "certs": ["양장기능사", "한복기능사"], "skills": ["손재주", "꼼꼼함", "속도"], "sal": 2400, "salr": "2100~3000", "out": "축소", "env": "공장·주간", "tags": ["몸 쓰는 일"]}];
+const TAGS = ["문서·숫자","안정 근무","사무","자격증 활용","사람 응대","성장성","혼자 집중","몸 쓰는 일","급여"];
+const STEPS = [
+  ["pre","사전 진단","S2"],["ready","Ready","S3"],["explore","Explore","S4"],
+  ["match","Match","S5"],["prove","Prove","S6"],["practice","Practice","S7"],
+  ["launch","Launch","S8"],["done","수료","S9"]];
+const BADGE = {ready:["Mode Switch","학생 모드 OFF · 직장인 모드 ON"],explore:["Market Scout","기회를 찾는 눈을 장착했습니다"],
+  match:["Job Finder","내가 빛날 자리를 찾았습니다"],prove:["Proof Maker","내 경험이 증거가 되었습니다"],
+  practice:["Interview Ready","이제 나를 말할 수 있습니다"],launch:["First Launch","첫 출근을 향해 출발합니다"]};
+const KEY="majormap_career_mvp_v1";
+let S = load();
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||fresh()}catch(e){return fresh()}}
+function fresh(){return {pre:{},ready:{check:{},decl:{}},explore:{posting:{},risk:{},ready3:[["","",""]]},
+  match:{crit:[],saved:[],eval:{}},prove:{exps:[],resume:{},cover:{},ai:""},
+  practice:{q:[],intro:{},star:{},att:{}},launch:{sel:"",apply:{},retro:{}},badges:{},done:[]}}
+function save(silent){localStorage.setItem(KEY,JSON.stringify(S));if(!silent)flash()}
+function flash(){let e=document.getElementById("savemsg");if(e){e.textContent="저장됨 ✓";setTimeout(()=>{if(e)e.textContent=""},1500)}}
+let cur="pre";
+function go(k){cur=k;render()}
+function pct(){let n=STEPS.length-1,d=STEPS.slice(0,n).filter(s=>S.done.includes(s[0])).length;return Math.round(d/n*100)}
+function award(step){if(!S.done.includes(step)){S.done.push(step);S.badges[step]=true;save(1)}}
+function nav(){
+  document.getElementById("nav").innerHTML=STEPS.map(([k,t])=>{
+    let cls=S.done.includes(k)?"done":"";if(cur===k)cls+=" active";
+    let mark=S.done.includes(k)?"✓":(STEPS.findIndex(x=>x[0]===k)+1);
+    return `<div class="nav ${cls}" onclick="go('${k}')"><span class="st">${mark}</span>${t}</div>`}).join("");
+  document.getElementById("ppct").textContent=pct()+"%";document.getElementById("pbar").style.width=pct()+"%";
+}
+function head(step,title,goal){return `<div class="h"><span class="step">${step}</span><h2>${title}</h2></div><div class="goal">${goal}</div>`}
+function actbar(extra){return `<div class="acts">${extra||""}<span class="sp"></span><span id="savemsg" class="saved"></span><button class="btn" onclick="saveCur()">임시저장</button></div>`}
+function saveCur(){save()}
+function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+
+// ---------- matching engine ----------
+function scoreJobs(){
+  let crit=S.match.crit||[];
+  return JOBS.map(j=>{
+    let overlap=j.tags.filter(t=>crit.includes(t)).length;
+    let s=overlap*10 + (j.out==="성장"?4:j.out==="유지"?1:0);
+    return {j,s,overlap}}).sort((a,b)=>b.s-a.s);
+}
+function jobFit(j){let c=S.match.crit||[];return j.tags.filter(t=>c.includes(t)).length}
+
+// ---------- AI (rule-based) ----------
+const PUFF=["최고","최선","열정적으로","누구보다","완벽","엄청난","뛰어난","압도적","항상","무조건"];
+function aiResume(e){
+  let act=e.action||"___", res=e.result||"___", role=e.role||"___";
+  return `· ${e.name||"경험"} — ${role} 담당, ${act}하여 ${res} (${(e.skill||"직무역량")})`;
+}
+function aiStar(e,job){
+  return `[STAR 초안 · 지원직무: ${job||"___"}]\n`+
+  `S(상황) ${e.name||"___"} 상황에서\n`+
+  `T(역할) ${e.role||"___"} 역할을 맡아\n`+
+  `A(행동) ${e.action||"___"}했고\n`+
+  `R(결과) ${e.result||"___"}.\n`+
+  `→ 이 경험으로 기른 ${(e.skill||"역량")}을 ${job||"지원 직무"}에서 발휘하겠습니다.`;
+}
+function aiPuffCheck(txt){
+  let hit=PUFF.filter(p=>(txt||"").includes(p));
+  return hit.length?`⚠ 과장 의심 표현: ${hit.join(", ")} — 구체적 사실·수치로 바꾸세요.`:"과장 표현이 발견되지 않았습니다. 좋아요.";
+}
+function aiQuestions(job,exp){
+  return [`[기본] 1분 자기소개를 해주세요.`,
+    `[지원동기] 왜 ${job||"이 직무"}에 지원했나요?`,
+    `[경험] ${exp||"가장 자신 있는 경험"}에서 본인이 한 행동은 무엇인가요?`,
+    `[꼬리] 그때 가장 어려웠던 점과 어떻게 해결했는지 말해주세요.`,
+    `[태도] 실수했을 때 어떻게 대처하나요?`].join("\n");
+}
+
+// ---------- views ----------
+function render(){nav();
+  let v=document.getElementById("view");
+  v.innerHTML=({pre:vPre,ready:vReady,explore:vExplore,match:vMatch,prove:vProve,practice:vPractice,launch:vLaunch,done:vDone}[cur])();
+  document.getElementById("who").textContent = S.done.length? `미션 ${S.done.length}/7 진행 중`:"학생 모드";
+  window.scrollTo(0,0);
+}
+// 사전진단
+function vPre(){
+  let q=S.pre;
+  let opts=(k,a)=>a.map(o=>`<span class="chip ${q[k]===o?'sel':''}" onclick="setPre('${k}','${o}')">${o}</span>`).join("");
+  return head("S2","사전 진단","수업 시작 전, 나의 취업 준비 상태를 점검합니다.")+
+  `<label class="q">취업을 희망하나요?</label><div class="chips">${opts('want',['예','아직 고민'])}</div>
+   <label class="q">관심 직무가 있나요?</label><div class="chips">${opts('job',['있다','없다'])}</div>
+   <label class="q">자격증을 보유했나요?</label><div class="chips">${opts('cert',['있다','준비 중','없다'])}</div>
+   <label class="q">이력서·자기소개서 작성 경험</label><div class="chips">${opts('doc',['있다','없다'])}</div>
+   <label class="q">면접 경험</label><div class="chips">${opts('itv',['있다','없다'])}</div>
+   <label class="q">가장 걱정되는 부분 (주관식)</label><textarea oninput="S.pre.worry=this.value" placeholder="예: 면접에서 말하기">${esc(q.worry)}</textarea>
+   <label class="q">이번 프로그램에서 얻고 싶은 것 (주관식)</label><textarea oninput="S.pre.want_get=this.value">${esc(q.want_get)}</textarea>
+   ${q.want?`<div class="msg"><b>현재 나의 취업 준비 상태</b><br>${preSummary()}</div>`:""}
+   ${actbar(`<button class="btn p" onclick="submitPre()">진단 완료 → Ready</button>`)}`;
+}
+function preSummary(){let q=S.pre,lvl="입문";let pts=(q.job==='있다'?1:0)+(q.doc==='있다'?1:0)+(q.itv==='있다'?1:0)+(q.cert==='있다'?1:0);
+  if(pts>=3)lvl="준비";else if(pts>=1)lvl="기초";
+  return `당신은 <b>${lvl} 단계</b>입니다. ${q.job==='있다'?'관심 직무를 더 구체화하고':'관심 직무를 찾고'}, 내 경험을 서류와 면접 답변으로 바꾸는 연습이 필요합니다.`;}
+function setPre(k,v){S.pre[k]=v;save(1);render()}
+function submitPre(){if(!S.pre.want){alert("문항에 응답해 주세요");return}award("pre");go("ready")}
+
+// Ready
+function vReady(){let r=S.ready;
+  let items=[["시간과 약속","약속 시간을 잘 지킨다"],["시간과 약속","해야 할 일을 미루지 않는다"],
+   ["질문과 확인","모르는 것을 질문할 수 있다"],["책임감","맡은 일을 끝까지 해본 경험이 있다"],
+   ["강점 인식","내가 잘하는 것을 1가지 이상 설명할 수 있다"],["취업 목표","관심 직무·분야가 1개 이상 있다"]];
+  let body=items.map((it,i)=>{let v=r.check[i];
+    let sc=["매우","보통","부족"].map(o=>`<span class="${v===o?'on':''}" onclick="S.ready.check[${i}]='${o}';save(1);render()">${o}</span>`).join("");
+    return `<div class="chk"><span style="flex:1"><b style="color:#1f3864">${it[0]}</b> · ${it[1]}</span><span class="scaleopt">${sc}</span></div>`}).join("");
+  let cnt=Object.keys(r.check).length;
+  return head("S3","Ready — 직장인 모드로","‘학생’에서 ‘예비 직장인’으로 태도를 전환합니다.")+
+   `<div class="msg">회사는 완벽한 사람보다 <b>믿고 함께 일할 수 있는 사람</b>을 원합니다.</div>
+    <div class="lbl">직장인 모드 체크리스트 (${cnt}/6)</div>${body}
+    <div class="lbl">직장인 모드 선언문</div>
+    <label class="q">바꾸고 싶은 습관 1가지</label><input type="text" value="${esc(r.decl.habit)}" oninput="S.ready.decl.habit=this.value">
+    <label class="q">그 이유</label><input type="text" value="${esc(r.decl.why)}" oninput="S.ready.decl.why=this.value">
+    <label class="q">이번 주 실천할 행동</label><input type="text" value="${esc(r.decl.act)}" oninput="S.ready.decl.act=this.value">
+    ${actbar(`<button class="btn g" onclick="submitReady()">제출 → 뱃지</button>`)}`;
+}
+function submitReady(){let r=S.ready;if(Object.keys(r.check).length<6||!r.decl.habit){alert("체크리스트 6개와 선언문(습관)을 완성하세요");return}save(1);popBadge("ready")}
+
+// Explore
+function vExplore(){let e=S.explore;
+  let f=(k,l,ph)=>`<label class="q">${l}</label><input type="text" value="${esc(e.posting[k])}" oninput="S.explore.posting.${k}=this.value" placeholder="${ph||''}">`;
+  let risks=["담당업무가 구체적인가","근무시간이 명확한가","급여(기준)가 안내되었는가","회사 정보가 확인되는가","‘초보가능·고수익’만 과도하게 강조하지 않는가"];
+  let rb=risks.map((t,i)=>`<div class="chk"><label style="flex:1"><input type="checkbox" ${e.risk[i]?'checked':''} onchange="S.explore.risk[${i}]=this.checked;save(1)"> ${t}</label></div>`).join("");
+  let rows=(e.ready3||[["","",""]]).map((r,i)=>`<tr>
+    <td><input value="${esc(r[0])}" oninput="S.explore.ready3[${i}][0]=this.value"></td>
+    <td><input value="${esc(r[1])}" oninput="S.explore.ready3[${i}][1]=this.value"></td>
+    <td><input value="${esc(r[2])}" oninput="S.explore.ready3[${i}][2]=this.value"></td></tr>`).join("");
+  return head("S4","Explore — 채용공고 읽기","공고를 분석해 ‘내가 준비할 것’을 찾습니다.")+
+   `<div class="msg">채용공고는 <b>회사가 원하는 사람과 내가 준비할 것</b>을 알려주는 힌트지입니다.</div>
+    <div class="lbl">채용공고 분석표</div>
+    <div class="row">${f('co','회사명')}${f('job','모집 직무')}</div>
+    ${f('duty','담당업무')}${f('req','자격요건')}${f('pref','우대사항')}
+    <div class="row">${f('cond','근무조건')}${f('q','면접 예상 질문 1개')}</div>
+    <div class="lbl">좋은 공고 / 위험 신호 체크</div>${rb}
+    <div class="lbl">나의 준비도 <button class="btn" style="padding:3px 9px;font-size:11px" onclick="S.explore.ready3.push(['','','']);save(1);render()">+행</button></div>
+    <table><tr><th>공고가 요구하는 것</th><th>내가 가진 것</th><th>더 준비할 것</th></tr>${rows}</table>
+    ${actbar(`<button class="btn g" onclick="submitExplore()">제출 → 뱃지</button>`)}`;
+}
+function submitExplore(){let e=S.explore;let r3=(e.ready3||[]).some(r=>r[2]&&r[2].trim());
+  if(!e.posting.co||!e.posting.duty||!r3){alert("회사명·담당업무와 ‘더 준비할 것’ 1개 이상을 작성하세요");return}save(1);popBadge("explore")}
+
+// Match (real engine)
+let matchView="crit";
+function vMatch(){
+  if(matchView==="crit")return mCrit();
+  if(matchView==="explore")return mExplore();
+  if(matchView==="table")return mTable();
+  return mEval();
+}
+function mTab(){return `<div class="chips" style="margin:6px 0 12px">
+  ${[["crit","① 기준"],["explore","② 직업 탐색"],["table","③ 매칭표"],["eval","④ TOP3 평가"]].map(([k,t])=>`<span class="chip ${matchView===k?'sel':''}" onclick="matchView='${k}';render()">${t}</span>`).join("")}</div>`}
+function mCrit(){let c=S.match.crit||[];
+  let chips=TAGS.map(t=>`<span class="chip ${c.includes(t)?'sel':''}" onclick="toggleCrit('${t}')">${t}</span>`).join("");
+  return head("S5","Match — 나에게 맞는 직무 찾기","신규 직업 DB(80직종)에서 나와 맞는 직무를 찾습니다.")+mTab()+
+   `<div class="lbl">중요하게 보는 기준 (최대 3개 선택) — ${c.length}/3</div><div class="chips">${chips}</div>
+    <div class="hint">선택한 기준이 직업 DB의 ‘적합 태그’와 매칭되어 추천 점수를 만듭니다.</div>
+    ${actbar(`<button class="btn p" onclick="if((S.match.crit||[]).length){matchView='explore';render()}else alert('기준을 1개 이상 고르세요')">직업 탐색 →</button>`)}`;
+}
+function toggleCrit(t){let c=S.match.crit;let i=c.indexOf(t);if(i>=0)c.splice(i,1);else{if(c.length>=3){alert("최대 3개");return}c.push(t)}save(1);render()}
+function mExplore(){
+  let ranked=scoreJobs();let saved=S.match.saved||[];
+  let filt=document.getElementById; // noop
+  let list=ranked.slice(0,12).map(({j,s})=>{
+    let on=saved.find(x=>x.id===j.id);
+    return `<div class="jobcard"><span class="score">적합 ${s}</span><h4>${j.name}</h4>
+      <div class="meta">${j.cat} · 연봉 ${j.salr}만원 · 전망 ${j.out}</div>
+      <div class="meta">${j["def"]}</div>
+      <div class="meta">필요역량: ${j.skills.join(", ")} / 자격증: ${j.certs.join(", ")}</div>
+      <div>${j.tags.map(t=>`<span class="tagm">${t}</span>`).join("")}</div>
+      <div style="margin-top:8px"><button class="btn ${on?'':'p'}" onclick="saveJob('${j.id}')">${on?'저장됨 ✓ (해제)':'관심 직무 저장'}</button></div></div>`}).join("");
+  return head("S5","Match — 직업 탐색","기준에 맞춰 추천된 직업입니다. 관심 직무를 최대 3개 저장하세요.")+mTab()+
+   `<div class="lbl">추천 직업 (저장 ${saved.length}/3) · 선택 기준: ${(S.match.crit||[]).join(", ")||"-"}</div>${list}
+    ${actbar(`<button class="btn p" onclick="if((S.match.saved||[]).length){matchView='table';render()}else alert('관심 직무를 1개 이상 저장하세요')">매칭표 →</button>`)}`;
+}
+function saveJob(id){let s=S.match.saved;let i=s.findIndex(x=>x.id===id);
+  if(i>=0)s.splice(i,1);else{if(s.length>=3){alert("최대 3개");return}let j=JOBS.find(x=>x.id===id);s.push({id:j.id,name:j.name})}save(1);render()}
+function mTable(){let saved=S.match.saved||[];if(!saved.length)return head("S5","Match — 매칭표","")+mTab()+"<p>먼저 관심 직무를 저장하세요.</p>";
+  let job=JOBS.find(x=>x.id===saved[0].id);let m=S.match;m.table=m.table||{};
+  let rows=job.skills.map((sk,i)=>`<tr><td>${sk}</td>
+    <td><input value="${esc((m.table[i]||{}).exp)}" oninput="setTbl(${i},'exp',this.value)" placeholder="연결되는 내 경험"></td>
+    <td><input value="${esc((m.table[i]||{}).ev)}" oninput="setTbl(${i},'ev',this.value)" placeholder="근거"></td></tr>`).join("");
+  return head("S5","Match — 내 직무 매칭표",`1순위 후보 «${job.name}»에 필요한 역량과 내 경험을 연결하세요.`)+mTab()+
+   `<table><tr><th>직무에 필요한 역량</th><th>내가 가진 경험</th><th>근거</th></tr>${rows}</table>
+    ${actbar(`<button class="btn p" onclick="matchView='eval';render()">TOP3 평가 →</button>`)}`;
+}
+function setTbl(i,k,v){S.match.table=S.match.table||{};S.match.table[i]=S.match.table[i]||{};S.match.table[i][k]=v;save(1)}
+function mEval(){let saved=S.match.saved||[];if(!saved.length)return head("S5","Match — TOP3 평가","")+mTab()+"<p>먼저 관심 직무를 저장하세요.</p>";
+  let ax=["관심도","전공연결","보유역량","준비가능성","근무환경"];let ev=S.match.eval;
+  let rows=saved.map(s=>{let tot=ax.reduce((a,x)=>a+(+((ev[s.id]||{})[x])||0),0);
+    let cells=ax.map(x=>`<td><input style="width:46px" value="${(ev[s.id]||{})[x]||''}" oninput="setEval('${s.id}','${x}',this.value)" placeholder="1-5"></td>`).join("");
+    return `<tr><td><b>${s.name}</b></td>${cells}<td><b>${tot}</b></td></tr>`}).join("");
+  let best=saved.map(s=>({n:s.name,t:ax.reduce((a,x)=>a+(+((ev[s.id]||{})[x])||0),0)})).sort((a,b)=>b.t-a.t)[0];
+  return head("S5","Match — 직무 TOP3 평가표","5개 기준으로 점수를 매겨 1순위를 정합니다.")+mTab()+
+   `<table><tr><th>직무</th>${ax.map(x=>`<th>${x}</th>`).join("")}<th>합계</th></tr>${rows}</table>
+    ${best&&best.t?`<div class="msg">현재 1순위 제안: <b>${best.n}</b> (${best.t}점). 아래에 선택 이유를 적으세요.</div>`:""}
+    <label class="q">1순위 직무와 선택 이유</label><textarea oninput="S.match.reason=this.value">${esc(S.match.reason)}</textarea>
+    ${actbar(`<button class="btn g" onclick="submitMatch()">제출 → 뱃지</button>`)}`;
+}
+function setEval(id,k,v){S.match.eval[id]=S.match.eval[id]||{};S.match.eval[id][k]=v.replace(/[^0-5]/g,'');save(1)}
+function submitMatch(){if((S.match.saved||[]).length<1||!S.match.reason){alert("관심 직무 저장과 1순위 선택 이유를 완성하세요");return}S.match.top1=S.match.saved[0].name;save(1);popBadge("match")}
+
+// Prove
+function vProve(){let p=S.prove;p.exps=p.exps.length?p.exps:[{}];
+  let job=S.match.top1||(S.match.saved[0]||{}).name||"";
+  let cur=p.exps[p.cur||0]||{};p.cur=p.cur||0;
+  let pickers=p.exps.map((e,i)=>`<span class="chip ${i===p.cur?'sel':''}" onclick="S.prove.cur=${i};save(1);render()">경험 ${i+1}</span>`).join("")
+    +`<span class="chip" onclick="S.prove.exps.push({});S.prove.cur=S.prove.exps.length-1;save(1);render()">+추가</span>`;
+  let ef=(k,l)=>`<label class="q">${l}</label><input type="text" value="${esc(cur[k])}" oninput="setExp('${k}',this.value)">`;
+  return head("S6","Prove — 경험을 서류로","경험을 지원 직무와 연결되는 이력서·자소서로 바꿉니다.")+
+   `<div class="msg">서류는 자랑하는 글이 아니라 <b>내가 이 일을 해낼 수 있다는 근거</b>입니다. (지원직무: ${job||"-"})</div>
+    <div class="lbl">경험 인벤토리</div><div class="chips">${pickers}</div>
+    ${ef('name','경험명 (예: 학교 축제 스태프)')}
+    <div class="row">${ef('role','맡은 역할')}${ef('skill','연결 직무역량')}</div>
+    ${ef('action','내가 한 행동')}${ef('result','결과·배운 점')}
+    <div class="ai"><h4>AI 코치 — 정리·피드백 전용 (대필 금지)</h4>
+      <div class="out">${esc(aiResume(cur))}\n\n${esc(aiStar(cur,job))}</div>
+      <div class="out" style="margin-top:8px">과장 점검: ${esc(aiPuffCheck((cur.action||"")+(cur.result||"")))}</div>
+      <div class="caution">⚠ AI 문장은 참고용입니다. 실제 경험과 다르거나 면접에서 설명할 수 없는 내용은 쓰지 마세요. 아래에 ‘내 말로’ 고쳐 쓰세요.</div></div>
+    <div class="lbl">이력서 핵심 (내 말로)</div>
+    <div class="row"><input placeholder="희망 직무" value="${esc(p.resume.job)}" oninput="S.prove.resume.job=this.value">
+      <input placeholder="보유 자격증" value="${esc(p.resume.cert)}" oninput="S.prove.resume.cert=this.value"></div>
+    <textarea placeholder="경력·활동 / 강점 키워드" oninput="S.prove.resume.body=this.value">${esc(p.resume.body)}</textarea>
+    <div class="lbl">자기소개서 (지원동기 등 1문항, 내 말로)</div>
+    <textarea placeholder="STAR 구조로 작성" oninput="S.prove.cover.text=this.value">${esc(p.cover.text)}</textarea>
+    ${actbar(`<button class="btn g" onclick="submitProve()">제출 → 뱃지</button>`)}`;
+}
+function setExp(k,v){let p=S.prove;p.exps[p.cur][k]=v;save(1)}
+function submitProve(){let p=S.prove;let okExp=p.exps.filter(e=>e.name&&e.action).length>=1;
+  if(!okExp||!p.resume.body||!p.cover.text){alert("경험 1개(이름·행동)와 이력서 본문·자소서를 작성하세요");return}save(1);popBadge("prove")}
+
+// Practice
+function vPractice(){let pr=S.practice;let job=S.match.top1||"";let exp=(S.prove.exps[0]||{}).name||"";
+  let it=(S.practice.intro=S.practice.intro||{});
+  return head("S7","Practice — 면접 답변과 태도","자소서 경험을 면접 답변으로 바꾸고 태도를 연습합니다.")+
+   `<div class="ai"><h4>AI 코치 — 예상 질문 생성</h4><div class="out">${esc(aiQuestions(job,exp))}</div>
+     <div class="caution">⚠ 생성된 질문은 참고용. 답변은 본인의 실제 경험으로 준비하세요.</div></div>
+    <div class="lbl">30초 자기소개</div>
+    <textarea placeholder="안녕하세요. ___ 직무에 지원한 ___입니다. 저는 ___을 강점으로..." oninput="S.practice.intro.text=this.value">${esc(it.text)}</textarea>
+    <div class="lbl">STAR 답변 (1개 이상)</div>
+    <textarea placeholder="질문 / S·T·A·R / 직무연결 / 최종답변" oninput="S.practice.star.text=this.value">${esc((S.practice.star||{}).text)}</textarea>
+    <div class="lbl">면접 태도 체크</div>
+    ${["가볍게 인사했다","시선을 피하지 않았다","말끝을 흐리지 않았다","모르는 질문에 솔직히 답했다","감사 인사를 했다"].map((t,i)=>`<div class="chk"><label style="flex:1"><input type="checkbox" ${(S.practice.att||{})[i]?'checked':''} onchange="S.practice.att[${i}]=this.checked;save(1)"> ${t}</label></div>`).join("")}
+    ${actbar(`<button class="btn g" onclick="submitPractice()">제출 → 뱃지</button>`)}`;
+}
+function submitPractice(){let p=S.practice;if(!(p.intro||{}).text||!(p.star||{}).text){alert("30초 자기소개와 STAR 답변을 작성하세요");return}save(1);popBadge("practice")}
+
+// Launch
+function vLaunch(){let l=S.launch;
+  let mocks=[["○○물류 사무보조","경영·사무·금융"],["△△디자인 운영보조","디자인·콘텐츠"],["□□테크 생산직","기계·금속"]];
+  let cards=mocks.map(([n,c])=>`<div class="jobcard"><h4>${n} <span class="meta">${c}</span></h4>
+     <button class="btn ${l.sel===n?'':'p'}" onclick="S.launch.sel='${n}';save(1);render()">${l.sel===n?'선택됨 ✓':'이 공고로 지원'}</button></div>`).join("");
+  return head("S8","Launch — 모의채용 데이","준비한 자료로 실제처럼 지원하고 회고합니다.")+
+   `<div class="lbl">모의 채용공고 선택</div>${cards}
+    <div class="lbl">지원서 최종 점검</div>
+    <div class="row"><input placeholder="지원 직무" value="${esc((l.apply||{}).job)}" oninput="S.launch.apply.job=this.value">
+      <input placeholder="지원 이유" value="${esc((l.apply||{}).why)}" oninput="S.launch.apply.why=this.value"></div>
+    <div class="lbl">최종 회고 리포트</div>
+    <label class="q">면접에서 잘한 점 / 보완할 점</label><textarea oninput="S.launch.retro.fb=this.value">${esc((l.retro||{}).fb)}</textarea>
+    <label class="q">가장 먼저 실천할 행동 1가지</label><input type="text" value="${esc((l.retro||{}).next)}" oninput="S.launch.retro.next=this.value">
+    ${actbar(`<button class="btn g" onclick="submitLaunch()">제출 → 뱃지</button>`)}`;
+}
+function submitLaunch(){let l=S.launch;if(!l.sel||!(l.retro||{}).next){alert("모의공고 선택과 회고(실천 행동)를 완성하세요");return}save(1);popBadge("launch")}
+
+// badge popup
+function popBadge(step){award(step);let v=document.getElementById("view");let b=BADGE[step];
+  v.innerHTML=`<div class="badgepop"><div class="seal">${b[0]}<br>Badge</div><h2 style="color:#1f3864">${b[0]} Badge</h2>
+   <p style="color:#6b7682">${b[1]}</p>
+   <div class="acts" style="justify-content:center;border:none"><button class="btn p" onclick="nextStep('${step}')">다음 단계 →</button></div></div>`;nav();}
+function nextStep(step){let i=STEPS.findIndex(s=>s[0]===step);go(STEPS[Math.min(i+1,STEPS.length-1)][0])}
+
+// done
+function vDone(){let n=S.done.filter(d=>d!=='done').length;let all=n>=7;
+  let badges=Object.keys(BADGE).map(k=>`<span class="chip ${S.badges[k]?'sel':''}">${BADGE[k][0]}${S.badges[k]?' ✓':''}</span>`).join("");
+  let pre=S.pre,lvl=pre.want?preSummary():"-";
+  return head("S9","사후 설문 / 수료","성장을 확인하고 수료합니다.")+
+   `<div class="kpi"><div class="k"><b>${n}/6</b><small>완료 미션</small></div>
+     <div class="k"><b>${(S.match.saved||[]).length}</b><small>탐색 직무</small></div>
+     <div class="k"><b>${S.match.top1||'-'}</b><small>1순위 직무</small></div></div>
+    <div class="lbl">획득 뱃지</div><div class="chips">${badges}</div>
+    ${all?`<div class="cert"><div class="gold">CAREER READY BADGE</div><h2>학생에서 현장 인재로 성장 완료</h2>
+      <p style="color:#5a636e;font-size:13px;max-width:460px;margin:6px auto;line-height:1.7">축하합니다! Ready부터 Launch까지 모든 미션을 완료했습니다. 이제 경험을 직무와 연결하고 서류·면접에서 설명할 수 있는 첫 출근 준비자입니다.</p></div>
+      <div class="acts"><span class="sp"></span><button class="btn" onclick="window.print()">수료증 인쇄</button></div>`
+     :`<div class="msg">아직 완료하지 않은 미션이 있습니다. 좌측에서 이어서 진행하세요. (완료 ${n}/6)</div>`}
+    <div class="lbl" style="margin-top:14px">최종 리포트 요약</div>
+    <div class="jobcard"><div class="meta">진단: ${lvl}</div>
+      <div class="meta">1순위 직무: ${S.match.top1||'-'} / 선택 이유: ${esc(S.match.reason)||'-'}</div>
+      <div class="meta">다음 실천: ${esc((S.launch.retro||{}).next)||'-'}</div></div>`;
+}
+function exportData(){let blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
+  let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="career_progress.json";a.click()}
+function resetAll(){if(confirm("모든 진행을 초기화할까요?")){S=fresh();save(1);go("pre")}}
+render();
+</script></body></html>
