@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>터치밀 — Phase 1 화면 프로토타입 (영양사 + 어드민)</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+/* ============================================================
+   터치밀 Phase 1 — 디자인 시스템 v0.2 (기획서 §1, §8.5)
+   ============================================================ */
+:root{
+  /* 컬러 토큰 */
+  --primary-700:#15803D; --primary-600:#16A34A; --primary-50:#F0FDF4;
+  --gray-900:#111827; --gray-700:#374151; --gray-500:#6B7280;
+  --gray-200:#E5E7EB; --gray-100:#F3F4F6; --gray-50:#F9FAFB;
+  --warning:#F59E0B; --warning-50:#FFFBEB;
+  --danger:#DC2626; --danger-50:#FEF2F2;
+  --info:#3B82F6; --info-50:#EFF6FF;
+  --white:#FFFFFF;
+  /* 간격 스케일 4·8·12·16·24·32·48·64 */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s6:24px; --s8:32px; --s12:48px; --s16:64px;
+  --radius:10px; --radius-sm:6px; --radius-lg:14px;
+  --shadow-sm:0 1px 2px rgba(16,24,40,.06);
+  --shadow-md:0 4px 12px rgba(16,24,40,.10);
+  --shadow-lg:0 12px 32px rgba(16,24,40,.16);
+  --font:'Pretendard Variable',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font);color:var(--gray-700);background:var(--gray-50);
+  font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input,select{font-family:inherit;font-size:14px}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--gray-200);border-radius:6px;border:2px solid var(--gray-50)}
+
+/* 타이포 */
+h1{font-size:24px;font-weight:700;color:var(--gray-900);letter-spacing:-.01em}
+h2{font-size:18px;font-weight:600;color:var(--gray-900)}
+h3{font-size:16px;font-weight:600;color:var(--gray-900)}
+.caption{font-size:12px;color:var(--gray-500)}
+.kpi-num{font-size:28px;font-weight:700;color:var(--gray-900);letter-spacing:-.02em}
+
+/* ===== 공통 컴포넌트 ===== */
+.btn{display:inline-flex;align-items:center;gap:6px;font-weight:600;border-radius:var(--radius-sm);
+  transition:all .12s;white-space:nowrap;border:1px solid transparent}
+.btn-sm{padding:6px 10px;font-size:13px}
+.btn-md{padding:9px 16px;font-size:14px}
+.btn-lg{padding:12px 22px;font-size:15px}
+.btn-primary{background:var(--primary-600);color:#fff}
+.btn-primary:hover{background:var(--primary-700)}
+.btn-secondary{background:#fff;color:var(--gray-700);border-color:var(--gray-200)}
+.btn-secondary:hover{border-color:var(--gray-500);background:var(--gray-50)}
+.btn-ghost{background:transparent;color:var(--gray-700)}
+.btn-ghost:hover{background:var(--gray-100)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;
+  padding:2px 8px;border-radius:999px;line-height:1.6}
+.tag-cat{background:var(--gray-100);color:var(--gray-700)}
+.tag-allergy{background:var(--danger-50);color:var(--danger)}
+.tag-status-ok{background:var(--primary-50);color:var(--primary-700)}
+.tag-status-warn{background:var(--warning-50);color:#B45309}
+.tag-status-info{background:var(--info-50);color:var(--info)}
+.tag-status-danger{background:var(--danger-50);color:var(--danger)}
+
+.card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+.card-pad{padding:var(--s6)}
+.card-click{cursor:pointer;transition:all .12s}
+.card-click:hover{box-shadow:var(--shadow-md);border-color:var(--gray-200)}
+.card-click:active{border-color:var(--primary-600)}
+
+.input,select.input{width:100%;padding:9px 12px;border:1px solid var(--gray-200);
+  border-radius:var(--radius-sm);background:#fff;color:var(--gray-900);transition:border .12s}
+.input:focus{outline:none;border-color:var(--primary-600);box-shadow:0 0 0 3px var(--primary-50)}
+.field-label{display:block;font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:6px}
+
+table.dt{width:100%;border-collapse:collapse;font-size:14px}
+table.dt thead th{position:sticky;top:0;background:var(--gray-50);z-index:2;
+  text-align:left;font-size:12px;font-weight:600;color:var(--gray-500);
+  padding:10px 14px;border-bottom:1px solid var(--gray-200);white-space:nowrap}
+table.dt tbody td{padding:11px 14px;border-bottom:1px solid var(--gray-100);color:var(--gray-700)}
+table.dt tbody tr{transition:background .1s}
+table.dt tbody tr:hover{background:var(--gray-50)}
+table.dt .num{font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
+.row-click{cursor:pointer}
+
+kbd{font-family:var(--font);font-size:11px;font-weight:600;color:var(--gray-700);
+  background:var(--gray-100);border:1px solid var(--gray-200);border-bottom-width:2px;
+  border-radius:4px;padding:1px 6px}
+
+/* 애니메이션 토큰 §8.5 */
+@keyframes pulseOnce{0%{background:var(--primary-50);box-shadow:0 0 0 0 rgba(22,163,74,.4)}
+  100%{background:transparent;box-shadow:0 0 0 8px rgba(22,163,74,0)}}
+.pulse-once{animation:pulseOnce .6s ease-out}
+@keyframes fillAnim{0%{transform:scale(.92);opacity:0}100%{transform:scale(1);opacity:1}}
+.fill-anim{animation:fillAnim .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin .8s linear infinite}
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+.skeleton{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-200) 37%,var(--gray-100) 63%);
+  background-size:800px 100%;animation:shimmer 1.4s infinite;border-radius:6px}
+
+.diff-add{background:var(--primary-50);border-left:3px solid var(--primary-600)}
+.diff-del{background:var(--danger-50);border-left:3px solid var(--danger);text-decoration:line-through;color:var(--gray-500)}
+.diff-mod{background:var(--warning-50);border-left:3px solid var(--warning)}
+
+/* ===== 앱 셸 ===== */
+#app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:16px;height:56px;padding:0 20px;
+  background:#fff;border-bottom:1px solid var(--gray-200);flex-shrink:0;z-index:50}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;color:var(--gray-900)}
+.brand .logo{width:28px;height:28px;border-radius:8px;background:var(--primary-600);
+  display:grid;place-items:center;color:#fff;font-size:15px}
+.mode-switch{display:flex;background:var(--gray-100);border-radius:999px;padding:3px}
+.mode-switch button{padding:6px 16px;border-radius:999px;font-size:13px;font-weight:600;color:var(--gray-500)}
+.mode-switch button.active{background:#fff;color:var(--primary-700);box-shadow:var(--shadow-sm)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--primary-50);color:var(--primary-700);
+  display:grid;place-items:center;font-weight:700;font-size:13px;border:1px solid var(--gray-200)}
+
+.body{display:flex;flex:1;overflow:hidden}
+/* 영양사 좌측 네비 */
+.sidenav{width:212px;background:#fff;border-right:1px solid var(--gray-200);
+  padding:16px 12px;flex-shrink:0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);
+  font-weight:600;font-size:14px;color:var(--gray-700);cursor:pointer;margin-bottom:2px;min-height:44px}
+.nav-item .ic{width:20px;text-align:center;font-size:16px}
+.nav-item:hover{background:var(--gray-50)}
+.nav-item.active{background:var(--primary-50);color:var(--primary-700)}
+.nav-section{font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;
+  letter-spacing:.04em;padding:14px 12px 6px}
+/* 어드민 상단 가로 네비 */
+.adminnav{display:flex;gap:4px;padding:0 20px;background:#fff;border-bottom:1px solid var(--gray-200);flex-shrink:0}
+.adminnav button{padding:14px 16px;font-weight:600;font-size:14px;color:var(--gray-500);
+  border-bottom:2px solid transparent;margin-bottom:-1px}
+.adminnav button.active{color:var(--primary-700);border-bottom-color:var(--primary-600)}
+.adminnav button:hover{color:var(--gray-900)}
+
+.main{flex:1;overflow-y:auto;padding:24px 28px}
+.page{max-width:1180px;margin:0 auto}
+.page-head{display:flex;align-items:flex-start;gap:16px;margin-bottom:20px}
+.page-head .sub{color:var(--gray-500);font-size:14px;margin-top:4px}
+.page-head .actions{margin-left:auto;display:flex;gap:8px;flex-shrink:0}
+
+.grid{display:grid;gap:16px}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g5{grid-template-columns:repeat(5,1fr)}
+.g2-3{grid-template-columns:1.6fr 1fr}
+@media(max-width:1080px){.g4,.g5{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:1fr}}
+
+/* 배너 */
+.banner{display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:var(--radius);
+  margin-bottom:20px;cursor:pointer}
+.banner .ic{font-size:20px}
+.banner-warn{background:linear-gradient(90deg,#FFFBEB,#FEF3C7);border:1px solid #FDE68A;color:#92400E}
+.banner-danger{background:linear-gradient(90deg,#FEF2F2,#FEE2E2);border:1px solid #FECACA;color:#991B1B}
+.banner-info{background:var(--info-50);border:1px solid #BFDBFE;color:#1E40AF}
+
+/* KPI 카드 */
+.kpi{padding:18px 20px}
+.kpi .lbl{font-size:13px;color:var(--gray-500);font-weight:600;display:flex;align-items:center;gap:6px}
+.kpi .val{margin-top:8px;display:flex;align-items:baseline;gap:8px}
+.kpi .delta{font-size:12px;font-weight:600}
+.delta-up{color:var(--primary-600)} .delta-down{color:var(--danger)}
+.kpi .target{font-size:11px;color:var(--gray-500);margin-top:6px}
+
+/* 식단표 그리드 */
+.menu-wrap{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden}
+.menu-toolbar{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--gray-200)}
+.weeknav{display:flex;align-items:center;gap:6px;font-weight:600;font-size:15px;color:var(--gray-900)}
+.weeknav button{width:32px;height:32px;border-radius:var(--radius-sm);color:var(--gray-700)}
+.weeknav button:hover{background:var(--gray-100)}
+.menu-grid{display:grid;grid-template-columns:64px repeat(7,1fr);font-size:13px}
+.menu-grid .gh{background:var(--gray-50);font-weight:600;color:var(--gray-700);padding:8px 6px;
+  text-align:center;border-bottom:1px solid var(--gray-200);border-right:1px solid var(--gray-100);
+  position:sticky;top:0}
+.menu-grid .gh .d{font-size:11px;color:var(--gray-500);font-weight:500}
+.menu-grid .rowlbl{background:var(--gray-50);font-weight:600;color:var(--gray-700);
+  display:grid;place-items:center;border-right:1px solid var(--gray-200);border-bottom:1px solid var(--gray-100);font-size:12px}
+.mcell{border-right:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100);
+  padding:5px;min-height:64px;display:flex;flex-direction:column;gap:4px}
+.weekend{background:#FCFCFD}
+.mcard{background:#fff;border:1px solid var(--gray-200);border-radius:6px;padding:6px 8px;
+  font-size:12px;line-height:1.45;cursor:pointer;transition:all .1s;position:relative}
+.mcard:hover{border-color:var(--primary-600);box-shadow:var(--shadow-sm)}
+.mcard .meta{display:flex;align-items:center;gap:4px;margin-top:3px;color:var(--gray-500);font-size:11px}
+.mcard .warn-dot{position:absolute;top:5px;right:5px;color:var(--danger);font-size:11px}
+.cell-empty{border:1.5px dashed var(--gray-200);border-radius:6px;flex:1;min-height:54px;
+  display:grid;place-items:center;color:var(--gray-500);font-size:12px;cursor:pointer;transition:all .1s}
+.cell-empty:hover{border-color:var(--primary-600);background:var(--primary-50);color:var(--primary-700)}
+.kcal-row .rowlbl{background:#F0FDF4;color:var(--primary-700)}
+.kcal-cell{text-align:center;padding:8px 4px;font-weight:600;color:var(--gray-700);
+  background:#F0FDF4;border-right:1px solid var(--gray-100);font-variant-numeric:tabular-nums}
+
+/* 드로어 */
+.scrim{position:fixed;inset:0;background:rgba(17,24,39,.32);backdrop-filter:blur(1px);
+  opacity:0;pointer-events:none;transition:opacity .2s;z-index:60}
+.scrim.show{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:480px;max-width:92vw;background:#fff;
+  box-shadow:var(--shadow-lg);transform:translateX(100%);transition:transform .26s cubic-bezier(.2,.8,.2,1);
+  z-index:70;display:flex;flex-direction:column}
+.drawer.show{transform:translateX(0)}
+.drawer-head{padding:18px 20px;border-bottom:1px solid var(--gray-200)}
+.drawer-head .close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:var(--radius-sm);
+  color:var(--gray-500);font-size:18px}
+.drawer-head .close:hover{background:var(--gray-100)}
+.drawer-body{flex:1;overflow-y:auto;padding:18px 20px}
+.drawer-foot{padding:14px 20px;border-top:1px solid var(--gray-200);display:flex;gap:8px;justify-content:flex-end}
+
+/* 모달 */
+.modal-scrim{position:fixed;inset:0;background:rgba(17,24,39,.4);display:grid;place-items:center;
+  opacity:0;pointer-events:none;transition:opacity .18s;z-index:80;padding:20px}
+.modal-scrim.show{opacity:1;pointer-events:auto}
+.modal{background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:520px;max-width:100%;
+  transform:scale(.96);transition:transform .18s}
+.modal-scrim.show .modal{transform:scale(1)}
+.modal-head{padding:18px 22px;border-bottom:1px solid var(--gray-200)}
+.modal-body{padding:20px 22px;max-height:60vh;overflow-y:auto}
+.modal-foot{padding:14px 22px;border-top:1px solid var(--gray-200);display:flex;gap:8px;justify-content:flex-end}
+
+/* AI 오버레이 */
+.ai-overlay{position:fixed;inset:0;background:rgba(17,24,39,.55);backdrop-filter:blur(4px);
+  display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .2s;z-index:90}
+.ai-overlay.show{opacity:1;pointer-events:auto}
+.ai-box{background:#fff;border-radius:var(--radius-lg);padding:34px 40px;text-align:center;width:380px;box-shadow:var(--shadow-lg)}
+.ai-ring{width:48px;height:48px;border:4px solid var(--primary-50);border-top-color:var(--primary-600);
+  border-radius:50%;margin:0 auto 18px}
+.ai-step{font-size:15px;font-weight:600;color:var(--gray-900);min-height:22px}
+.ai-prog{height:6px;background:var(--gray-100);border-radius:3px;margin-top:18px;overflow:hidden}
+.ai-prog>i{display:block;height:100%;background:var(--primary-600);width:0;transition:width .4s}
+
+/* 토스트 §공통: 하단 우측 */
+#toasts{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:10px;z-index:120}
+.toast{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--radius);
+  box-shadow:var(--shadow-lg);font-size:14px;font-weight:500;min-width:240px;
+  transform:translateY(20px);opacity:0;transition:all .25s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-success{background:var(--primary-700);color:#fff}
+.toast-info{background:var(--gray-900);color:#fff}
+.toast-warn{background:var(--warning);color:#fff}
+
+/* 차트 */
+.spark{display:inline-flex;align-items:flex-end;gap:2px;height:24px}
+.spark i{width:4px;background:var(--primary-600);border-radius:1px;opacity:.5}
+.spark i:last-child{opacity:1}
+.linechart{width:100%;height:200px}
+.barwk{display:flex;align-items:flex-end;gap:3px;height:34px}
+.barwk i{flex:1;background:var(--primary-600);border-radius:2px;min-height:3px}
+.barwk i.empty{background:var(--gray-200)}
+
+.timeline{list-style:none}
+.timeline li{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--gray-100)}
+.timeline li:last-child{border:none}
+.tl-dot{width:9px;height:9px;border-radius:50%;margin-top:6px;flex-shrink:0;background:var(--primary-600)}
+.tl-dot.info{background:var(--info)} .tl-dot.warn{background:var(--warning)}
+
+.issue-list{list-style:none}
+.issue-list li{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--gray-100);cursor:pointer}
+.issue-list li:hover{background:var(--gray-50);margin:0 -12px;padding:12px 12px;border-radius:8px}
+.issue-list li:last-child{border:none}
+
+.help-line{font-size:12px;color:var(--gray-500)}
+.divider{height:1px;background:var(--gray-200);margin:18px 0}
+.flex{display:flex} .between{justify-content:space-between} .center{align-items:center}
+.mt2{margin-top:8px}.mt3{margin-top:12px}.mt4{margin-top:16px}.mb2{margin-bottom:8px}.mb4{margin-bottom:16px}
+.muted{color:var(--gray-500)} .strong{font-weight:600;color:var(--gray-900)}
+.hide{display:none!important}
+.saved-chip{font-size:12px;color:var(--gray-500);display:flex;align-items:center;gap:6px}
+.dot-live{width:7px;height:7px;border-radius:50%;background:var(--primary-600)}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <div class="brand"><span class="logo">🍱</span> 터치밀 <span class="caption" style="font-weight:500;color:var(--gray-500)">Phase 1</span></div>
+    <div class="mode-switch">
+      <button id="m-nutri" class="active" onclick="setMode('nutri')">영양사</button>
+      <button id="m-admin" onclick="setMode('admin')">어드민</button>
+    </div>
+    <div class="topbar-right">
+      <span class="caption" id="ctx-label">사랑가득요양원 · 입소자 86명</span>
+      <span class="avatar" id="avatar">황</span>
+    </div>
+  </div>
+
+  <!-- 어드민 가로 네비 -->
+  <div class="adminnav hide" id="adminnav">
+    <button data-screen="A-02" class="active" onclick="go('A-02')">전체 현황</button>
+    <button data-screen="A-08" onclick="go('A-08')">AI 평가·품질</button>
+  </div>
+
+  <div class="body">
+    <!-- 영양사 좌측 네비 -->
+    <nav class="sidenav" id="sidenav">
+      <div class="nav-section">작업</div>
+      <div class="nav-item active" data-screen="N-02" onclick="go('N-02')"><span class="ic">🏠</span> 대시보드</div>
+      <div class="nav-item" data-screen="N-03" onclick="go('N-03')"><span class="ic">📅</span> 주간 식단표</div>
+      <div class="nav-item" data-screen="N-05" onclick="go('N-05')"><span class="ic">🧾</span> 발주서</div>
+      <div class="nav-section">관리</div>
+      <div class="nav-item" onclick="toast('인원 관리는 다음 화면입니다 (N-07)','info')"><span class="ic">👥</span> 인원 관리</div>
+      <div class="nav-item" onclick="toast('설정은 다음 화면입니다 (N-09)','info')"><span class="ic">⚙️</span> 설정</div>
+    </nav>
+
+    <main class="main" id="main"></main>
+  </div>
+</div>
+
+<!-- 드로어 / 모달 / 오버레이 / 토스트 마운트 -->
+<div class="scrim" id="scrim" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer"></div>
+<div class="modal-scrim" id="modalScrim" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
+<div class="ai-overlay" id="aiOverlay"><div class="ai-box">
+  <div class="ai-ring spin"></div>
+  <div class="ai-step" id="aiStep">제철 식재료 분석 중…</div>
+  <div class="ai-prog"><i id="aiProg"></i></div>
+</div></div>
+<div id="toasts"></div>
+
+<script>
+/* ============================================================
+   상태 & 데이터
+   ============================================================ */
+const DAYS=['일','월','화','수','목','금','토'];
+const DATES=['2/1','2/2','2/3','2/4','2/5','2/6','2/7'];
+const MEALS=['조식','오전간식','중식','오후간식','석식'];
+let MODE='nutri', SCREEN='N-02';
+
+// 메뉴 데이터 (식단표) — null = 빈 칸
+function seedMenu(){
+  const g={};
+  MEALS.forEach(m=>g[m]=Array(7).fill(null));
+  const set=(meal,day,name,items,kcal,allergy)=>g[meal][day]={name,items,kcal,allergy:allergy||[]};
+  // 일부만 채워서 빈 칸 인터랙션 시연
+  set('조식',0,'쌀밥·미역국·계란말이',8,560,['난류']);
+  set('조식',1,'잡곡밥·북엇국·두부조림',7,540);
+  set('조식',2,'쌀밥·시금치된장국·고등어구이',9,610,['고등어']);
+  set('중식',0,'쌀밥·소고기무국·제육볶음·김치',12,720,['돼지고기']);
+  set('중식',1,'쌀밥·근대된장국·닭갈비·나물',11,690);
+  set('중식',2,'카레라이스·미소국·단무지',8,650);
+  set('석식',0,'쌀밥·콩나물국·갈치조림',9,640);
+  set('석식',1,'쌀밥·시래기국·돈사태장조림',10,660,['돼지고기']);
+  set('오후간식',0,'단호박죽',2,180);
+  set('오전간식',1,'요거트·바나나',2,150,['우유']);
+  return g;
+}
+let MENU=seedMenu();
+
+// 조리계획서 (드로어) 식자재 모델
+function recipeFor(name){
+  const base={
+    '쌀밥·소고기무국·제육볶음·김치':[
+      {item:'백미',g:90,unit:'kg',supplier:'한솔푸드'},
+      {item:'소고기 양지',g:35,unit:'kg',supplier:'대성축산'},
+      {item:'무',g:60,unit:'kg',supplier:'green마트'},
+      {item:'돈사태',g:80,unit:'kg',supplier:'대성축산'},
+      {item:'고추장',g:12,unit:'kg',supplier:'한솔푸드'},
+      {item:'배추김치',g:40,unit:'kg',supplier:'발효명가'},
+    ],
+  };
+  return (base[name]||[
+    {item:'백미',g:90,unit:'kg',supplier:'한솔푸드'},
+    {item:'두부',g:50,unit:'kg',supplier:'green마트'},
+    {item:'대파',g:8,unit:'kg',supplier:'green마트'},
+  ]).map(x=>({...x}));
+}
+
+const PEOPLE=86; // 인원 (총량 계산 기준)
+
+/* ============================================================
+   라우팅 / 모드
+   ============================================================ */
+function setMode(m){
+  MODE=m;
+  document.getElementById('m-nutri').classList.toggle('active',m==='nutri');
+  document.getElementById('m-admin').classList.toggle('active',m==='admin');
+  document.getElementById('sidenav').classList.toggle('hide',m==='admin');
+  document.getElementById('adminnav').classList.toggle('hide',m==='nutri');
+  document.getElementById('avatar').textContent=m==='nutri'?'황':'M';
+  document.getElementById('ctx-label').textContent=m==='nutri'
+    ?'사랑가득요양원 · 입소자 86명':'메이저맵 · Super Admin';
+  go(m==='nutri'?'N-02':'A-02');
+}
+function go(s){
+  SCREEN=s; closeDrawer(); closeModal();
+  document.querySelectorAll('.nav-item,[data-screen]').forEach(el=>{
+    if(el.dataset.screen) el.classList.toggle('active',el.dataset.screen===s);
+  });
+  const r=({'N-02':renderDashboard,'N-03':renderMenuPlan,'N-05':renderOrder,
+            'A-02':renderAdminDash,'A-08':renderAIQuality})[s];
+  document.getElementById('main').scrollTop=0;
+  document.getElementById('main').innerHTML=r();
+  if(s==='A-02') setTimeout(drawAdminCharts,30);
+  if(s==='A-08') setTimeout(drawAICharts,30);
+}
+
+/* ============================================================
+   N-02 대시보드
+   ============================================================ */
+function renderDashboard(){
+  const calDays=DAYS.map((d,i)=>{
+    const filled=MEALS.filter(m=>MENU[m][i]).length;
+    const pct=Math.round(filled/5*100);
+    const col=pct===100?'var(--primary-600)':pct>0?'var(--warning)':'var(--gray-200)';
+    return `<div style="text-align:center"><div class="caption">${d}</div>
+      <div style="width:34px;height:34px;border-radius:8px;margin:4px auto 0;display:grid;place-items:center;
+      background:${pct>0?'var(--primary-50)':'var(--gray-50)'};border:1px solid var(--gray-200);
+      color:${col};font-weight:700;font-size:12px">${pct}</div></div>`;
+  }).join('');
+  const totalMenu=MEALS.reduce((a,m)=>a+MENU[m].filter(Boolean).length,0);
+  return `<div class="page">
+    <div class="page-head"><div><h1>안녕하세요, 황지현 영양사님 👋</h1>
+      <div class="sub">2월 1주차 (2/1–2/7) · 오늘 해야 할 일을 모았어요</div></div></div>
+
+    <div class="banner banner-warn" onclick="go('N-05')">
+      <span class="ic">⏰</span>
+      <div><strong>다음 발주 마감 D-2</strong> — 2/3(화) 입고분 발주서가 아직 초안 상태예요. 지금 검토하세요.</div>
+      <span class="btn btn-secondary btn-sm" style="margin-left:auto">발주서 열기 →</span>
+    </div>
+
+    <div class="grid g3 mb4">
+      ${kpiCard('이번 주 식단표','📋',`${totalMenu}<span class="muted" style="font-size:18px"> / 35칸</span>`,
+        `완성율 ${Math.round(totalMenu/35*100)}%`,'채워야 할 칸 '+(35-totalMenu)+'개')}
+      ${kpiCard('일평균 칼로리','🔥','1,965<span class="muted" style="font-size:16px"> kcal</span>',
+        '권장 1,900–2,000','적정 범위','up')}
+      ${kpiCard('다음 발주 마감','📦','D-2',null,'2/3(화) 입고분','down')}
+    </div>
+
+    <div class="grid g2-3">
+      <div>
+        <div class="card card-pad mb4">
+          <h3 class="mb4">바로 시작하기</h3>
+          <div class="flex" style="gap:10px;flex-wrap:wrap">
+            <button class="btn btn-primary btn-md" onclick="go('N-03')">📅 이번 주 이어서 작성</button>
+            <button class="btn btn-secondary btn-md" onclick="copyLastWeek()">📑 지난주 복사</button>
+            <button class="btn btn-secondary btn-md" onclick="go('N-03');setTimeout(aiAutoFill,300)">✨ AI 자동 추천 시작</button>
+          </div>
+        </div>
+        <div class="card card-pad">
+          <div class="flex between center mb4"><h3>이번 주 입력 현황</h3>
+            <span class="caption">7일 × 5식사</span></div>
+          <div class="flex between" style="padding:0 6px">${calDays}</div>
+        </div>
+      </div>
+      <div>
+        <div class="card card-pad mb4">
+          <h3 class="mb4">AI 제안</h3>
+          ${aiSuggest('🥬 시금치 단가 18% 하락','이번 주 나물 메뉴에 활용하면 재료비 절감','수락')}
+          ${aiSuggest('🐟 고등어 알레르기 누락 감지','2/3 조식 조리계획서에 태그 추가 권장','확인')}
+        </div>
+        <div class="card card-pad">
+          <h3 class="mb4">최근 이력</h3>
+          <ul class="timeline">
+            <li><span class="tl-dot"></span><div><div class="strong">제육볶음 1인량 80g→85g 수정</div><div class="caption">방금 전</div></div></li>
+            <li><span class="tl-dot info"></span><div><div class="strong">2/2 발주서 계산 완료</div><div class="caption">1시간 전</div></div></li>
+            <li><span class="tl-dot warn"></span><div><div class="strong">2/1 조리계획서 인쇄</div><div class="caption">어제 16:20</div></div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function kpiCard(lbl,ic,val,delta,target,dir){
+  return `<div class="card kpi">
+    <div class="lbl">${ic} ${lbl}</div>
+    <div class="val"><span class="kpi-num">${val}</span>
+      ${delta?`<span class="delta ${dir==='down'?'delta-down':'delta-up'}">${delta}</span>`:''}</div>
+    <div class="target">${target}</div></div>`;
+}
+function aiSuggest(title,desc,action){
+  return `<div class="card card-pad mb2" style="background:var(--primary-50);border-color:#BBF7D0;padding:12px 14px">
+    <div class="strong" style="font-size:13px">${title}</div>
+    <div class="caption mt2">${desc}</div>
+    <button class="btn btn-primary btn-sm mt3" onclick="toast('적용되었습니다','success')">${action}</button></div>`;
+}
+function copyLastWeek(){
+  openModal('지난주 식단 복사',`<p>2월 1주차의 빈 칸 <strong>21개</strong>에 지난주(1월 5주차) 메뉴를 복사합니다.</p>
+    <div class="card card-pad mt4" style="background:var(--info-50);border-color:#BFDBFE">
+    <div class="strong" style="font-size:13px;color:#1E40AF">💡 단가 변동 자동 반영</div>
+    <div class="caption mt2">복사 시 최신 식자재 단가가 발주서에 자동 적용됩니다.</div></div>`,
+    [{label:'취소',cls:'btn-secondary',fn:closeModal},
+     {label:'복사하기',cls:'btn-primary',fn:()=>{closeModal();go('N-03');setTimeout(()=>fillAllEmpty(true),300);}}]);
+}
+
+/* ============================================================
+   N-03 주간 식단표 + N-04 조리계획서 드로어
+   ============================================================ */
+function renderMenuPlan(){
+  return `<div class="page">
+    <div class="page-head"><div><h1>주간 식단표</h1>
+      <div class="sub">메뉴를 클릭하면 조리계획서가 열려요 · 빈 칸을 클릭하면 AI가 추천해요</div></div>
+      <div class="actions"><span class="saved-chip"><span class="dot-live"></span> 저장됨 · 방금 전</span></div>
+    </div>
+    <div class="menu-wrap">
+      <div class="menu-toolbar">
+        <div class="weeknav"><button onclick="toast('이전 주','info')">◀</button>
+          2월 1주차 <span class="caption" style="font-weight:500">(2/1–2/7)</span>
+          <button onclick="toast('다음 주','info')">▶</button></div>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn btn-secondary btn-sm" onclick="aiAutoFill()">✨ AI 자동</button>
+          <button class="btn btn-secondary btn-sm" onclick="copyLastWeek()">지난주 복사</button>
+          <button class="btn btn-secondary btn-sm" onclick="toast('조리장용 인쇄 미리보기 (N-08)','info')">🖨 인쇄</button>
+          <button class="btn btn-primary btn-sm" onclick="toast('저장되었습니다','success')">저장</button>
+        </div>
+      </div>
+      <div id="grid">${menuGridHTML()}</div>
+    </div>
+    <div class="help-line mt3">단축키 <kbd>ESC</kbd> 닫기 · <kbd>⌘S</kbd> 저장</div>
+  </div>`;
+}
+function menuGridHTML(){
+  let h=`<div class="menu-grid">`;
+  h+=`<div class="gh">　</div>`;
+  DAYS.forEach((d,i)=>h+=`<div class="gh ${i===0||i===6?'weekend':''}">${d}<div class="d">${DATES[i]}</div></div>`);
+  MEALS.forEach(meal=>{
+    h+=`<div class="rowlbl">${meal.replace('간식','간')}</div>`;
+    for(let i=0;i<7;i++){
+      const m=MENU[meal][i];
+      const we=(i===0||i===6)?'weekend':'';
+      if(m){
+        const warn=m.allergy.length?`<span class="warn-dot" title="알레르기 ${m.allergy.join(',')}">⚠</span>`:'';
+        h+=`<div class="mcell ${we}"><div class="mcard" onclick="openRecipe('${meal}',${i})">${warn}
+          ${m.name}<div class="meta">🥗 식자재 ${m.items} · ${m.kcal}kcal</div></div></div>`;
+      }else{
+        h+=`<div class="mcell ${we}"><div class="cell-empty" onclick="openAiPick('${meal}',${i})">＋ 추천 받기</div></div>`;
+      }
+    }
+  });
+  // 칼로리 행
+  h+=`<div class="rowlbl" style="background:#F0FDF4;color:var(--primary-700)">총kcal</div>`;
+  for(let i=0;i<7;i++){
+    const sum=MEALS.reduce((a,m)=>a+(MENU[m][i]?.kcal||0),0);
+    h+=`<div class="kcal-cell">${sum||'—'}</div>`;
+  }
+  h+=`</div>`;
+  return h;
+}
+function refreshGrid(){const g=document.getElementById('grid'); if(g)g.innerHTML=menuGridHTML();}
+
+// N-04 조리계획서 드로어
+let DRAWER_CTX=null;
+function openRecipe(meal,day){
+  const m=MENU[meal][day];
+  DRAWER_CTX={meal,day,rows:recipeFor(m.name)};
+  const d=document.getElementById('drawer');
+  d.innerHTML=`
+    <div class="drawer-head" style="position:relative">
+      <button class="close" onclick="closeDrawer()">✕</button>
+      <div class="caption">${DATES[day]} (${DAYS[day]}) · ${meal} · ${PEOPLE}명</div>
+      <h2 class="mt2">${m.name}</h2>
+      <div class="flex mt3" style="gap:6px;flex-wrap:wrap">${m.allergy.map(a=>`<span class="tag tag-allergy">⚠ ${a}</span>`).join('')||'<span class="tag tag-status-ok">알레르기 없음</span>'}</div>
+    </div>
+    <div class="drawer-body">
+      <div class="banner banner-info" style="margin-bottom:14px;cursor:default">
+        <span class="ic">🤖</span><div style="font-size:13px">AI가 식자재·1인량을 초안했어요. <strong>1인량(g)</strong>을 수정하면 총량·발주량이 즉시 재계산됩니다.</div></div>
+      <label class="field-label">식자재 추가</label>
+      <input class="input mb4" placeholder="식자재 마스터 자동완성 · 예: 돈사태, 시금치…"
+        onkeydown="if(event.key==='Enter')addRow(this)">
+      <div style="border:1px solid var(--gray-200);border-radius:8px;overflow:hidden">
+      <table class="dt"><thead><tr>
+        <th>품명</th><th style="text-align:right">1인량(g)</th><th style="text-align:right">총량</th>
+        <th style="text-align:right">발주량</th><th></th></tr></thead>
+        <tbody id="recRows"></tbody></table>
+      </div>
+      <div class="card card-pad mt4" style="background:var(--gray-50)">
+        <div class="flex between"><span class="muted">총 칼로리</span><span class="strong">720 kcal</span></div>
+        <div class="flex between mt2"><span class="muted">단백질</span><span class="strong">31 g</span></div>
+        <div class="flex between mt2"><span class="muted">예상 재료비 (86인분)</span><span class="strong" id="costOut">₩—</span></div>
+      </div>
+    </div>
+    <div class="drawer-foot">
+      <button class="btn btn-ghost btn-md" onclick="confirmRegen()">↻ AI 재생성</button>
+      <button class="btn btn-secondary btn-md" onclick="toast('메뉴 마스터 검수 대기열에 등록되었습니다','success')">레시피로 저장</button>
+      <button class="btn btn-primary btn-md" onclick="toast('저장되었습니다','success');closeDrawer()">저장 · 닫기</button>
+    </div>`;
+  renderRecRows();
+  document.getElementById('scrim').classList.add('show');
+  d.classList.add('show');
+}
+function renderRecRows(){
+  const tb=document.getElementById('recRows'); if(!tb)return;
+  tb.innerHTML=DRAWER_CTX.rows.map((r,idx)=>{
+    const total=(r.g*PEOPLE/1000).toFixed(1);
+    const order=Math.ceil(r.g*PEOPLE/1000*10)/10;
+    return `<tr>
+      <td>${r.item}</td>
+      <td class="num"><input value="${r.g}" data-idx="${idx}" oninput="onGram(this)"
+        style="width:54px;text-align:right;padding:4px 6px;border:1px solid var(--gray-200);border-radius:5px"></td>
+      <td class="num">${total} kg</td>
+      <td class="num" id="ord-${idx}">${order} ${r.unit}</td>
+      <td style="text-align:right"><button class="btn btn-ghost btn-sm" onclick="delRow(${idx})" title="삭제">🗑</button></td>
+    </tr>`;
+  }).join('');
+  recalcCost();
+}
+function onGram(inp){
+  const idx=+inp.dataset.idx; const v=Math.max(0,+inp.value||0);
+  DRAWER_CTX.rows[idx].g=v;
+  const r=DRAWER_CTX.rows[idx];
+  const total=(v*PEOPLE/1000).toFixed(1);
+  const order=Math.ceil(v*PEOPLE/1000*10)/10;
+  const cell=inp.closest('tr').children[2]; cell.textContent=total+' kg';
+  const oc=document.getElementById('ord-'+idx);
+  oc.textContent=order+' '+r.unit;
+  oc.classList.remove('pulse-once'); void oc.offsetWidth; oc.classList.add('pulse-once');
+  recalcCost();
+}
+function recalcCost(){
+  // 단가 가정(원/kg)으로 예상 재료비 계산
+  const price={'백미':2800,'소고기 양지':18000,'무':1200,'돈사태':9500,'고추장':6000,'배추김치':4000,'두부':3500,'대파':3000};
+  const total=DRAWER_CTX.rows.reduce((a,r)=>a+(price[r.item]||4000)*(r.g*PEOPLE/1000),0);
+  const el=document.getElementById('costOut'); if(el)el.textContent='₩'+Math.round(total).toLocaleString();
+}
+function addRow(inp){
+  const name=inp.value.trim(); if(!name)return;
+  DRAWER_CTX.rows.push({item:name,g:30,unit:'kg',supplier:'미지정'});
+  inp.value=''; renderRecRows();
+  const tb=document.getElementById('recRows'); tb.lastElementChild.classList.add('fill-anim');
+  toast(`'${name}' 추가됨 · 매칭 실패 시 식자재 마스터 제안`,'info');
+}
+function delRow(idx){DRAWER_CTX.rows.splice(idx,1);renderRecRows();toast('삭제됨 · 5초 내 실행취소 가능','info');}
+function confirmRegen(){
+  openModal('AI 재생성','수정한 내용이 사라지고 AI가 처음부터 다시 초안합니다. 계속할까요?',
+    [{label:'취소',cls:'btn-secondary',fn:closeModal},
+     {label:'재생성',cls:'btn-primary',fn:()=>{closeModal();renderRecRows();toast('AI가 재생성했습니다','success')}}]);
+}
+
+// 빈 칸 AI 추천 모달
+let PICK_CTX=null;
+function openAiPick(meal,day){
+  PICK_CTX={meal,day};
+  const recs=[
+    {n:'쌀밥·아욱된장국·돼지불고기·도라지생채',k:710,c:1820,leftover:'4%'},
+    {n:'잡곡밥·달래된장국·삼치구이·시금치나물',k:660,c:1640,leftover:'6%'},
+    {n:'쌀밥·우거지국·닭조림·콩나물무침',k:680,c:1510,leftover:'5%'},
+  ];
+  openModal(`${DATES[day]} ${meal} · AI 추천`,
+    `<div class="caption mb4">제철·잔반률·식재료비를 고려한 3개 제안입니다.</div>`+
+    recs.map((r,i)=>`<div class="card card-click card-pad mb2" onclick="pickMenu(${i})" style="padding:14px">
+      <div class="strong" style="font-size:14px">${r.n}</div>
+      <div class="flex mt3" style="gap:14px"><span class="caption">🔥 ${r.k}kcal</span>
+        <span class="caption">💰 1인 ₩${r.c}</span>
+        <span class="tag tag-status-ok">잔반률 ${r.leftover}</span></div></div>`).join(''),
+    [{label:'메뉴 직접 찾기',cls:'btn-secondary',fn:()=>{closeModal();toast('메뉴 검색 (메뉴 마스터)','info')}}]);
+  window.__recs=recs;
+}
+function pickMenu(i){
+  const r=window.__recs[i];
+  MENU[PICK_CTX.meal][PICK_CTX.day]={name:r.n,items:r.n.split('·').length,kcal:r.k,allergy:[]};
+  closeModal(); refreshGrid();
+  // 새 셀 fill-anim
+  toast('메뉴가 추가되었습니다','success');
+}
+
+// AI 자동 추천 (전체 빈 칸)
+function aiAutoFill(){fillAllEmpty(false);}
+function fillAllEmpty(copyMode){
+  const steps=copyMode
+    ?['지난주 메뉴 불러오는 중…','단가 변동 반영 중…','발주량 재계산 중…','완료']
+    :['제철 식재료 분석 중…','과거 선호 학습 중…','중복·알레르기 회피 중…','완료'];
+  const ov=document.getElementById('aiOverlay'), st=document.getElementById('aiStep'), pr=document.getElementById('aiProg');
+  ov.classList.add('show'); let i=0; pr.style.width='0';
+  const samples=[
+    {n:'쌀밥·아욱된장국·돼지불고기·도라지생채',k:710},
+    {n:'잡곡밥·달래된장국·삼치구이·시금치나물',k:660},
+    {n:'쌀밥·우거지국·닭조림·콩나물무침',k:680},
+    {n:'현미밥·유부장국·코다리조림·취나물',k:640},
+    {n:'쌀밥·근대국·소불고기·가지볶음',k:700},
+    {n:'쌀밥·미역국·계란찜·연근조림',k:620,a:['난류']},
+  ];
+  const timer=setInterval(()=>{
+    st.textContent=steps[i]; pr.style.width=((i+1)/steps.length*100)+'%'; i++;
+    if(i>=steps.length){
+      clearInterval(timer);
+      setTimeout(()=>{
+        let s=0;
+        MEALS.forEach(meal=>{for(let d=0;d<7;d++){if(!MENU[meal][d]){
+          const x=samples[(s++)%samples.length];
+          MENU[meal][d]={name:x.n,items:x.n.split('·').length,kcal:x.k,allergy:x.a||[]};
+        }}});
+        ov.classList.remove('show');
+        if(SCREEN!=='N-03'){go('N-03');}else{refreshGrid();}
+        toast(copyMode?'지난주 메뉴를 복사했습니다':'AI가 빈 칸을 모두 채웠습니다','success');
+      },350);
+    }
+  },650);
+}
+
+/* ============================================================
+   N-05 발주서
+   ============================================================ */
+function renderOrder(){
+  const rows=[
+    {cat:'육류',name:'돈사태',use:'제육볶음',qty:'6.9',unit:'kg',in:'2/3',sup:'대성축산',trend:[5,6,5,7]},
+    {cat:'육류',name:'소고기 양지',use:'소고기무국',qty:'3.0',unit:'kg',in:'2/3',sup:'대성축산',trend:[4,5,6,6]},
+    {cat:'채소',name:'무',use:'소고기무국·깍두기',qty:'5.2',unit:'kg',in:'2/2',sup:'green마트',trend:[3,3,2,4]},
+    {cat:'채소',name:'시금치',use:'시금치나물',qty:'2.1',unit:'kg',in:'2/2',sup:'green마트',trend:[6,5,4,3]},
+    {cat:'수산',name:'고등어',use:'고등어구이',qty:'86',unit:'마리',in:'2/3',sup:'동해수산',trend:[5,6,7,6]},
+    {cat:'공산품',name:'백미',use:'전 끼니',use2:true,qty:'24',unit:'kg',in:'2/1',sup:'한솔푸드',trend:[5,5,5,5]},
+    {cat:'양념',name:'고추장',use:'제육볶음·고추장찌개',qty:'2.1',unit:'kg',in:'2/1',sup:'한솔푸드',trend:[4,4,4,4]},
+  ];
+  const body=rows.map(r=>`<tr>
+    <td><span class="tag tag-cat">${r.cat}</span></td>
+    <td class="strong">${r.name}</td>
+    <td><a style="color:var(--info);text-decoration:none">${r.use}</a></td>
+    <td class="num"><input value="${r.qty}" style="width:56px;text-align:right;padding:4px 6px;border:1px solid var(--gray-200);border-radius:5px"
+       oninput="this.nextSibling&&0"> ${r.unit}</td>
+    <td>${r.in}</td>
+    <td><select class="input" style="padding:5px 8px;width:120px">
+      <option>${r.sup}</option><option>한솔푸드</option><option>green마트</option></select></td>
+    <td>${spark(r.trend)}</td>
+  </tr>`).join('');
+  return `<div class="page">
+    <div class="page-head"><div><h1>발주서</h1>
+      <div class="sub">메뉴에서 식자재를 합산해 공급사별로 그룹화했어요</div></div>
+      <div class="actions">
+        <button class="btn btn-secondary btn-md" onclick="openExport()">⬇ Export</button>
+        <button class="btn btn-primary btn-md" onclick="openSend()">발송</button></div>
+    </div>
+
+    <div class="banner banner-warn" style="cursor:default">
+      <span class="ic">🧊</span><div><strong>냉동고 사용량 경고</strong> — 이번 발주 반영 시 냉동 저장공간 <strong>95%</strong> 예상. 입고일 분산을 권장합니다.</div>
+    </div>
+
+    <div class="flex mb4" style="gap:10px;flex-wrap:wrap">
+      <select class="input" style="width:auto"><option>기간: 이번주</option><option>다음주</option><option>날짜 지정</option></select>
+      <select class="input" style="width:auto"><option>그룹: 공급사별</option><option>카테고리별</option><option>입고일별</option></select>
+      <select class="input" style="width:auto"><option>상태: 초안</option><option>계산 완료</option><option>발송</option></select>
+    </div>
+
+    <div class="card" style="overflow:hidden">
+      <table class="dt"><thead><tr>
+        <th>카테고리</th><th>품명</th><th>용도</th><th style="text-align:right">예상 수량</th>
+        <th>입고일</th><th>공급사</th><th>단가 이력(4주)</th></tr></thead>
+        <tbody>${body}</tbody></table>
+    </div>
+    <div class="help-line mt3">수량을 수정하면 자동 보정 항목으로 표시됩니다 · 공급사 변경 시 단가 자동 조회</div>
+  </div>`;
+}
+function spark(arr){
+  const max=Math.max(...arr);
+  return `<span class="spark">${arr.map(v=>`<i style="height:${v/max*24}px"></i>`).join('')}</span>`;
+}
+function openExport(){
+  openModal('발주서 Export','',[
+    {label:'취소',cls:'btn-secondary',fn:closeModal},
+    {label:'전송',cls:'btn-primary',fn:()=>{closeModal();toast('공급사별로 전송되었습니다','success')}}],
+    `<label class="field-label">공급사 선택</label>
+     <div class="flex mb4" style="gap:8px;flex-wrap:wrap">
+       <label class="tag tag-status-ok" style="cursor:pointer">✓ 대성축산</label>
+       <label class="tag tag-status-ok" style="cursor:pointer">✓ green마트</label>
+       <label class="tag tag-cat" style="cursor:pointer">동해수산</label>
+       <label class="tag tag-cat" style="cursor:pointer">한솔푸드</label></div>
+     <label class="field-label">포맷</label>
+     <div class="flex mb4" style="gap:8px">
+       <button class="btn btn-secondary btn-sm">Excel</button>
+       <button class="btn btn-secondary btn-sm">CSV</button>
+       <button class="btn btn-primary btn-sm">이메일</button></div>
+     <label class="field-label">컬럼 매핑 미리보기 <span class="caption">(대성축산 포맷)</span></label>
+     <div style="border:1px solid var(--gray-200);border-radius:8px;overflow:hidden">
+     <table class="dt"><thead><tr><th>표준 컬럼</th><th>→ 공급사 필드</th></tr></thead><tbody>
+       <tr><td>품명</td><td class="muted">item_nm</td></tr>
+       <tr><td>수량</td><td class="muted">order_qty</td></tr>
+       <tr><td>단위</td><td class="muted">unit_cd</td></tr></tbody></table></div>
+     <div class="caption mt3">💡 한 번 수정한 매핑은 다음 발주부터 자동 기억됩니다.</div>`);
+}
+function openSend(){
+  openModal('발주서 발송','공급사 4곳에 발주서를 이메일/API로 전송합니다. 전송 후에는 수정할 수 없습니다.',
+    [{label:'취소',cls:'btn-secondary',fn:closeModal},
+     {label:'발송 확정',cls:'btn-primary',fn:()=>{closeModal();toast('4개 공급사에 발송 완료','success')}}]);
+}
+
+/* ============================================================
+   A-02 전체 현황 대시보드
+   ============================================================ */
+function renderAdminDash(){
+  const kpis=[
+    {l:'활성 요양원',v:'5',t:'목표 5 (파일럿)',ok:true,d:'전곳 활성'},
+    {l:'총 메뉴 입력수',v:'1,184',t:'주간 · 목표 ≥1,000',ok:true,d:'+12%'},
+    {l:'AI 그대로 사용율',v:'73%',t:'목표 ≥70%',ok:true,d:'+3%p'},
+    {l:'메뉴당 LLM 비용',v:'₩42',t:'목표 ≤₩50',ok:true,d:'-5%'},
+    {l:'이탈 위험군',v:'1',t:'목표 ≤1',ok:false,d:'주의'},
+  ];
+  return `<div class="page">
+    <div class="page-head"><div><h1>전체 현황</h1>
+      <div class="sub">2월 1주차 · 파일럿 5개 요양원</div></div>
+      <div class="actions"><span class="caption">업데이트 1분 전</span></div></div>
+
+    <div class="grid g5 mb4">
+      ${kpis.map(k=>`<div class="card kpi">
+        <div class="lbl">${k.l}</div>
+        <div class="val"><span class="kpi-num">${k.v}</span>
+          <span class="delta ${k.ok?'delta-up':'delta-down'}">${k.d}</span></div>
+        <div class="target">${k.ok?'✅':'⚠️'} ${k.t}</div></div>`).join('')}
+    </div>
+
+    <div class="grid g2-3">
+      <div class="card card-pad">
+        <h3 class="mb4">주간 입력률 추이 (4주)</h3>
+        <canvas id="adminLine" class="linechart"></canvas>
+      </div>
+      <div class="card card-pad">
+        <h3 class="mb4">이슈 알림</h3>
+        <ul class="issue-list">
+          <li onclick="toast('영양사 활동 화면으로 이동 (A-04)','info')">
+            <span class="tag tag-status-danger">이탈 위험</span>
+            <div><div class="strong" style="font-size:13px">햇살요양원 · 박○○ 영양사</div>
+              <div class="caption">최근 5일 입력 0건 · 로그인 D-6</div></div></li>
+          <li onclick="go('A-08')">
+            <span class="tag tag-status-warn">AI 점수</span>
+            <div><div class="strong" style="font-size:13px">1인량 MAE 9.2g</div>
+              <div class="caption">목표 8g 초과 · 완제품 메뉴 분해 실패</div></div></li>
+          <li onclick="toast('수정 diff 탐색 (A-05)','info')">
+            <span class="tag tag-status-info">미검수</span>
+            <div><div class="strong" style="font-size:13px">검수 대기 diff 14건</div>
+              <div class="caption">SLA D+3 임박 3건</div></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   A-08 AI 평가·품질
+   ============================================================ */
+function renderAIQuality(){
+  const m=[
+    {l:'식자재 정확도',v:'91.4%',t:'≥90%',ok:true},
+    {l:'1인량 MAE',v:'9.2g',t:'≤8g',ok:false},
+    {l:'그대로 사용율',v:'73%',t:'≥70%',ok:true},
+    {l:'회귀 점수',v:'96.1%',t:'≥95%',ok:true},
+  ];
+  return `<div class="page">
+    <div class="page-head"><div><h1>AI 평가·품질</h1>
+      <div class="sub">조리계획서 자동생성 정확도 · 평가셋 62메뉴</div></div>
+      <div class="actions"><select class="input" style="width:auto"><option>모델: v1.3 (현재)</option><option>v1.2</option></select></div></div>
+
+    <div class="grid g4 mb4">
+      ${m.map(x=>`<div class="card kpi">
+        <div class="lbl">${x.l}</div>
+        <div class="val"><span class="kpi-num">${x.v}</span></div>
+        <div class="target">${x.ok?'✅':'⚠️'} 목표 ${x.t}</div></div>`).join('')}
+    </div>
+
+    <div class="grid g2-3">
+      <div class="card card-pad">
+        <div class="flex between center mb4"><h3>지표 추이 (4주)</h3>
+          <span class="caption">🟡 점선 = v1.3 배포</span></div>
+        <canvas id="aiLine" class="linechart"></canvas>
+      </div>
+      <div class="card card-pad">
+        <h3 class="mb4">약점 Top 3</h3>
+        ${weak('완제품 메뉴 분해 실패','"오므라이스" 등 완제품 명칭을 세부 식자재로 분해 못함','메뉴 18개')}
+        ${weak('국·찌개 국물량 과소추정','국물 비중 메뉴의 1인량 평균 -12g','메뉴 9개')}
+        ${weak('계절 채소 단가 미반영','단가 변동 큰 채소 발주량 오차','메뉴 6개')}
+      </div>
+    </div>
+  </div>`;
+}
+function weak(t,d,cnt){
+  return `<div class="card card-click card-pad mb2" style="padding:13px" onclick="toast('드릴다운: ${cnt} 평가셋','info')">
+    <div class="flex between"><span class="strong" style="font-size:13px">${t}</span><span class="tag tag-status-warn">${cnt}</span></div>
+    <div class="caption mt2">${d}</div></div>`;
+}
+
+/* ====== 차트 (Canvas 라인) ====== */
+function lineChart(id,series,opts){
+  const cv=document.getElementById(id); if(!cv)return;
+  const dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=cv.clientHeight;
+  cv.width=W*dpr; cv.height=H*dpr; const c=cv.getContext('2d'); c.scale(dpr,dpr);
+  c.clearRect(0,0,W,H);
+  const pad={l:34,r:14,t:14,b:24}, iw=W-pad.l-pad.r, ih=H-pad.t-pad.b;
+  const all=series.flatMap(s=>s.data); const min=opts.min??Math.min(...all)*.95, max=opts.max??Math.max(...all)*1.02;
+  const x=i=>pad.l+iw*i/(opts.labels.length-1), y=v=>pad.t+ih*(1-(v-min)/(max-min));
+  // grid
+  c.strokeStyle='#E5E7EB'; c.lineWidth=1; c.font='11px sans-serif'; c.fillStyle='#6B7280';
+  for(let g=0;g<=4;g++){const yy=pad.t+ih*g/4; c.beginPath();c.moveTo(pad.l,yy);c.lineTo(W-pad.r,yy);c.stroke();
+    c.fillText(Math.round(max-(max-min)*g/4),4,yy+3);}
+  opts.labels.forEach((l,i)=>c.fillText(l,x(i)-8,H-6));
+  // deploy marker
+  if(opts.marker!=null){const mx=x(opts.marker);c.strokeStyle='#F59E0B';c.setLineDash([4,4]);
+    c.beginPath();c.moveTo(mx,pad.t);c.lineTo(mx,pad.t+ih);c.stroke();c.setLineDash([]);}
+  series.forEach(s=>{
+    c.strokeStyle=s.color;c.lineWidth=2.5;c.beginPath();
+    s.data.forEach((v,i)=>{i?c.lineTo(x(i),y(v)):c.moveTo(x(i),y(v))});c.stroke();
+    c.fillStyle=s.color;s.data.forEach((v,i)=>{c.beginPath();c.arc(x(i),y(v),3.5,0,7);c.fill();});
+  });
+}
+function drawAdminCharts(){
+  lineChart('adminLine',[{color:'#16A34A',data:[58,64,69,73]}],
+    {labels:['1주','2주','3주','4주'],min:50,max:80});
+}
+function drawAICharts(){
+  lineChart('aiLine',[
+    {color:'#16A34A',data:[86,88,90,91.4]},
+    {color:'#3B82F6',data:[68,70,71,73]},
+  ],{labels:['1주','2주','3주','4주'],min:60,max:95,marker:2});
+}
+
+/* ============================================================
+   드로어 / 모달 / 토스트 공통
+   ============================================================ */
+function closeDrawer(){document.getElementById('drawer').classList.remove('show');
+  document.getElementById('scrim').classList.remove('show');}
+function openModal(title,bodyText,actions,bodyHTML){
+  const m=document.getElementById('modal');
+  m.innerHTML=`<div class="modal-head"><h2>${title}</h2></div>
+    <div class="modal-body">${bodyHTML||('<p>'+bodyText+'</p>')}</div>
+    <div class="modal-foot" id="mfoot"></div>`;
+  const f=m.querySelector('#mfoot');
+  (actions||[{label:'확인',cls:'btn-primary',fn:closeModal}]).forEach(a=>{
+    const b=document.createElement('button');b.className='btn '+a.cls+' btn-md';b.textContent=a.label;
+    b.onclick=a.fn;f.appendChild(b);});
+  document.getElementById('modalScrim').classList.add('show');
+}
+function closeModal(){document.getElementById('modalScrim').classList.remove('show');}
+let toastSeq=0;
+function toast(msg,type){
+  const t=document.createElement('div');t.className='toast toast-'+(type||'info');
+  const ic={success:'✅',info:'ℹ️',warn:'⚠️'}[type||'info'];
+  t.innerHTML=`<span>${ic}</span><span>${msg}</span>`;
+  document.getElementById('toasts').appendChild(t);
+  requestAnimationFrame(()=>t.classList.add('show'));
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300)},3600);
+}
+// 키보드 단축키
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeDrawer();closeModal();}
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='s'){e.preventDefault();toast('저장되었습니다','success');}
+});
+window.addEventListener('resize',()=>{if(SCREEN==='A-02')drawAdminCharts();if(SCREEN==='A-08')drawAICharts();});
+
+// 초기 렌더
+go('N-02');
+</script>
+</body>
+</html>
