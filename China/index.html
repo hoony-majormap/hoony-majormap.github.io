@@ -99,9 +99,16 @@
 
   /* pricing */
   .price{background:linear-gradient(180deg,#fff,var(--bg-soft))}
-  .price-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;max-width:820px;margin:0 auto}
-  .plan{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:30px 26px;box-shadow:var(--shadow);position:relative}
+  .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1020px;margin:0 auto;align-items:start}
+  .plan{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px 24px;box-shadow:var(--shadow);position:relative}
   .plan.best{border:2px solid var(--orange)}
+  .plan.premium{background:linear-gradient(160deg,#143a7b,#1f53ad);border:2px solid var(--amber)}
+  .plan.premium h3,.plan.premium .big{color:#fff}
+  .plan.premium .dur,.plan.premium .per{color:#cdd9ee}
+  .plan.premium .was{color:#9fb6e0}
+  .plan.premium li{color:#eaf1fb}
+  .plan.premium .ribbon{background:var(--amber);color:#143a7b}
+  .plan.premium .early{color:var(--amber)}
   .plan .ribbon{position:absolute;top:-13px;left:26px;background:var(--orange);color:#fff;font-size:12px;font-weight:800;padding:5px 12px;border-radius:999px}
   .plan h3{font-size:20px;font-weight:900}
   .plan .dur{color:var(--muted);font-size:14px;margin-top:2px}
@@ -114,7 +121,7 @@
   .plan li{padding:7px 0 7px 26px;position:relative;font-size:15px;color:#36405a}
   .plan li::before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:900}
   .price-note{text-align:center;color:var(--muted);font-size:13px;margin-top:20px}
-  @media(max-width:680px){.price-grid{grid-template-columns:1fr}}
+  @media(max-width:880px){.price-grid{grid-template-columns:1fr;max-width:480px}}
 
   /* trust */
   .trust{background:var(--blue);color:#fff}
@@ -298,6 +305,19 @@
       <p>포함: 어학수업 · 숙소 · 일부식사 · 전 산업프로그램 · 현지인솔 · 보험 · 수료증 <br>(항공 별도 · 단체발권 지원)</p>
     </div>
     <div class="price-grid">
+      <div class="plan">
+        <h3>1주 미니</h3>
+        <div class="dur">6박 7일</div>
+        <div class="early">1기 얼리버드</div>
+        <div><span class="big">69만원</span><span class="was">89만원</span></div>
+        <div class="per">1인 기준 · 항공 별도</div>
+        <ul>
+          <li>중국어 입문 수업</li>
+          <li>알리바바·라이브커머스 핵심 체험</li>
+          <li>미니 프로젝트 + 수료증</li>
+          <li>숙소·일부식사·보험·현지인솔 포함</li>
+        </ul>
+      </div>
       <div class="plan best">
         <span class="ribbon">BEST · 플래그십</span>
         <h3>2주 캠프</h3>
@@ -312,17 +332,19 @@
           <li>숙소·일부식사·보험·현지인솔 포함</li>
         </ul>
       </div>
-      <div class="plan">
-        <h3>1주 미니</h3>
-        <div class="dur">6박 7일</div>
+      <div class="plan premium">
+        <span class="ribbon">PREMIUM · 커리어 트랙</span>
+        <h3>4주 프리미엄</h3>
+        <div class="dur">27박 28일</div>
         <div class="early">1기 얼리버드</div>
-        <div><span class="big">69만원</span><span class="was">89만원</span></div>
-        <div class="per">1인 기준 · 항공 별도</div>
+        <div><span class="big">319만원</span><span class="was">359만원</span></div>
+        <div class="per">1인 기준 · 항공 별도 · 정원 8명</div>
         <ul>
-          <li>중국어 입문 수업</li>
-          <li>알리바바·라이브커머스 핵심 체험</li>
-          <li>미니 프로젝트 + 수료증</li>
-          <li>숙소·일부식사·보험·현지인솔 포함</li>
+          <li>2주 캠프 전 과정 + 어학 심화반</li>
+          <li>현지 이커머스 기업 인턴십(1~2주)</li>
+          <li>1:1 진로·진학 컨설팅(메이저맵)</li>
+          <li>개인 포트폴리오 코칭 + 1인실</li>
+          <li>수료 후 어학연수·진학 우선 연계</li>
         </ul>
       </div>
     </div>
