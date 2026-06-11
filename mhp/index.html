@@ -134,6 +134,9 @@ section{padding:110px 0}
 .tech-card p{font-size:15px;color:rgba(255,255,255,.62)}
 .tech-deco{position:absolute;left:-40px;bottom:-110px;font-weight:800;font-size:380px;line-height:1;color:rgba(144,198,180,.06);letter-spacing:-0.06em;user-select:none;pointer-events:none}
 .tech-note{margin-top:46px;display:inline-flex;align-items:center;gap:12px;background:rgba(234,86,69,.12);border:1px solid rgba(234,86,69,.3);padding:14px 22px;border-radius:14px;font-size:15px;font-weight:600;position:relative;z-index:2}
+.tech-extra{margin-top:18px;position:relative;z-index:2}
+.tech-cta{display:inline-flex;align-items:center;gap:10px;border:1.5px solid rgba(144,198,180,.45);background:rgba(144,198,180,.08);color:var(--mint);padding:14px 22px;border-radius:14px;font-size:15px;font-weight:700;transition:.2s}
+.tech-cta:hover{background:rgba(144,198,180,.18);border-color:var(--mint);transform:translateY(-1px)}
 
 /* ---------- Global ---------- */
 .global{background:var(--bg)}
@@ -385,6 +388,9 @@ footer{background:var(--navy);color:rgba(255,255,255,.6);padding:64px 0 48px;fon
       </div>
     </div>
     <div class="tech-note reveal" data-i18n="t_note">🏆 영국 이코노미스트(The Economist) 선정 — 아시아 교육혁신 사례 'Technology for Change Asia'</div>
+    <div class="tech-extra reveal">
+      <a class="tech-cta" href="https://miraeai-6zdvptuo.manus.space" target="_blank" rel="noopener" data-i18n="t_link">🕸️ 진로특화 지식그래프 AI 파운데이션 — 기술 소개 자세히 보기 →</a>
+    </div>
   </div>
 </section>
 
@@ -495,7 +501,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.6);padding:64px 0 48px;fon
     <p class="reveal" data-i18n="c_sub">학교·기관 도입, 데이터 협력, 글로벌 파트너십, 투자 문의 —
 어떤 이야기든 환영합니다.</p>
     <div class="cta-actions reveal">
-      <a class="btn btn-white btn-lg" href="mailto:contact@themajormap.com" data-i18n="c_btn1">이메일 문의하기</a>
+      <a class="btn btn-white btn-lg" href="mailto:hello@majormap.net" data-i18n="c_btn1">이메일 문의하기</a>
       <a class="btn btn-lg" style="border:2px solid rgba(255,255,255,.7);color:#fff" href="https://plus.majormap.net" target="_blank" rel="noopener" data-i18n="c_btn2">학교·기관 도입 안내</a>
     </div>
   </div>
@@ -531,7 +537,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.6);padding:64px 0 48px;fon
     </div>
     <div class="foot-bottom">
       <span>© 2026 MajorMap Inc. All rights reserved.</span>
-      <span>contact@themajormap.com</span>
+      <span>hello@majormap.net</span>
     </div>
   </div>
 </footer>
@@ -737,6 +743,7 @@ ko: {
   t2h:'AI 추천 엔진', t2p:'진로 특화 언어모델과 그래프 추론을 결합해, 검사 결과·관심사·성적 맥락에 맞는 학과와 경로를 추천합니다.',
   t3h:'살아있는 데이터', t3p:'56만 사용자, 500만 건의 탐색 데이터가 그래프를 계속 학습시킵니다. 쓰일수록 정확해지는 진로의 지도입니다.',
   t_note:"🏆 영국 이코노미스트(The Economist) 선정 — 아시아 교육혁신 사례 'Technology for Change Asia'",
+  t_link:'🕸️ 진로특화 지식그래프 AI 파운데이션 — 기술 소개 자세히 보기 →',
   g_title:'진로의 지도를,<br>세계의 언어로 그립니다',
   g_sub:'미국 대학생 3명 중 1명은 전공을 바꾸고, 인도네시아 대학생 87%는 전공 선택을 후회합니다. 한국에서 검증한 메이저맵의 기술이 각 나라의 입시·진로 시스템에 맞게 현지화되어 있습니다.',
   g1p:'전공은 4년, 10만 달러짜리 의사결정. AI Major-Fit 매칭과 실제 커리어 결과 데이터로 미국 고교생과 카운슬러를 돕습니다.',
@@ -803,6 +810,7 @@ en: {
   t2h:'AI Recommendation Engine', t2p:'A career-specialized language model combined with graph reasoning recommends majors and paths that fit each student’s assessment results, interests, and academic context.',
   t3h:'Living Data', t3p:'560K users and 5 million searches keep training the graph — a career map that gets more accurate the more it is used.',
   t_note:'🏆 Featured by The Economist — ‘Technology for Change Asia’ education innovation case',
+  t_link:'🕸️ Career-Specialized Knowledge Graph AI Foundation — explore the technology →',
   g_title:'Drawing the career map<br>in the world’s languages',
   g_sub:'One in three US college students changes majors, and 87% of Indonesian students regret their choice. MajorMap’s Korea-proven technology is localized for each country’s admissions and career systems.',
   g1p:'Your major is a 4-year, $100K decision. AI major-fit matching and real career outcome data for US students and counselors.',
@@ -869,6 +877,7 @@ zh: {
   t2h:'AI推荐引擎', t2p:'结合生涯专用语言模型与图谱推理，根据测评结果、兴趣与成绩情境，推荐适合的专业与路径。',
   t3h:'持续生长的数据', t3p:'56万用户、500万次探索数据不断训练图谱。这张生涯地图，越被使用越精准。',
   t_note:'🏆 英国《经济学人》评选——"Technology for Change Asia"亚洲教育创新案例',
+  t_link:'🕸️ 生涯专用知识图谱AI基座——深入了解技术 →',
   g_title:'用世界的语言，<br>绘制生涯的地图',
   g_sub:'美国大学生每3人中就有1人更换专业，印尼87%的大学生后悔自己的专业选择。MajorMap在韩国验证的技术，已针对各国的升学与生涯体系完成本地化。',
   g1p:'专业是一项为期4年、价值10万美元的决定。以AI专业匹配与真实职业结果数据，服务美国高中生与升学顾问。',
@@ -935,6 +944,7 @@ id: {
   t2h:'Mesin Rekomendasi AI', t2p:'Memadukan model bahasa khusus karier dengan penalaran graf untuk merekomendasikan jurusan dan jalur sesuai hasil tes, minat, dan konteks akademik siswa.',
   t3h:'Data yang Hidup', t3p:'560 ribu pengguna dan 5 juta data pencarian terus melatih graf ini. Peta karier yang semakin dipakai semakin akurat.',
   t_note:"🏆 Dipilih The Economist — kasus inovasi pendidikan 'Technology for Change Asia'",
+  t_link:'🕸️ AI Foundation Knowledge Graph Khusus Karier — pelajari teknologinya →',
   g_title:'Menggambar peta karier<br>dalam bahasa dunia',
   g_sub:'Satu dari tiga mahasiswa AS pindah jurusan, dan 87% mahasiswa Indonesia menyesali pilihan jurusannya. Teknologi MajorMap yang teruji di Korea dilokalkan sesuai sistem penerimaan dan karier tiap negara.',
   g1p:'Jurusan adalah keputusan 4 tahun senilai $100 ribu. Pencocokan jurusan AI dan data hasil karier nyata untuk siswa serta konselor AS.',
