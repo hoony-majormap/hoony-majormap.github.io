@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>메이저맵 주식회사 — 데이터로 잇는 진로의 지도</title>
+<meta name="description" content="메이저맵은 지식그래프 기반 진로 설계 기술 기업입니다. 대한민국 고등학생 6명 중 1명이 사용하는 진로·진학 플랫폼을 만들고, 미국·중국·인도네시아로 확장하고 있습니다.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css">
+<style>
+:root{
+  --red:#EA5645;       /* PANTONE 2034C — MAJOR MAP RED */
+  --red-deep:#D44A3A;
+  --red-soft:#F0837A;
+  --red-tint:#FDEEEC;
+  --navy:#202B45;      /* PANTONE 648C — MAJOR MAP NAVY */
+  --navy-soft:#3A4666;
+  --navy-faint:#2A3654;
+  --mint:#90C6B4;      /* PANTONE 572C — MAJOR MAP MINT */
+  --mint-deep:#3E8A72;
+  --mint-tint:#EAF5F1;
+  --blue:#82A9EA;
+  --yellow:#EDDF7B;
+  --ink:#202B45;
+  --gray:#6B7280;
+  --line:#EEF0F4;
+  --bg:#FFFFFF;
+  --bg-alt:#F7F8FA;
+  font-family:"Wanted Sans Variable","Wanted Sans",-apple-system,"Segoe UI","Noto Sans KR",Roboto,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:inherit;color:var(--ink);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased;word-break:keep-all}
+a{text-decoration:none;color:inherit}
+.container{max-width:1140px;margin:0 auto;padding:0 24px}
+
+/* ---------- Wordmark (BI: slanted-cut first M) ---------- */
+.wordmark{font-weight:800;letter-spacing:-0.02em;color:var(--red);display:inline-flex;align-items:baseline;white-space:nowrap}
+.wordmark .wm{display:inline-block;clip-path:polygon(0 56%,30% 10%,100% 10%,100% 100%,0 100%)}
+.wordmark.on-dark{color:#fff}
+
+/* ---------- Reveal ---------- */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- Nav ---------- */
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:68px}
+.nav-logo{font-size:21px}
+.nav-links{display:flex;gap:30px;font-weight:600;font-size:15px;color:var(--navy)}
+.nav-links a:hover{color:var(--red)}
+.btn{display:inline-block;padding:13px 26px;border-radius:12px;font-weight:700;font-size:15px;transition:.2s;cursor:pointer;border:none}
+.btn-primary{background:var(--red);color:#fff}
+.btn-primary:hover{background:var(--red-deep);transform:translateY(-1px)}
+.btn-outline{border:2px solid var(--navy);color:var(--navy);background:transparent}
+.btn-outline:hover{background:var(--navy);color:#fff}
+.btn-white{background:#fff;color:var(--navy)}
+.btn-white:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.btn-lg{padding:17px 36px;font-size:17px;border-radius:14px}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;overflow:hidden;background:var(--navy);color:#fff;padding:120px 0 110px}
+.hero .container{position:relative;z-index:2}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#fff;font-weight:600;font-size:13.5px;padding:8px 16px;border-radius:999px;margin-bottom:30px;letter-spacing:.02em}
+.hero-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red)}
+.hero h1{font-size:62px;line-height:1.12;font-weight:800;letter-spacing:-0.03em;max-width:840px}
+.hero h1 .accent{color:var(--red-soft)}
+.hero-sub{font-size:20px;color:rgba(255,255,255,.72);margin:28px 0 42px;max-width:640px}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+/* deco M pattern */
+.hero-deco{position:absolute;right:-60px;bottom:-90px;font-weight:800;font-size:420px;line-height:1;color:rgba(255,255,255,.03);letter-spacing:-0.06em;user-select:none;pointer-events:none;z-index:1}
+/* knowledge-graph canvas */
+#graph-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.hero-veil{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(32,43,69,.88) 0%,rgba(32,43,69,.55) 46%,rgba(32,43,69,.05) 100%)}
+.hero-tech{display:inline-flex;align-items:center;gap:10px;margin-top:26px;font-size:14px;font-weight:600;color:rgba(255,255,255,.55);letter-spacing:.01em}
+.hero-tech .pulse{width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 0 rgba(144,198,180,.6);animation:pulseDot 2.2s infinite}
+@keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(144,198,180,.55)}70%{box-shadow:0 0 0 11px rgba(144,198,180,0)}100%{box-shadow:0 0 0 0 rgba(144,198,180,0)}}
+
+/* ---------- Stats band ---------- */
+.stats{background:var(--red);color:#fff;padding:54px 0}
+.stats-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:24px;text-align:center}
+.stat .num{font-size:34px;font-weight:800;letter-spacing:-0.02em;line-height:1.15}
+.stat .label{font-size:13.5px;font-weight:500;opacity:.85;margin-top:6px}
+
+/* ---------- Section base ---------- */
+section{padding:110px 0}
+.sec-eyebrow{color:var(--red);font-weight:800;font-size:14.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:18px}
+.sec-title{font-size:42px;font-weight:800;letter-spacing:-0.025em;line-height:1.25;color:var(--navy);max-width:760px}
+.sec-sub{font-size:18px;color:var(--gray);margin-top:20px;max-width:680px}
+
+/* ---------- Mission ---------- */
+.mission{background:var(--bg)}
+.mission-quote{font-size:34px;font-weight:700;line-height:1.5;letter-spacing:-0.02em;color:var(--navy);max-width:880px;margin-top:46px}
+.mission-quote .hl{color:var(--red)}
+.mission-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:64px}
+.mission-card{background:var(--bg-alt);border-radius:20px;padding:34px 30px}
+.mission-card .ic{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:18px}
+.mission-card h3{font-size:19px;font-weight:700;color:var(--navy);margin-bottom:10px}
+.mission-card p{font-size:15.5px;color:var(--gray)}
+
+/* ---------- Services ---------- */
+.services{background:var(--bg-alt)}
+.svc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;margin-top:64px}
+.svc-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:42px 38px;display:flex;flex-direction:column;transition:.25s;position:relative;overflow:hidden}
+.svc-card:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(32,43,69,.10)}
+.svc-tag{display:inline-block;font-size:12.5px;font-weight:800;letter-spacing:.08em;padding:6px 13px;border-radius:999px;margin-bottom:22px;width:fit-content}
+.tag-b2c{background:var(--red-tint);color:var(--red)}
+.tag-b2b{background:var(--mint-tint);color:var(--mint-deep)}
+.tag-global{background:#EDF2FC;color:#4A77C9}
+.tag-rnd{background:#FBF7E3;color:#9A8A1F}
+.svc-card h3{font-size:25px;font-weight:800;color:var(--navy);letter-spacing:-0.02em;margin-bottom:14px}
+.svc-card p{font-size:16px;color:var(--gray);flex:1}
+.svc-points{margin:22px 0 26px;display:flex;flex-direction:column;gap:10px}
+.svc-points li{list-style:none;font-size:15px;color:var(--navy-soft);display:flex;gap:10px;align-items:flex-start}
+.svc-points li::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--red);margin-top:8px}
+.svc-link{font-weight:700;color:var(--red);font-size:15.5px}
+.svc-link:hover{text-decoration:underline}
+
+/* ---------- Tech ---------- */
+.tech{background:var(--navy);color:#fff;position:relative;overflow:hidden}
+.tech .sec-title{color:#fff}
+.tech .sec-sub{color:rgba(255,255,255,.65)}
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:64px;position:relative;z-index:2}
+.tech-card{background:var(--navy-faint);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:36px 30px}
+.tech-card .ic{font-size:30px;margin-bottom:18px}
+.tech-card h3{font-size:19px;font-weight:700;margin-bottom:12px}
+.tech-card p{font-size:15px;color:rgba(255,255,255,.62)}
+.tech-deco{position:absolute;left:-40px;bottom:-110px;font-weight:800;font-size:380px;line-height:1;color:rgba(144,198,180,.06);letter-spacing:-0.06em;user-select:none;pointer-events:none}
+.tech-note{margin-top:46px;display:inline-flex;align-items:center;gap:12px;background:rgba(234,86,69,.12);border:1px solid rgba(234,86,69,.3);padding:14px 22px;border-radius:14px;font-size:15px;font-weight:600;position:relative;z-index:2}
+
+/* ---------- Global ---------- */
+.global{background:var(--bg)}
+.global-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:64px}
+.global-card{border-radius:24px;padding:38px 32px;display:flex;flex-direction:column;min-height:340px;transition:.25s;position:relative;overflow:hidden}
+.global-card:hover{transform:translateY(-4px)}
+.gc-us{background:linear-gradient(150deg,#FFF 0%,var(--red-tint) 100%);border:1px solid #F6D9D5}
+.gc-cn{background:var(--navy);color:#fff}
+.gc-id{background:linear-gradient(150deg,var(--mint-tint) 0%,#FBF7E3 100%);border:1px solid #D9EBE3}
+.global-card .flag{font-size:34px;margin-bottom:16px}
+.global-card .domain{font-size:13px;font-weight:700;letter-spacing:.04em;opacity:.6;margin-bottom:10px}
+.global-card h3{font-size:21px;font-weight:800;letter-spacing:-0.015em;margin-bottom:12px;line-height:1.35}
+.global-card p{font-size:15px;opacity:.75;flex:1}
+.global-card .glink{font-weight:700;font-size:15px;margin-top:22px;color:var(--red)}
+.gc-cn .glink{color:var(--red-soft)}
+.global-note{margin-top:44px;font-size:16px;color:var(--gray);text-align:center}
+
+/* ---------- History ---------- */
+.history{background:var(--bg-alt)}
+.timeline{margin-top:64px;display:flex;flex-direction:column;gap:0;max-width:760px}
+.t-item{display:grid;grid-template-columns:120px 36px 1fr;gap:0 8px}
+.t-year{font-weight:800;font-size:20px;color:var(--red);text-align:right;padding-right:8px;letter-spacing:-0.01em}
+.t-rail{position:relative;display:flex;justify-content:center}
+.t-rail::before{content:"";position:absolute;top:8px;bottom:-8px;width:2px;background:#E3E6ED}
+.t-item:last-child .t-rail::before{bottom:auto;height:18px}
+.t-dot{position:relative;z-index:1;width:14px;height:14px;border-radius:50%;background:#fff;border:4px solid var(--red);margin-top:6px}
+.t-body{padding:0 0 44px 16px}
+.t-body h4{font-size:18px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.t-body p{font-size:15px;color:var(--gray)}
+
+/* ---------- Recognition ---------- */
+.recog{background:var(--bg)}
+.recog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:60px}
+.recog-card{border:1px solid var(--line);border-radius:20px;padding:34px 30px;background:#fff}
+.recog-card .src{font-size:13px;font-weight:800;letter-spacing:.1em;color:var(--red);text-transform:uppercase;margin-bottom:14px}
+.recog-card h3{font-size:18.5px;font-weight:700;color:var(--navy);line-height:1.45;margin-bottom:10px}
+.recog-card p{font-size:14.5px;color:var(--gray)}
+
+/* ---------- CTA ---------- */
+.cta{background:var(--red);color:#fff;text-align:center;position:relative;overflow:hidden}
+.cta .container{position:relative;z-index:2}
+.cta h2{font-size:44px;font-weight:800;letter-spacing:-0.025em;line-height:1.25}
+.cta p{font-size:18px;opacity:.88;margin:22px auto 40px;max-width:560px}
+.cta-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.cta-deco{position:absolute;right:-80px;top:-60px;font-weight:800;font-size:340px;line-height:1;color:rgba(255,255,255,.07);letter-spacing:-0.06em;user-select:none;pointer-events:none}
+
+/* ---------- Footer ---------- */
+footer{background:var(--navy);color:rgba(255,255,255,.6);padding:64px 0 48px;font-size:14px}
+.foot-grid{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap}
+.foot-brand .wordmark{font-size:22px;margin-bottom:16px}
+.foot-brand p{max-width:340px;line-height:1.7}
+.foot-cols{display:flex;gap:64px;flex-wrap:wrap}
+.foot-col h5{color:#fff;font-size:14px;font-weight:700;margin-bottom:14px}
+.foot-col a{display:block;margin-bottom:9px}
+.foot-col a:hover{color:#fff}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.1);margin-top:48px;padding-top:28px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;color:rgba(255,255,255,.4)}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1024px){
+  .stats-grid{grid-template-columns:repeat(3,1fr);gap:34px 20px}
+  .mission-grid,.tech-grid,.global-grid,.recog-grid{grid-template-columns:1fr 1fr}
+  .hero h1{font-size:48px}
+}
+@media (max-width:720px){
+  .nav-links{display:none}
+  section{padding:80px 0}
+  .hero{padding:88px 0 80px}
+  .hero h1{font-size:36px}
+  .hero-sub{font-size:17px}
+  .sec-title{font-size:30px}
+  .mission-quote{font-size:24px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .svc-grid,.mission-grid,.tech-grid,.global-grid,.recog-grid{grid-template-columns:1fr}
+  .cta h2{font-size:32px}
+  .t-item{grid-template-columns:64px 30px 1fr}
+  .t-year{font-size:16px}
+  .hero-deco{font-size:260px;right:-40px;bottom:-60px}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<nav>
+  <div class="container nav-inner">
+    <a href="#" class="wordmark nav-logo" aria-label="MAJOR MAP"><span class="wm">M</span>AJOR&nbsp;MAP</a>
+    <div class="nav-links">
+      <a href="#mission">회사소개</a>
+      <a href="#services">사업영역</a>
+      <a href="#tech">기술</a>
+      <a href="#global">글로벌</a>
+      <a href="#history">연혁</a>
+      <a href="#contact">문의</a>
+    </div>
+    <a class="btn btn-primary" href="https://www.majormap.net" target="_blank" rel="noopener">메이저맵 바로가기</a>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <canvas id="graph-canvas" aria-hidden="true"></canvas>
+  <div class="hero-veil"></div>
+  <div class="hero-deco">M</div>
+  <div class="container">
+    <div class="hero-eyebrow"><span class="dot"></span>지식그래프 기반 진로 설계 기술 기업</div>
+    <h1>모든 학생이<br>자신만의 진로를<br><span class="accent">설계할 수 있도록.</span></h1>
+    <p class="hero-sub">메이저맵은 학과·대학·직업의 데이터를 하나의 지도로 연결합니다.
+대한민국 고등학생 6명 중 1명이 메이저맵으로 진로를 탐색하고, 이제 그 지도는 세계로 넓어지고 있습니다.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary btn-lg" href="#services">사업 살펴보기</a>
+      <a class="btn btn-white btn-lg" href="#contact">도입·제휴 문의</a>
+    </div>
+    <div class="hero-tech"><span class="pulse"></span>지금 이 순간에도 학과·직업·대학이 진로 지식그래프 위에서 연결되고 있습니다</div>
+  </div>
+</header>
+
+<!-- ================= STATS ================= -->
+<div class="stats">
+  <div class="container stats-grid">
+    <div class="stat reveal"><div class="num">56만+</div><div class="label">누적 가입자</div></div>
+    <div class="stat reveal"><div class="num">65만+</div><div class="label">누적 학과 추천</div></div>
+    <div class="stat reveal"><div class="num">500만회</div><div class="label">학과·직업 검색 누적</div></div>
+    <div class="stat reveal"><div class="num">6명 중 1명</div><div class="label">전국 고등학생 사용</div></div>
+    <div class="stat reveal"><div class="num">510개교</div><div class="label">누적 학교 방문</div></div>
+    <div class="stat reveal"><div class="num">3개국</div><div class="label">글로벌 서비스 진출</div></div>
+  </div>
+</div>
+
+<!-- ================= MISSION ================= -->
+<section class="mission" id="mission">
+  <div class="container">
+    <div class="sec-eyebrow reveal">Our Mission</div>
+    <h2 class="sec-title reveal">진로의 불확실함을,<br>데이터의 확신으로 바꿉니다</h2>
+    <p class="mission-quote reveal">학과를 정하는 일은 인생에서 가장 큰 결정 중 하나인데,
+정작 그 결정은 늘 <span class="hl">감과 소문</span>에 의존해 왔습니다.
+메이저맵은 흩어져 있던 학과·대학·직업·입시 정보를 연결해
+누구나 <span class="hl">자신의 데이터로 진로를 설계</span>하는 세상을 만듭니다.</p>
+    <div class="mission-grid">
+      <div class="mission-card reveal">
+        <div class="ic" style="background:var(--red-tint)">🧭</div>
+        <h3>발견 Discover</h3>
+        <p>관심사와 적성에서 출발해, 몰랐던 학과와 직업의 가능성을 발견하게 합니다.</p>
+      </div>
+      <div class="mission-card reveal">
+        <div class="ic" style="background:var(--mint-tint)">🔗</div>
+        <h3>연결 Connect</h3>
+        <p>학과–대학–직업–입시를 잇는 지식그래프로 정보와 사람을 연결합니다.</p>
+      </div>
+      <div class="mission-card reveal">
+        <div class="ic" style="background:#EDF2FC">🗺️</div>
+        <h3>설계 Design</h3>
+        <p>탐색에서 끝나지 않고, 학생 스스로 진로 경로를 설계하도록 돕습니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SERVICES ================= -->
+<section class="services" id="services">
+  <div class="container">
+    <div class="sec-eyebrow reveal">Business</div>
+    <h2 class="sec-title reveal">학생에서 학교, 그리고 세계로<br>진로 교육의 기준을 만듭니다</h2>
+    <div class="svc-grid">
+      <div class="svc-card reveal">
+        <span class="svc-tag tag-b2c">B2C 플랫폼</span>
+        <h3>메이저맵</h3>
+        <p>학과·대학·직업 고민을 끝내는 진로·진학 탐색 플랫폼.
+검사 한 번으로 나에게 맞는 학과를 찾고, 학과별 교육과정·진출 직업·입시 정보까지 한 번에 확인합니다.</p>
+        <ul class="svc-points">
+          <li>학과 찰떡 테스트 — 56문항으로 찾는 나에게 맞는 학과 (누적 추천 65만+)</li>
+          <li>학과별 워드클라우드 — 빅데이터로 보는 학과 핵심 키워드</li>
+          <li>학과·대학·직업 통합 검색과 웹·iOS·Android 앱</li>
+        </ul>
+        <a class="svc-link" href="https://www.majormap.net" target="_blank" rel="noopener">www.majormap.net →</a>
+      </div>
+      <div class="svc-card reveal">
+        <span class="svc-tag tag-b2b">B2B · 학교/기관</span>
+        <h3>메이저맵 플러스</h3>
+        <p>학교와 교육기관을 위한 진로교육 솔루션.
+2025년 한 해에만 250개 학교에서 진로 캠프를 운영했고, 전국 진로교사 5명 중 4명이 메이저맵을 활용합니다.</p>
+        <ul class="svc-points">
+          <li>중·고등학교 진로탐색 캠프 (만족도 85%)</li>
+          <li>웨이메이커(Waymaker) — 검사·탐색·로드맵·교과선택·주제탐구 원스톱 솔루션</li>
+          <li>진로교사·강사 전문 연수, 외국인 유학생 캠프</li>
+        </ul>
+        <a class="svc-link" href="https://plus.majormap.net" target="_blank" rel="noopener">plus.majormap.net →</a>
+      </div>
+      <div class="svc-card reveal">
+        <span class="svc-tag tag-global">Global</span>
+        <h3>메이저맵 글로벌</h3>
+        <p>전공 선택의 고민은 만국 공통입니다.
+한국에서 검증한 진로 설계 기술을 미국·중국·인도네시아 시장에 맞게 현지화해 확장하고 있습니다.</p>
+        <ul class="svc-points">
+          <li>미국 — AI Major-Fit 매칭과 커리어 데이터</li>
+          <li>중국 — 가오카오 志愿(지원) 설계 솔루션</li>
+          <li>인도네시아 — 모바일 퍼스트 전공 적성 테스트</li>
+        </ul>
+        <a class="svc-link" href="#global">글로벌 사업 자세히 보기 →</a>
+      </div>
+      <div class="svc-card reveal">
+        <span class="svc-tag tag-rnd">Data & AI</span>
+        <h3>진로 데이터 인텔리전스</h3>
+        <p>국내 최대 규모의 진로·진학 행동 데이터를 기반으로
+대학·교육청·연구기관과 함께 데이터 기반 진로교육 모델을 만듭니다.</p>
+        <ul class="svc-points">
+          <li>학과 선호·탐색 트렌드 데이터</li>
+          <li>대학·기관 대상 맞춤 데이터 협력</li>
+          <li>진로교육 효과성 연구 파트너십</li>
+        </ul>
+        <a class="svc-link" href="#contact">데이터 협력 문의 →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TECH ================= -->
+<section class="tech" id="tech">
+  <div class="tech-deco">M</div>
+  <div class="container">
+    <div class="sec-eyebrow reveal">Technology</div>
+    <h2 class="sec-title reveal">서비스 뒤에는,<br>진로에 특화된 지식그래프가 있습니다</h2>
+    <p class="sec-sub reveal">기술을 자랑하기 위해서가 아니라, 학생의 더 나은 결정을 위해 만듭니다.
+메이저맵의 모든 추천과 보고서는 자체 구축한 진로 지식그래프 위에서 동작합니다.</p>
+    <div class="tech-grid">
+      <div class="tech-card reveal">
+        <div class="ic">🕸️</div>
+        <h3>진로 지식그래프</h3>
+        <p>국내 140여 개 대학의 학과·커리큘럼을 AI로 분석해 학과·대학·직업·입시를 관계로 연결한 진로 특화 그래프. "이 학과를 나오면 어떤 길이 열리는가"에 데이터로 답합니다.</p>
+      </div>
+      <div class="tech-card reveal">
+        <div class="ic">🤖</div>
+        <h3>AI 추천 엔진</h3>
+        <p>진로 특화 언어모델과 그래프 추론을 결합해, 검사 결과·관심사·성적 맥락에 맞는 학과와 경로를 추천합니다.</p>
+      </div>
+      <div class="tech-card reveal">
+        <div class="ic">📊</div>
+        <h3>살아있는 데이터</h3>
+        <p>56만 사용자, 500만 건의 탐색 데이터가 그래프를 계속 학습시킵니다. 쓰일수록 정확해지는 진로의 지도입니다.</p>
+      </div>
+    </div>
+    <div class="tech-note reveal">🏆 영국 이코노미스트(The Economist) 선정 — 아시아 교육혁신 사례 'Technology for Change Asia'</div>
+  </div>
+</section>
+
+<!-- ================= GLOBAL ================= -->
+<section class="global" id="global">
+  <div class="container">
+    <div class="sec-eyebrow reveal">Global</div>
+    <h2 class="sec-title reveal">진로의 지도를,<br>세계의 언어로 그립니다</h2>
+    <p class="sec-sub reveal">미국 대학생 3명 중 1명은 전공을 바꾸고, 인도네시아 대학생 87%는 전공 선택을 후회합니다.
+한국에서 검증한 메이저맵의 기술이 각 나라의 입시·진로 시스템에 맞게 현지화되어 있습니다.</p>
+    <div class="global-grid">
+      <a class="global-card gc-us reveal" href="https://us.majormap.net" target="_blank" rel="noopener">
+        <div class="flag">🇺🇸</div>
+        <div class="domain">US.MAJORMAP.NET</div>
+        <h3>"Don't just pick a major.<br>Map it."</h3>
+        <p>전공은 4년, 10만 달러짜리 의사결정. AI Major-Fit 매칭과 실제 커리어 결과 데이터로 미국 고교생과 카운슬러를 돕습니다.</p>
+        <span class="glink">방문하기 →</span>
+      </a>
+      <a class="global-card gc-cn reveal" href="https://china.majormap.net" target="_blank" rel="noopener">
+        <div class="flag">🇨🇳</div>
+        <div class="domain">CHINA.MAJORMAP.NET</div>
+        <h3>"用数据，填好人生<br>第一份志愿"</h3>
+        <p>가오카오 1,342만 수험생의 志愿填报(지원서 작성)를 위한 冲·稳·保 스마트 지원표. 학생과 학부모가 같은 데이터로 결정합니다.</p>
+        <span class="glink">방문하기 →</span>
+      </a>
+      <a class="global-card gc-id reveal" href="https://idn.majormap.net" target="_blank" rel="noopener">
+        <div class="flag">🇮🇩</div>
+        <div class="domain">IDN.MAJORMAP.NET</div>
+        <h3>"Jangan Salah Jurusan"<br>전공 선택, 후회 없이</h3>
+        <p>'살라 주루산(전공 후회)' 87%의 나라에서, 모바일 퍼스트 적성 테스트와 전형별 입시 전략으로 인도네시아 고교생을 만납니다.</p>
+        <span class="glink">방문하기 →</span>
+      </a>
+    </div>
+    <p class="global-note reveal">유학생을 위한 한국 진학 서비스까지 — 메이저맵은 국경 없는 진로 설계 플랫폼으로 성장하고 있습니다.</p>
+  </div>
+</section>
+
+<!-- ================= HISTORY ================= -->
+<section class="history" id="history">
+  <div class="container">
+    <div class="sec-eyebrow reveal">History</div>
+    <h2 class="sec-title reveal">한 걸음씩, 진로교육의<br>기준을 만들어온 시간</h2>
+    <div class="timeline">
+      <div class="t-item reveal">
+        <div class="t-year">2018</div>
+        <div class="t-rail"><div class="t-dot"></div></div>
+        <div class="t-body"><h4>메이저맵 서비스 시작</h4><p>국내 140여 개 대학의 학과 커리큘럼을 AI로 분석해 학과 간 유사도를 지도로 그리다 — 메이저맵의 원형 탄생.</p></div>
+      </div>
+      <div class="t-item reveal">
+        <div class="t-year">2020</div>
+        <div class="t-rail"><div class="t-dot"></div></div>
+        <div class="t-body"><h4>주식회사 메이저맵 설립</h4><p>"학과 선택을 데이터로" — 법인 설립과 함께 회원 13만 명 돌파. 블루포인트파트너스·SOSV 투자 유치.</p></div>
+      </div>
+      <div class="t-item reveal">
+        <div class="t-year">2021–22</div>
+        <div class="t-rail"><div class="t-dot"></div></div>
+        <div class="t-body"><h4>플랫폼 성장과 학교 현장 진출</h4><p>입소문만으로 회원 30만 명 돌파. 웨이메이커 출시, 학교 캠프·교사 연수로 B2B 사업 확장 시작.</p></div>
+      </div>
+      <div class="t-item reveal">
+        <div class="t-year">2023–24</div>
+        <div class="t-rail"><div class="t-dot"></div></div>
+        <div class="t-body"><h4>전국 진로교육 인프라로</h4><p>전국 고등학생 6명 중 1명 사용, 진로교사 5명 중 4명 활용. 이코노미스트 아시아 교육혁신 사례 선정.</p></div>
+      </div>
+      <div class="t-item reveal">
+        <div class="t-year">2025</div>
+        <div class="t-rail"><div class="t-dot"></div></div>
+        <div class="t-body"><h4>250개교 캠프, 누적 510개교</h4><p>한 해 250개 학교 캠프 운영, 진로교사 연수 20회. 누적 가입자 56만 명, 검색 500만 회 돌파.</p></div>
+      </div>
+      <div class="t-item reveal">
+        <div class="t-year">2026</div>
+        <div class="t-rail"><div class="t-dot"></div></div>
+        <div class="t-body"><h4>글로벌 3개국 진출</h4><p>미국·중국·인도네시아 현지화 서비스 론칭. 지식그래프 기반 진로 설계 기술의 세계 시장 검증 시작.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RECOGNITION ================= -->
+<section class="recog" id="recog">
+  <div class="container">
+    <div class="sec-eyebrow reveal">Recognition</div>
+    <h2 class="sec-title reveal">현장과 세계가 먼저<br>알아본 변화</h2>
+    <div class="recog-grid">
+      <div class="recog-card reveal">
+        <div class="src">The Economist</div>
+        <h3>'Technology for Change Asia' 교육혁신 사례 선정</h3>
+        <p>아시아의 변화를 일으키는 기술로 메이저맵의 진로 설계 기술이 소개되었습니다.</p>
+      </div>
+      <div class="recog-card reveal">
+        <div class="src">학교 현장</div>
+        <h3>진로교사 5명 중 4명이 수업에서 활용</h3>
+        <p>전국 510개 학교 방문, 캠프 만족도 85% — 교사와 학생이 직접 검증한 솔루션입니다.</p>
+      </div>
+      <div class="recog-card reveal">
+        <div class="src">사회적 가치</div>
+        <h3>진로탐색 기회의 격차를 줄이는 임팩트</h3>
+        <p>지역과 환경에 관계없이 모든 학생에게 양질의 진로탐색 기회를 제공합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="cta" id="contact">
+  <div class="cta-deco">M</div>
+  <div class="container">
+    <h2 class="reveal">학생들의 다음 지도를<br>함께 그려주세요</h2>
+    <p class="reveal">학교·기관 도입, 데이터 협력, 글로벌 파트너십, 투자 문의 —
+어떤 이야기든 환영합니다.</p>
+    <div class="cta-actions reveal">
+      <a class="btn btn-white btn-lg" href="mailto:contact@themajormap.com">이메일 문의하기</a>
+      <a class="btn btn-lg" style="border:2px solid rgba(255,255,255,.7);color:#fff" href="https://plus.majormap.net" target="_blank" rel="noopener">학교·기관 도입 안내</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="wordmark on-dark"><span class="wm">M</span>AJOR&nbsp;MAP</div>
+        <p>메이저맵 주식회사<br>지식그래프 기반 진로 설계 기술 기업<br>대표 이중훈</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h5>서비스</h5>
+          <a href="https://www.majormap.net" target="_blank" rel="noopener">메이저맵</a>
+          <a href="https://plus.majormap.net" target="_blank" rel="noopener">메이저맵 플러스</a>
+        </div>
+        <div class="foot-col">
+          <h5>글로벌</h5>
+          <a href="https://us.majormap.net" target="_blank" rel="noopener">MajorMap US</a>
+          <a href="https://china.majormap.net" target="_blank" rel="noopener">MajorMap China</a>
+          <a href="https://idn.majormap.net" target="_blank" rel="noopener">MajorMap Indonesia</a>
+        </div>
+        <div class="foot-col">
+          <h5>회사</h5>
+          <a href="#mission">회사소개</a>
+          <a href="#history">연혁</a>
+          <a href="#contact">문의하기</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 MajorMap Inc. All rights reserved.</span>
+      <span>contact@themajormap.com</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+},{threshold:0.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ================= Knowledge-graph hero animation ================= */
+(function(){
+  const canvas = document.getElementById('graph-canvas');
+  if(!canvas) return;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ctx = canvas.getContext('2d');
+  const DPR = Math.min(window.devicePixelRatio||1, 2);
+  let W=0, H=0, nodes=[], pulses=[], labelPool=[], raf=null;
+
+  const LABELS = [
+    {t:'컴퓨터공학과', c:'red'},{t:'데이터 사이언티스트', c:'mint'},{t:'인공지능학과', c:'red'},
+    {t:'간호학과', c:'red'},{t:'UX 디자이너', c:'mint'},{t:'심리학과', c:'red'},
+    {t:'반도체공학과', c:'red'},{t:'머신러닝 엔지니어', c:'mint'},{t:'경영학과', c:'red'},
+    {t:'KAIST', c:'blue'},{t:'빅데이터전문가', c:'mint'},{t:'의예과', c:'red'},
+    {t:'로봇공학자', c:'mint'},{t:'미디어커뮤니케이션', c:'red'},{t:'서울대학교', c:'blue'},
+    {t:'바이오메디컬공학', c:'red'},{t:'게임 기획자', c:'mint'},{t:'연세대학교', c:'blue'}
+  ];
+  const COL = {red:'#EA5645', mint:'#90C6B4', blue:'#82A9EA', white:'rgba(255,255,255,.85)'};
+
+  function resize(){
+    const r = canvas.parentElement.getBoundingClientRect();
+    W = r.width; H = r.height;
+    canvas.width = W*DPR; canvas.height = H*DPR;
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    build();
+  }
+
+  function build(){
+    nodes=[]; pulses=[]; labelPool=[];
+    const isMobile = W < 720;
+    const N = isMobile ? 34 : Math.min(80, Math.round(W/17));
+    for(let i=0;i<N;i++){
+      const kind = Math.random();
+      nodes.push({
+        x: Math.random()*W, y: Math.random()*H,
+        vx:(Math.random()-.5)*.22, vy:(Math.random()-.5)*.22,
+        r: kind>.9 ? 4.2 : kind>.6 ? 2.8 : 1.8,
+        c: kind>.9 ? COL.red : kind>.72 ? COL.mint : kind>.58 ? COL.blue : COL.white,
+        hub: kind>.9
+      });
+    }
+    // labeled nodes: pick hubs & big nodes, prefer right side where text doesn't sit
+    const candidates = nodes.filter(n=>n.r>2.4);
+    const count = isMobile ? 3 : 6;
+    const shuffled = LABELS.slice().sort(()=>Math.random()-.5); // no duplicate labels
+    for(let i=0;i<count && i<candidates.length;i++){
+      const n = candidates[i];
+      n.x = W*(isMobile? .15+.7*Math.random() : .42+.5*Math.random());
+      labelPool.push({n, label: shuffled[i], phase: Math.random()*Math.PI*2});
+    }
+  }
+
+  const LINK = 130;
+  function step(){
+    ctx.clearRect(0,0,W,H);
+    const t = performance.now()/1000;
+
+    // move
+    for(const n of nodes){
+      n.x+=n.vx; n.y+=n.vy;
+      if(n.x<-20)n.x=W+20; if(n.x>W+20)n.x=-20;
+      if(n.y<-20)n.y=H+20; if(n.y>H+20)n.y=-20;
+    }
+    // edges
+    ctx.lineWidth = 1;
+    for(let i=0;i<nodes.length;i++){
+      const a=nodes[i];
+      for(let j=i+1;j<nodes.length;j++){
+        const b=nodes[j];
+        const dx=a.x-b.x, dy=a.y-b.y, d2=dx*dx+dy*dy;
+        if(d2<LINK*LINK){
+          const o=(1-Math.sqrt(d2)/LINK)*( (a.hub||b.hub)? .28 : .13);
+          ctx.strokeStyle=`rgba(255,255,255,${o})`;
+          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+          // occasionally spawn a traveling pulse on a hub edge
+          if(!reduced && (a.hub||b.hub) && pulses.length<7 && Math.random()<.002){
+            pulses.push({a,b,p:0,sp:.012+Math.random()*.012});
+          }
+        }
+      }
+    }
+    // traveling pulses
+    for(let i=pulses.length-1;i>=0;i--){
+      const p=pulses[i]; p.p+=p.sp;
+      if(p.p>=1){pulses.splice(i,1);continue;}
+      const x=p.a.x+(p.b.x-p.a.x)*p.p, y=p.a.y+(p.b.y-p.a.y)*p.p;
+      ctx.fillStyle='rgba(234,86,69,.9)';
+      ctx.beginPath(); ctx.arc(x,y,2.2,0,Math.PI*2); ctx.fill();
+    }
+    // nodes
+    for(const n of nodes){
+      if(n.hub){
+        const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,16);
+        g.addColorStop(0,'rgba(234,86,69,.35)'); g.addColorStop(1,'rgba(234,86,69,0)');
+        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(n.x,n.y,16,0,Math.PI*2); ctx.fill();
+      }
+      ctx.fillStyle=n.c;
+      ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2); ctx.fill();
+    }
+    // labels (fade in/out)
+    ctx.font='600 12px "Wanted Sans Variable","Wanted Sans",sans-serif';
+    for(const L of labelPool){
+      const a = .25+.45*(0.5+0.5*Math.sin(t*.5+L.phase));
+      const n=L.n, txt=L.label.t;
+      const wTxt = ctx.measureText(txt).width;
+      const bx=Math.max(8, Math.min(n.x+10, W-wTxt-26)), by=Math.max(8, Math.min(n.y-22, H-30));
+      ctx.fillStyle=`rgba(32,43,69,${a*.85})`;
+      ctx.strokeStyle=`rgba(255,255,255,${a*.25})`;
+      roundRect(bx,by,wTxt+18,21,10); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = L.label.c==='red'?`rgba(240,131,122,${a+.2})` : L.label.c==='mint'?`rgba(144,198,180,${a+.2})` : `rgba(130,169,234,${a+.2})`;
+      ctx.fillText(txt, bx+9, by+15);
+    }
+    if(!reduced) raf=requestAnimationFrame(step);
+  }
+  function roundRect(x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+  }
+
+  let rT; window.addEventListener('resize',()=>{clearTimeout(rT); rT=setTimeout(resize,150);});
+  resize();
+  step(); // draws once even with reduced motion
+})();
+</script>
+</body>
+</html>
