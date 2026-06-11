@@ -4,8 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>메이저맵 주식회사 — 데이터로 잇는 진로의 지도</title>
-<meta name="description" content="메이저맵은 지식그래프 기반 진로 설계 기술 기업입니다. 대한민국 고등학생 6명 중 1명이 사용하는 진로·진학 플랫폼을 만들고, 미국·중국·인도네시아로 확장하고 있습니다.">
+<meta name="description" id="meta-desc" content="메이저맵은 지식그래프 기반 진로 설계 기술 기업입니다. 대한민국 고등학생 6명 중 1명이 사용하는 진로·진학 플랫폼을 만들고, 미국·중국·인도네시아로 확장하고 있습니다.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --red:#EA5645;       /* PANTONE 2034C — MAJOR MAP RED */
@@ -30,6 +33,8 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:inherit;color:var(--ink);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased;word-break:keep-all}
+html[lang="zh-CN"] body{font-family:"Wanted Sans Variable","Wanted Sans","Noto Sans SC",-apple-system,"Segoe UI",sans-serif;word-break:normal}
+html[lang="id"] body,html[lang="en"] body{word-break:normal}
 a{text-decoration:none;color:inherit}
 .container{max-width:1140px;margin:0 auto;padding:0 24px}
 
@@ -44,10 +49,13 @@ a{text-decoration:none;color:inherit}
 
 /* ---------- Nav ---------- */
 nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-.nav-inner{display:flex;align-items:center;justify-content:space-between;height:68px}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:68px;gap:12px}
 .nav-logo{font-size:21px}
 .nav-links{display:flex;gap:30px;font-weight:600;font-size:15px;color:var(--navy)}
 .nav-links a:hover{color:var(--red)}
+.nav-cta{display:flex;align-items:center;gap:10px}
+.lang-select{appearance:none;-webkit-appearance:none;border:1.5px solid #DDE1E9;background:#fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" stroke="%23202B45" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>') no-repeat right 12px center;color:var(--navy);font-weight:700;font-size:13.5px;padding:9px 30px 9px 13px;border-radius:10px;cursor:pointer;font-family:inherit}
+.lang-select:hover{border-color:var(--navy)}
 .btn{display:inline-block;padding:13px 26px;border-radius:12px;font-weight:700;font-size:15px;transition:.2s;cursor:pointer;border:none}
 .btn-primary{background:var(--red);color:#fff}
 .btn-primary:hover{background:var(--red-deep);transform:translateY(-1px)}
@@ -61,7 +69,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-
 .hero{position:relative;overflow:hidden;background:var(--navy);color:#fff;padding:120px 0 110px}
 .hero .container{position:relative;z-index:2}
 .hero-eyebrow{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#fff;font-weight:600;font-size:13.5px;padding:8px 16px;border-radius:999px;margin-bottom:30px;letter-spacing:.02em}
-.hero-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red)}
+.hero-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex:none}
 .hero h1{font-size:62px;line-height:1.12;font-weight:800;letter-spacing:-0.03em;max-width:840px}
 .hero h1 .accent{color:var(--red-soft)}
 .hero-sub{font-size:20px;color:rgba(255,255,255,.72);margin:28px 0 42px;max-width:640px}
@@ -72,7 +80,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-
 #graph-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
 .hero-veil{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(32,43,69,.88) 0%,rgba(32,43,69,.55) 46%,rgba(32,43,69,.05) 100%)}
 .hero-tech{display:inline-flex;align-items:center;gap:10px;margin-top:26px;font-size:14px;font-weight:600;color:rgba(255,255,255,.55);letter-spacing:.01em}
-.hero-tech .pulse{width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 0 rgba(144,198,180,.6);animation:pulseDot 2.2s infinite}
+.hero-tech .pulse{width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 0 rgba(144,198,180,.6);animation:pulseDot 2.2s infinite;flex:none}
 @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(144,198,180,.55)}70%{box-shadow:0 0 0 11px rgba(144,198,180,0)}100%{box-shadow:0 0 0 0 rgba(144,198,180,0)}}
 
 /* ---------- Stats band ---------- */
@@ -191,6 +199,8 @@ footer{background:var(--navy);color:rgba(255,255,255,.6);padding:64px 0 48px;fon
 }
 @media (max-width:720px){
   .nav-links{display:none}
+  .nav-inner .btn{padding:11px 16px;font-size:13.5px}
+  .lang-select{padding:8px 26px 8px 10px;font-size:12.5px}
   section{padding:80px 0}
   .hero{padding:88px 0 80px}
   .hero h1{font-size:36px}
@@ -213,14 +223,22 @@ footer{background:var(--navy);color:rgba(255,255,255,.6);padding:64px 0 48px;fon
   <div class="container nav-inner">
     <a href="#" class="wordmark nav-logo" aria-label="MAJOR MAP"><span class="wm">M</span>AJOR&nbsp;MAP</a>
     <div class="nav-links">
-      <a href="#mission">회사소개</a>
-      <a href="#services">사업영역</a>
-      <a href="#tech">기술</a>
-      <a href="#global">글로벌</a>
-      <a href="#history">연혁</a>
-      <a href="#contact">문의</a>
+      <a href="#mission" data-i18n="nav_about">회사소개</a>
+      <a href="#services" data-i18n="nav_biz">사업영역</a>
+      <a href="#tech" data-i18n="nav_tech">기술</a>
+      <a href="#global" data-i18n="nav_global">글로벌</a>
+      <a href="#history" data-i18n="nav_history">연혁</a>
+      <a href="#contact" data-i18n="nav_contact">문의</a>
     </div>
-    <a class="btn btn-primary" href="https://www.majormap.net" target="_blank" rel="noopener">메이저맵 바로가기</a>
+    <div class="nav-cta">
+      <select id="lang-select" class="lang-select" aria-label="Language / 언어">
+        <option value="ko">한국어</option>
+        <option value="en">English</option>
+        <option value="zh">中文</option>
+        <option value="id">Bahasa Indonesia</option>
+      </select>
+      <a class="btn btn-primary" href="https://www.majormap.net" target="_blank" rel="noopener" data-i18n="nav_cta">메이저맵 바로가기</a>
+    </div>
   </div>
 </nav>
 
@@ -230,27 +248,27 @@ footer{background:var(--navy);color:rgba(255,255,255,.6);padding:64px 0 48px;fon
   <div class="hero-veil"></div>
   <div class="hero-deco">M</div>
   <div class="container">
-    <div class="hero-eyebrow"><span class="dot"></span>지식그래프 기반 진로 설계 기술 기업</div>
-    <h1>모든 학생이<br>자신만의 진로를<br><span class="accent">설계할 수 있도록.</span></h1>
-    <p class="hero-sub">메이저맵은 학과·대학·직업의 데이터를 하나의 지도로 연결합니다.
+    <div class="hero-eyebrow"><span class="dot"></span><span data-i18n="hero_eyebrow">지식그래프 기반 진로 설계 기술 기업</span></div>
+    <h1 data-i18n="hero_h1">모든 학생이<br>자신만의 진로를<br><span class="accent">설계할 수 있도록.</span></h1>
+    <p class="hero-sub" data-i18n="hero_sub">메이저맵은 학과·대학·직업의 데이터를 하나의 지도로 연결합니다.
 대한민국 고등학생 6명 중 1명이 메이저맵으로 진로를 탐색하고, 이제 그 지도는 세계로 넓어지고 있습니다.</p>
     <div class="hero-actions">
-      <a class="btn btn-primary btn-lg" href="#services">사업 살펴보기</a>
-      <a class="btn btn-white btn-lg" href="#contact">도입·제휴 문의</a>
+      <a class="btn btn-primary btn-lg" href="#services" data-i18n="hero_btn1">사업 살펴보기</a>
+      <a class="btn btn-white btn-lg" href="#contact" data-i18n="hero_btn2">도입·제휴 문의</a>
     </div>
-    <div class="hero-tech"><span class="pulse"></span>지금 이 순간에도 학과·직업·대학이 진로 지식그래프 위에서 연결되고 있습니다</div>
+    <div class="hero-tech"><span class="pulse"></span><span data-i18n="hero_tech">지금 이 순간에도 학과·직업·대학이 진로 지식그래프 위에서 연결되고 있습니다</span></div>
   </div>
 </header>
 
 <!-- ================= STATS ================= -->
 <div class="stats">
   <div class="container stats-grid">
-    <div class="stat reveal"><div class="num">56만+</div><div class="label">누적 가입자</div></div>
-    <div class="stat reveal"><div class="num">65만+</div><div class="label">누적 학과 추천</div></div>
-    <div class="stat reveal"><div class="num">500만회</div><div class="label">학과·직업 검색 누적</div></div>
-    <div class="stat reveal"><div class="num">6명 중 1명</div><div class="label">전국 고등학생 사용</div></div>
-    <div class="stat reveal"><div class="num">510개교</div><div class="label">누적 학교 방문</div></div>
-    <div class="stat reveal"><div class="num">3개국</div><div class="label">글로벌 서비스 진출</div></div>
+    <div class="stat reveal"><div class="num" data-i18n="s1n">56만+</div><div class="label" data-i18n="s1l">누적 가입자</div></div>
+    <div class="stat reveal"><div class="num" data-i18n="s2n">65만+</div><div class="label" data-i18n="s2l">누적 학과 추천</div></div>
+    <div class="stat reveal"><div class="num" data-i18n="s3n">500만회</div><div class="label" data-i18n="s3l">학과·직업 검색 누적</div></div>
+    <div class="stat reveal"><div class="num" data-i18n="s4n">6명 중 1명</div><div class="label" data-i18n="s4l">전국 고등학생 사용</div></div>
+    <div class="stat reveal"><div class="num" data-i18n="s5n">510개교</div><div class="label" data-i18n="s5l">누적 학교 방문</div></div>
+    <div class="stat reveal"><div class="num" data-i18n="s6n">3개국</div><div class="label" data-i18n="s6l">글로벌 서비스 진출</div></div>
   </div>
 </div>
 
@@ -258,26 +276,26 @@ footer{background:var(--navy);color:rgba(255,255,255,.6);padding:64px 0 48px;fon
 <section class="mission" id="mission">
   <div class="container">
     <div class="sec-eyebrow reveal">Our Mission</div>
-    <h2 class="sec-title reveal">진로의 불확실함을,<br>데이터의 확신으로 바꿉니다</h2>
-    <p class="mission-quote reveal">학과를 정하는 일은 인생에서 가장 큰 결정 중 하나인데,
+    <h2 class="sec-title reveal" data-i18n="m_title">진로의 불확실함을,<br>데이터의 확신으로 바꿉니다</h2>
+    <p class="mission-quote reveal" data-i18n="m_quote">학과를 정하는 일은 인생에서 가장 큰 결정 중 하나인데,
 정작 그 결정은 늘 <span class="hl">감과 소문</span>에 의존해 왔습니다.
 메이저맵은 흩어져 있던 학과·대학·직업·입시 정보를 연결해
 누구나 <span class="hl">자신의 데이터로 진로를 설계</span>하는 세상을 만듭니다.</p>
     <div class="mission-grid">
       <div class="mission-card reveal">
         <div class="ic" style="background:var(--red-tint)">🧭</div>
-        <h3>발견 Discover</h3>
-        <p>관심사와 적성에서 출발해, 몰랐던 학과와 직업의 가능성을 발견하게 합니다.</p>
+        <h3 data-i18n="m1h">발견 Discover</h3>
+        <p data-i18n="m1p">관심사와 적성에서 출발해, 몰랐던 학과와 직업의 가능성을 발견하게 합니다.</p>
       </div>
       <div class="mission-card reveal">
         <div class="ic" style="background:var(--mint-tint)">🔗</div>
-        <h3>연결 Connect</h3>
-        <p>학과–대학–직업–입시를 잇는 지식그래프로 정보와 사람을 연결합니다.</p>
+        <h3 data-i18n="m2h">연결 Connect</h3>
+        <p data-i18n="m2p">학과–대학–직업–입시를 잇는 지식그래프로 정보와 사람을 연결합니다.</p>
       </div>
       <div class="mission-card reveal">
         <div class="ic" style="background:#EDF2FC">🗺️</div>
-        <h3>설계 Design</h3>
-        <p>탐색에서 끝나지 않고, 학생 스스로 진로 경로를 설계하도록 돕습니다.</p>
+        <h3 data-i18n="m3h">설계 Design</h3>
+        <p data-i18n="m3p">탐색에서 끝나지 않고, 학생 스스로 진로 경로를 설계하도록 돕습니다.</p>
       </div>
     </div>
   </div>
@@ -287,55 +305,55 @@ footer{background:var(--navy);color:rgba(255,255,255,.6);padding:64px 0 48px;fon
 <section class="services" id="services">
   <div class="container">
     <div class="sec-eyebrow reveal">Business</div>
-    <h2 class="sec-title reveal">학생에서 학교, 그리고 세계로<br>진로 교육의 기준을 만듭니다</h2>
+    <h2 class="sec-title reveal" data-i18n="b_title">학생에서 학교, 그리고 세계로<br>진로 교육의 기준을 만듭니다</h2>
     <div class="svc-grid">
       <div class="svc-card reveal">
-        <span class="svc-tag tag-b2c">B2C 플랫폼</span>
-        <h3>메이저맵</h3>
-        <p>학과·대학·직업 고민을 끝내는 진로·진학 탐색 플랫폼.
+        <span class="svc-tag tag-b2c" data-i18n="b1tag">B2C 플랫폼</span>
+        <h3 data-i18n="b1h">메이저맵</h3>
+        <p data-i18n="b1p">학과·대학·직업 고민을 끝내는 진로·진학 탐색 플랫폼.
 검사 한 번으로 나에게 맞는 학과를 찾고, 학과별 교육과정·진출 직업·입시 정보까지 한 번에 확인합니다.</p>
         <ul class="svc-points">
-          <li>학과 찰떡 테스트 — 56문항으로 찾는 나에게 맞는 학과 (누적 추천 65만+)</li>
-          <li>학과별 워드클라우드 — 빅데이터로 보는 학과 핵심 키워드</li>
-          <li>학과·대학·직업 통합 검색과 웹·iOS·Android 앱</li>
+          <li data-i18n="b1p1">학과 찰떡 테스트 — 56문항으로 찾는 나에게 맞는 학과 (누적 추천 65만+)</li>
+          <li data-i18n="b1p2">학과별 워드클라우드 — 빅데이터로 보는 학과 핵심 키워드</li>
+          <li data-i18n="b1p3">학과·대학·직업 통합 검색과 웹·iOS·Android 앱</li>
         </ul>
         <a class="svc-link" href="https://www.majormap.net" target="_blank" rel="noopener">www.majormap.net →</a>
       </div>
       <div class="svc-card reveal">
-        <span class="svc-tag tag-b2b">B2B · 학교/기관</span>
-        <h3>메이저맵 플러스</h3>
-        <p>학교와 교육기관을 위한 진로교육 솔루션.
+        <span class="svc-tag tag-b2b" data-i18n="b2tag">B2B · 학교/기관</span>
+        <h3 data-i18n="b2h">메이저맵 플러스</h3>
+        <p data-i18n="b2p">학교와 교육기관을 위한 진로교육 솔루션.
 2025년 한 해에만 250개 학교에서 진로 캠프를 운영했고, 전국 진로교사 5명 중 4명이 메이저맵을 활용합니다.</p>
         <ul class="svc-points">
-          <li>중·고등학교 진로탐색 캠프 (만족도 85%)</li>
-          <li>웨이메이커(Waymaker) — 검사·탐색·로드맵·교과선택·주제탐구 원스톱 솔루션</li>
-          <li>진로교사·강사 전문 연수, 외국인 유학생 캠프</li>
+          <li data-i18n="b2p1">중·고등학교 진로탐색 캠프 (만족도 85%)</li>
+          <li data-i18n="b2p2">웨이메이커(Waymaker) — 검사·탐색·로드맵·교과선택·주제탐구 원스톱 솔루션</li>
+          <li data-i18n="b2p3">진로교사·강사 전문 연수, 외국인 유학생 캠프</li>
         </ul>
         <a class="svc-link" href="https://plus.majormap.net" target="_blank" rel="noopener">plus.majormap.net →</a>
       </div>
       <div class="svc-card reveal">
         <span class="svc-tag tag-global">Global</span>
-        <h3>메이저맵 글로벌</h3>
-        <p>전공 선택의 고민은 만국 공통입니다.
+        <h3 data-i18n="b3h">메이저맵 글로벌</h3>
+        <p data-i18n="b3p">전공 선택의 고민은 만국 공통입니다.
 한국에서 검증한 진로 설계 기술을 미국·중국·인도네시아 시장에 맞게 현지화해 확장하고 있습니다.</p>
         <ul class="svc-points">
-          <li>미국 — AI Major-Fit 매칭과 커리어 데이터</li>
-          <li>중국 — 가오카오 志愿(지원) 설계 솔루션</li>
-          <li>인도네시아 — 모바일 퍼스트 전공 적성 테스트</li>
+          <li data-i18n="b3p1">미국 — AI Major-Fit 매칭과 커리어 데이터</li>
+          <li data-i18n="b3p2">중국 — 가오카오 志愿(지원) 설계 솔루션</li>
+          <li data-i18n="b3p3">인도네시아 — 모바일 퍼스트 전공 적성 테스트</li>
         </ul>
-        <a class="svc-link" href="#global">글로벌 사업 자세히 보기 →</a>
+        <a class="svc-link" href="#global" data-i18n="b3link">글로벌 사업 자세히 보기 →</a>
       </div>
       <div class="svc-card reveal">
         <span class="svc-tag tag-rnd">Data & AI</span>
-        <h3>진로 데이터 인텔리전스</h3>
-        <p>국내 최대 규모의 진로·진학 행동 데이터를 기반으로
+        <h3 data-i18n="b4h">진로 데이터 인텔리전스</h3>
+        <p data-i18n="b4p">국내 최대 규모의 진로·진학 행동 데이터를 기반으로
 대학·교육청·연구기관과 함께 데이터 기반 진로교육 모델을 만듭니다.</p>
         <ul class="svc-points">
-          <li>학과 선호·탐색 트렌드 데이터</li>
-          <li>대학·기관 대상 맞춤 데이터 협력</li>
-          <li>진로교육 효과성 연구 파트너십</li>
+          <li data-i18n="b4p1">학과 선호·탐색 트렌드 데이터</li>
+          <li data-i18n="b4p2">대학·기관 대상 맞춤 데이터 협력</li>
+          <li data-i18n="b4p3">진로교육 효과성 연구 파트너십</li>
         </ul>
-        <a class="svc-link" href="#contact">데이터 협력 문의 →</a>
+        <a class="svc-link" href="#contact" data-i18n="b4link">데이터 협력 문의 →</a>
       </div>
     </div>
   </div>
@@ -346,27 +364,27 @@ footer{background:var(--navy);color:rgba(255,255,255,.6);padding:64px 0 48px;fon
   <div class="tech-deco">M</div>
   <div class="container">
     <div class="sec-eyebrow reveal">Technology</div>
-    <h2 class="sec-title reveal">서비스 뒤에는,<br>진로에 특화된 지식그래프가 있습니다</h2>
-    <p class="sec-sub reveal">기술을 자랑하기 위해서가 아니라, 학생의 더 나은 결정을 위해 만듭니다.
+    <h2 class="sec-title reveal" data-i18n="t_title">서비스 뒤에는,<br>진로에 특화된 지식그래프가 있습니다</h2>
+    <p class="sec-sub reveal" data-i18n="t_sub">기술을 자랑하기 위해서가 아니라, 학생의 더 나은 결정을 위해 만듭니다.
 메이저맵의 모든 추천과 보고서는 자체 구축한 진로 지식그래프 위에서 동작합니다.</p>
     <div class="tech-grid">
       <div class="tech-card reveal">
         <div class="ic">🕸️</div>
-        <h3>진로 지식그래프</h3>
-        <p>국내 140여 개 대학의 학과·커리큘럼을 AI로 분석해 학과·대학·직업·입시를 관계로 연결한 진로 특화 그래프. "이 학과를 나오면 어떤 길이 열리는가"에 데이터로 답합니다.</p>
+        <h3 data-i18n="t1h">진로 지식그래프</h3>
+        <p data-i18n="t1p">국내 140여 개 대학의 학과·커리큘럼을 AI로 분석해 학과·대학·직업·입시를 관계로 연결한 진로 특화 그래프. "이 학과를 나오면 어떤 길이 열리는가"에 데이터로 답합니다.</p>
       </div>
       <div class="tech-card reveal">
         <div class="ic">🤖</div>
-        <h3>AI 추천 엔진</h3>
-        <p>진로 특화 언어모델과 그래프 추론을 결합해, 검사 결과·관심사·성적 맥락에 맞는 학과와 경로를 추천합니다.</p>
+        <h3 data-i18n="t2h">AI 추천 엔진</h3>
+        <p data-i18n="t2p">진로 특화 언어모델과 그래프 추론을 결합해, 검사 결과·관심사·성적 맥락에 맞는 학과와 경로를 추천합니다.</p>
       </div>
       <div class="tech-card reveal">
         <div class="ic">📊</div>
-        <h3>살아있는 데이터</h3>
-        <p>56만 사용자, 500만 건의 탐색 데이터가 그래프를 계속 학습시킵니다. 쓰일수록 정확해지는 진로의 지도입니다.</p>
+        <h3 data-i18n="t3h">살아있는 데이터</h3>
+        <p data-i18n="t3p">56만 사용자, 500만 건의 탐색 데이터가 그래프를 계속 학습시킵니다. 쓰일수록 정확해지는 진로의 지도입니다.</p>
       </div>
     </div>
-    <div class="tech-note reveal">🏆 영국 이코노미스트(The Economist) 선정 — 아시아 교육혁신 사례 'Technology for Change Asia'</div>
+    <div class="tech-note reveal" data-i18n="t_note">🏆 영국 이코노미스트(The Economist) 선정 — 아시아 교육혁신 사례 'Technology for Change Asia'</div>
   </div>
 </section>
 
@@ -374,33 +392,33 @@ footer{background:var(--navy);color:rgba(255,255,255,.6);padding:64px 0 48px;fon
 <section class="global" id="global">
   <div class="container">
     <div class="sec-eyebrow reveal">Global</div>
-    <h2 class="sec-title reveal">진로의 지도를,<br>세계의 언어로 그립니다</h2>
-    <p class="sec-sub reveal">미국 대학생 3명 중 1명은 전공을 바꾸고, 인도네시아 대학생 87%는 전공 선택을 후회합니다.
+    <h2 class="sec-title reveal" data-i18n="g_title">진로의 지도를,<br>세계의 언어로 그립니다</h2>
+    <p class="sec-sub reveal" data-i18n="g_sub">미국 대학생 3명 중 1명은 전공을 바꾸고, 인도네시아 대학생 87%는 전공 선택을 후회합니다.
 한국에서 검증한 메이저맵의 기술이 각 나라의 입시·진로 시스템에 맞게 현지화되어 있습니다.</p>
     <div class="global-grid">
       <a class="global-card gc-us reveal" href="https://us.majormap.net" target="_blank" rel="noopener">
         <div class="flag">🇺🇸</div>
         <div class="domain">US.MAJORMAP.NET</div>
         <h3>"Don't just pick a major.<br>Map it."</h3>
-        <p>전공은 4년, 10만 달러짜리 의사결정. AI Major-Fit 매칭과 실제 커리어 결과 데이터로 미국 고교생과 카운슬러를 돕습니다.</p>
-        <span class="glink">방문하기 →</span>
+        <p data-i18n="g1p">전공은 4년, 10만 달러짜리 의사결정. AI Major-Fit 매칭과 실제 커리어 결과 데이터로 미국 고교생과 카운슬러를 돕습니다.</p>
+        <span class="glink" data-i18n="g_visit">방문하기 →</span>
       </a>
       <a class="global-card gc-cn reveal" href="https://china.majormap.net" target="_blank" rel="noopener">
         <div class="flag">🇨🇳</div>
         <div class="domain">CHINA.MAJORMAP.NET</div>
         <h3>"用数据，填好人生<br>第一份志愿"</h3>
-        <p>가오카오 1,342만 수험생의 志愿填报(지원서 작성)를 위한 冲·稳·保 스마트 지원표. 학생과 학부모가 같은 데이터로 결정합니다.</p>
-        <span class="glink">방문하기 →</span>
+        <p data-i18n="g2p">가오카오 1,342만 수험생의 志愿填报(지원서 작성)를 위한 冲·稳·保 스마트 지원표. 학생과 학부모가 같은 데이터로 결정합니다.</p>
+        <span class="glink" data-i18n="g_visit2">방문하기 →</span>
       </a>
       <a class="global-card gc-id reveal" href="https://idn.majormap.net" target="_blank" rel="noopener">
         <div class="flag">🇮🇩</div>
         <div class="domain">IDN.MAJORMAP.NET</div>
-        <h3>"Jangan Salah Jurusan"<br>전공 선택, 후회 없이</h3>
-        <p>'살라 주루산(전공 후회)' 87%의 나라에서, 모바일 퍼스트 적성 테스트와 전형별 입시 전략으로 인도네시아 고교생을 만납니다.</p>
-        <span class="glink">방문하기 →</span>
+        <h3 data-i18n="g3h">"Jangan Salah Jurusan"<br>전공 선택, 후회 없이</h3>
+        <p data-i18n="g3p">'살라 주루산(전공 후회)' 87%의 나라에서, 모바일 퍼스트 적성 테스트와 전형별 입시 전략으로 인도네시아 고교생을 만납니다.</p>
+        <span class="glink" data-i18n="g_visit3">방문하기 →</span>
       </a>
     </div>
-    <p class="global-note reveal">유학생을 위한 한국 진학 서비스까지 — 메이저맵은 국경 없는 진로 설계 플랫폼으로 성장하고 있습니다.</p>
+    <p class="global-note reveal" data-i18n="g_note">유학생을 위한 한국 진학 서비스까지 — 메이저맵은 국경 없는 진로 설계 플랫폼으로 성장하고 있습니다.</p>
   </div>
 </section>
 
@@ -408,37 +426,37 @@ footer{background:var(--navy);color:rgba(255,255,255,.6);padding:64px 0 48px;fon
 <section class="history" id="history">
   <div class="container">
     <div class="sec-eyebrow reveal">History</div>
-    <h2 class="sec-title reveal">한 걸음씩, 진로교육의<br>기준을 만들어온 시간</h2>
+    <h2 class="sec-title reveal" data-i18n="h_title">한 걸음씩, 진로교육의<br>기준을 만들어온 시간</h2>
     <div class="timeline">
       <div class="t-item reveal">
         <div class="t-year">2018</div>
         <div class="t-rail"><div class="t-dot"></div></div>
-        <div class="t-body"><h4>메이저맵 서비스 시작</h4><p>국내 140여 개 대학의 학과 커리큘럼을 AI로 분석해 학과 간 유사도를 지도로 그리다 — 메이저맵의 원형 탄생.</p></div>
+        <div class="t-body"><h4 data-i18n="h1h">메이저맵 서비스 시작</h4><p data-i18n="h1p">국내 140여 개 대학의 학과 커리큘럼을 AI로 분석해 학과 간 유사도를 지도로 그리다 — 메이저맵의 원형 탄생.</p></div>
       </div>
       <div class="t-item reveal">
         <div class="t-year">2020</div>
         <div class="t-rail"><div class="t-dot"></div></div>
-        <div class="t-body"><h4>주식회사 메이저맵 설립</h4><p>"학과 선택을 데이터로" — 법인 설립과 함께 회원 13만 명 돌파. 블루포인트파트너스·SOSV 투자 유치.</p></div>
+        <div class="t-body"><h4 data-i18n="h2h">주식회사 메이저맵 설립</h4><p data-i18n="h2p">"학과 선택을 데이터로" — 법인 설립과 함께 회원 13만 명 돌파. 블루포인트파트너스·SOSV 투자 유치.</p></div>
       </div>
       <div class="t-item reveal">
         <div class="t-year">2021–22</div>
         <div class="t-rail"><div class="t-dot"></div></div>
-        <div class="t-body"><h4>플랫폼 성장과 학교 현장 진출</h4><p>입소문만으로 회원 30만 명 돌파. 웨이메이커 출시, 학교 캠프·교사 연수로 B2B 사업 확장 시작.</p></div>
+        <div class="t-body"><h4 data-i18n="h3h">플랫폼 성장과 학교 현장 진출</h4><p data-i18n="h3p">입소문만으로 회원 30만 명 돌파. 웨이메이커 출시, 학교 캠프·교사 연수로 B2B 사업 확장 시작.</p></div>
       </div>
       <div class="t-item reveal">
         <div class="t-year">2023–24</div>
         <div class="t-rail"><div class="t-dot"></div></div>
-        <div class="t-body"><h4>전국 진로교육 인프라로</h4><p>전국 고등학생 6명 중 1명 사용, 진로교사 5명 중 4명 활용. 이코노미스트 아시아 교육혁신 사례 선정.</p></div>
+        <div class="t-body"><h4 data-i18n="h4h">전국 진로교육 인프라로</h4><p data-i18n="h4p">전국 고등학생 6명 중 1명 사용, 진로교사 5명 중 4명 활용. 이코노미스트 아시아 교육혁신 사례 선정.</p></div>
       </div>
       <div class="t-item reveal">
         <div class="t-year">2025</div>
         <div class="t-rail"><div class="t-dot"></div></div>
-        <div class="t-body"><h4>250개교 캠프, 누적 510개교</h4><p>한 해 250개 학교 캠프 운영, 진로교사 연수 20회. 누적 가입자 56만 명, 검색 500만 회 돌파.</p></div>
+        <div class="t-body"><h4 data-i18n="h5h">250개교 캠프, 누적 510개교</h4><p data-i18n="h5p">한 해 250개 학교 캠프 운영, 진로교사 연수 20회. 누적 가입자 56만 명, 검색 500만 회 돌파.</p></div>
       </div>
       <div class="t-item reveal">
         <div class="t-year">2026</div>
         <div class="t-rail"><div class="t-dot"></div></div>
-        <div class="t-body"><h4>글로벌 3개국 진출</h4><p>미국·중국·인도네시아 현지화 서비스 론칭. 지식그래프 기반 진로 설계 기술의 세계 시장 검증 시작.</p></div>
+        <div class="t-body"><h4 data-i18n="h6h">글로벌 3개국 진출</h4><p data-i18n="h6p">미국·중국·인도네시아 현지화 서비스 론칭. 지식그래프 기반 진로 설계 기술의 세계 시장 검증 시작.</p></div>
       </div>
     </div>
   </div>
@@ -448,22 +466,22 @@ footer{background:var(--navy);color:rgba(255,255,255,.6);padding:64px 0 48px;fon
 <section class="recog" id="recog">
   <div class="container">
     <div class="sec-eyebrow reveal">Recognition</div>
-    <h2 class="sec-title reveal">현장과 세계가 먼저<br>알아본 변화</h2>
+    <h2 class="sec-title reveal" data-i18n="r_title">현장과 세계가 먼저<br>알아본 변화</h2>
     <div class="recog-grid">
       <div class="recog-card reveal">
         <div class="src">The Economist</div>
-        <h3>'Technology for Change Asia' 교육혁신 사례 선정</h3>
-        <p>아시아의 변화를 일으키는 기술로 메이저맵의 진로 설계 기술이 소개되었습니다.</p>
+        <h3 data-i18n="r1h">'Technology for Change Asia' 교육혁신 사례 선정</h3>
+        <p data-i18n="r1p">아시아의 변화를 일으키는 기술로 메이저맵의 진로 설계 기술이 소개되었습니다.</p>
       </div>
       <div class="recog-card reveal">
-        <div class="src">학교 현장</div>
-        <h3>진로교사 5명 중 4명이 수업에서 활용</h3>
-        <p>전국 510개 학교 방문, 캠프 만족도 85% — 교사와 학생이 직접 검증한 솔루션입니다.</p>
+        <div class="src" data-i18n="r2s">학교 현장</div>
+        <h3 data-i18n="r2h">진로교사 5명 중 4명이 수업에서 활용</h3>
+        <p data-i18n="r2p">전국 510개 학교 방문, 캠프 만족도 85% — 교사와 학생이 직접 검증한 솔루션입니다.</p>
       </div>
       <div class="recog-card reveal">
-        <div class="src">사회적 가치</div>
-        <h3>진로탐색 기회의 격차를 줄이는 임팩트</h3>
-        <p>지역과 환경에 관계없이 모든 학생에게 양질의 진로탐색 기회를 제공합니다.</p>
+        <div class="src" data-i18n="r3s">사회적 가치</div>
+        <h3 data-i18n="r3h">진로탐색 기회의 격차를 줄이는 임팩트</h3>
+        <p data-i18n="r3p">지역과 환경에 관계없이 모든 학생에게 양질의 진로탐색 기회를 제공합니다.</p>
       </div>
     </div>
   </div>
@@ -473,12 +491,12 @@ footer{background:var(--navy);color:rgba(255,255,255,.6);padding:64px 0 48px;fon
 <section class="cta" id="contact">
   <div class="cta-deco">M</div>
   <div class="container">
-    <h2 class="reveal">학생들의 다음 지도를<br>함께 그려주세요</h2>
-    <p class="reveal">학교·기관 도입, 데이터 협력, 글로벌 파트너십, 투자 문의 —
+    <h2 class="reveal" data-i18n="c_title">학생들의 다음 지도를<br>함께 그려주세요</h2>
+    <p class="reveal" data-i18n="c_sub">학교·기관 도입, 데이터 협력, 글로벌 파트너십, 투자 문의 —
 어떤 이야기든 환영합니다.</p>
     <div class="cta-actions reveal">
-      <a class="btn btn-white btn-lg" href="mailto:contact@themajormap.com">이메일 문의하기</a>
-      <a class="btn btn-lg" style="border:2px solid rgba(255,255,255,.7);color:#fff" href="https://plus.majormap.net" target="_blank" rel="noopener">학교·기관 도입 안내</a>
+      <a class="btn btn-white btn-lg" href="mailto:contact@themajormap.com" data-i18n="c_btn1">이메일 문의하기</a>
+      <a class="btn btn-lg" style="border:2px solid rgba(255,255,255,.7);color:#fff" href="https://plus.majormap.net" target="_blank" rel="noopener" data-i18n="c_btn2">학교·기관 도입 안내</a>
     </div>
   </div>
 </section>
@@ -489,25 +507,25 @@ footer{background:var(--navy);color:rgba(255,255,255,.6);padding:64px 0 48px;fon
     <div class="foot-grid">
       <div class="foot-brand">
         <div class="wordmark on-dark"><span class="wm">M</span>AJOR&nbsp;MAP</div>
-        <p>메이저맵 주식회사<br>지식그래프 기반 진로 설계 기술 기업<br>대표 이중훈</p>
+        <p data-i18n="f_brand">메이저맵 주식회사<br>지식그래프 기반 진로 설계 기술 기업<br>대표 이중훈</p>
       </div>
       <div class="foot-cols">
         <div class="foot-col">
-          <h5>서비스</h5>
-          <a href="https://www.majormap.net" target="_blank" rel="noopener">메이저맵</a>
-          <a href="https://plus.majormap.net" target="_blank" rel="noopener">메이저맵 플러스</a>
+          <h5 data-i18n="f_c1">서비스</h5>
+          <a href="https://www.majormap.net" target="_blank" rel="noopener" data-i18n="f_c1a">메이저맵</a>
+          <a href="https://plus.majormap.net" target="_blank" rel="noopener" data-i18n="f_c1b">메이저맵 플러스</a>
         </div>
         <div class="foot-col">
-          <h5>글로벌</h5>
+          <h5 data-i18n="f_c2">글로벌</h5>
           <a href="https://us.majormap.net" target="_blank" rel="noopener">MajorMap US</a>
           <a href="https://china.majormap.net" target="_blank" rel="noopener">MajorMap China</a>
           <a href="https://idn.majormap.net" target="_blank" rel="noopener">MajorMap Indonesia</a>
         </div>
         <div class="foot-col">
-          <h5>회사</h5>
-          <a href="#mission">회사소개</a>
-          <a href="#history">연혁</a>
-          <a href="#contact">문의하기</a>
+          <h5 data-i18n="f_c3">회사</h5>
+          <a href="#mission" data-i18n="f_c3a">회사소개</a>
+          <a href="#history" data-i18n="f_c3b">연혁</a>
+          <a href="#contact" data-i18n="f_c3c">문의하기</a>
         </div>
       </div>
     </div>
@@ -519,28 +537,54 @@ footer{background:var(--navy);color:rgba(255,255,255,.6);padding:64px 0 48px;fon
 </footer>
 
 <script>
+/* ================= Scroll reveal ================= */
 const io = new IntersectionObserver((entries)=>{
   entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
 },{threshold:0.12});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
 /* ================= Knowledge-graph hero animation ================= */
-(function(){
-  const canvas = document.getElementById('graph-canvas');
-  if(!canvas) return;
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const ctx = canvas.getContext('2d');
-  const DPR = Math.min(window.devicePixelRatio||1, 2);
-  let W=0, H=0, nodes=[], pulses=[], labelPool=[], raf=null;
-
-  const LABELS = [
+const GRAPH_LABELS = {
+  ko: [
     {t:'컴퓨터공학과', c:'red'},{t:'데이터 사이언티스트', c:'mint'},{t:'인공지능학과', c:'red'},
     {t:'간호학과', c:'red'},{t:'UX 디자이너', c:'mint'},{t:'심리학과', c:'red'},
     {t:'반도체공학과', c:'red'},{t:'머신러닝 엔지니어', c:'mint'},{t:'경영학과', c:'red'},
     {t:'KAIST', c:'blue'},{t:'빅데이터전문가', c:'mint'},{t:'의예과', c:'red'},
     {t:'로봇공학자', c:'mint'},{t:'미디어커뮤니케이션', c:'red'},{t:'서울대학교', c:'blue'},
     {t:'바이오메디컬공학', c:'red'},{t:'게임 기획자', c:'mint'},{t:'연세대학교', c:'blue'}
-  ];
+  ],
+  en: [
+    {t:'Computer Science', c:'red'},{t:'Data Scientist', c:'mint'},{t:'AI Engineering', c:'red'},
+    {t:'Nursing', c:'red'},{t:'UX Designer', c:'mint'},{t:'Psychology', c:'red'},
+    {t:'Semiconductor Eng.', c:'red'},{t:'ML Engineer', c:'mint'},{t:'Business Admin', c:'red'},
+    {t:'KAIST', c:'blue'},{t:'Big Data Analyst', c:'mint'},{t:'Pre-Med', c:'red'},
+    {t:'Robotics Engineer', c:'mint'},{t:'Media & Communication', c:'red'},{t:'Seoul National Univ.', c:'blue'},
+    {t:'Biomedical Eng.', c:'red'},{t:'Game Designer', c:'mint'},{t:'Yonsei Univ.', c:'blue'}
+  ],
+  zh: [
+    {t:'计算机科学', c:'red'},{t:'数据科学家', c:'mint'},{t:'人工智能', c:'red'},
+    {t:'护理学', c:'red'},{t:'UX设计师', c:'mint'},{t:'心理学', c:'red'},
+    {t:'半导体工程', c:'red'},{t:'机器学习工程师', c:'mint'},{t:'工商管理', c:'red'},
+    {t:'KAIST', c:'blue'},{t:'大数据专家', c:'mint'},{t:'临床医学', c:'red'},
+    {t:'机器人工程师', c:'mint'},{t:'传媒学', c:'red'},{t:'首尔大学', c:'blue'},
+    {t:'生物医学工程', c:'red'},{t:'游戏策划', c:'mint'},{t:'延世大学', c:'blue'}
+  ],
+  id: [
+    {t:'Teknik Informatika', c:'red'},{t:'Data Scientist', c:'mint'},{t:'Kecerdasan Buatan', c:'red'},
+    {t:'Keperawatan', c:'red'},{t:'Desainer UX', c:'mint'},{t:'Psikologi', c:'red'},
+    {t:'Teknik Semikonduktor', c:'red'},{t:'Insinyur ML', c:'mint'},{t:'Manajemen Bisnis', c:'red'},
+    {t:'KAIST', c:'blue'},{t:'Analis Big Data', c:'mint'},{t:'Kedokteran', c:'red'},
+    {t:'Teknik Robotika', c:'mint'},{t:'Ilmu Komunikasi', c:'red'},{t:'Seoul National Univ.', c:'blue'},
+    {t:'Teknik Biomedis', c:'red'},{t:'Desainer Game', c:'mint'},{t:'Yonsei Univ.', c:'blue'}
+  ]
+};
+(function(){
+  const canvas = document.getElementById('graph-canvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const DPR = Math.min(window.devicePixelRatio||1, 2);
+  let W=0, H=0, nodes=[], pulses=[], labelPool=[], raf=null;
+  let LB = GRAPH_LABELS.ko;
   const COL = {red:'#EA5645', mint:'#90C6B4', blue:'#82A9EA', white:'rgba(255,255,255,.85)'};
 
   function resize(){
@@ -568,7 +612,7 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
     // labeled nodes: pick hubs & big nodes, prefer right side where text doesn't sit
     const candidates = nodes.filter(n=>n.r>2.4);
     const count = isMobile ? 3 : 6;
-    const shuffled = LABELS.slice().sort(()=>Math.random()-.5); // no duplicate labels
+    const shuffled = LB.slice().sort(()=>Math.random()-.5); // no duplicate labels
     for(let i=0;i<count && i<candidates.length;i++){
       const n = candidates[i];
       n.x = W*(isMobile? .15+.7*Math.random() : .42+.5*Math.random());
@@ -599,7 +643,7 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
           ctx.strokeStyle=`rgba(255,255,255,${o})`;
           ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
           // occasionally spawn a traveling pulse on a hub edge
-          if(!reduced && (a.hub||b.hub) && pulses.length<7 && Math.random()<.002){
+          if((a.hub||b.hub) && pulses.length<7 && Math.random()<.002){
             pulses.push({a,b,p:0,sp:.012+Math.random()*.012});
           }
         }
@@ -624,7 +668,7 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
       ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2); ctx.fill();
     }
     // labels (fade in/out)
-    ctx.font='600 12px "Wanted Sans Variable","Wanted Sans",sans-serif';
+    ctx.font='600 12px "Wanted Sans Variable","Wanted Sans","Noto Sans SC",sans-serif';
     for(const L of labelPool){
       const a = .25+.45*(0.5+0.5*Math.sin(t*.5+L.phase));
       const n=L.n, txt=L.label.t;
@@ -636,7 +680,7 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
       ctx.fillStyle = L.label.c==='red'?`rgba(240,131,122,${a+.2})` : L.label.c==='mint'?`rgba(144,198,180,${a+.2})` : `rgba(130,169,234,${a+.2})`;
       ctx.fillText(txt, bx+9, by+15);
     }
-    if(!reduced) raf=requestAnimationFrame(step);
+    raf=requestAnimationFrame(step);
   }
   function roundRect(x,y,w,h,r){
     ctx.beginPath();
@@ -645,8 +689,300 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
   }
 
   let rT; window.addEventListener('resize',()=>{clearTimeout(rT); rT=setTimeout(resize,150);});
+  window.addEventListener('mm:lang',(e)=>{ LB = GRAPH_LABELS[e.detail] || GRAPH_LABELS.ko; build(); });
   resize();
-  step(); // draws once even with reduced motion
+  step();
+})();
+
+/* ================= i18n ================= */
+const I18N = {
+ko: {
+  _title:'메이저맵 주식회사 — 데이터로 잇는 진로의 지도',
+  _desc:'메이저맵은 지식그래프 기반 진로 설계 기술 기업입니다. 대한민국 고등학생 6명 중 1명이 사용하는 진로·진학 플랫폼을 만들고, 미국·중국·인도네시아로 확장하고 있습니다.',
+  nav_about:'회사소개', nav_biz:'사업영역', nav_tech:'기술', nav_global:'글로벌', nav_history:'연혁', nav_contact:'문의', nav_cta:'메이저맵 바로가기',
+  hero_eyebrow:'지식그래프 기반 진로 설계 기술 기업',
+  hero_h1:'모든 학생이<br>자신만의 진로를<br><span class="accent">설계할 수 있도록.</span>',
+  hero_sub:'메이저맵은 학과·대학·직업의 데이터를 하나의 지도로 연결합니다. 대한민국 고등학생 6명 중 1명이 메이저맵으로 진로를 탐색하고, 이제 그 지도는 세계로 넓어지고 있습니다.',
+  hero_btn1:'사업 살펴보기', hero_btn2:'도입·제휴 문의',
+  hero_tech:'지금 이 순간에도 학과·직업·대학이 진로 지식그래프 위에서 연결되고 있습니다',
+  s1n:'56만+', s1l:'누적 가입자', s2n:'65만+', s2l:'누적 학과 추천', s3n:'500만회', s3l:'학과·직업 검색 누적',
+  s4n:'6명 중 1명', s4l:'전국 고등학생 사용', s5n:'510개교', s5l:'누적 학교 방문', s6n:'3개국', s6l:'글로벌 서비스 진출',
+  m_title:'진로의 불확실함을,<br>데이터의 확신으로 바꿉니다',
+  m_quote:'학과를 정하는 일은 인생에서 가장 큰 결정 중 하나인데, 정작 그 결정은 늘 <span class="hl">감과 소문</span>에 의존해 왔습니다. 메이저맵은 흩어져 있던 학과·대학·직업·입시 정보를 연결해 누구나 <span class="hl">자신의 데이터로 진로를 설계</span>하는 세상을 만듭니다.',
+  m1h:'발견 Discover', m1p:'관심사와 적성에서 출발해, 몰랐던 학과와 직업의 가능성을 발견하게 합니다.',
+  m2h:'연결 Connect', m2p:'학과–대학–직업–입시를 잇는 지식그래프로 정보와 사람을 연결합니다.',
+  m3h:'설계 Design', m3p:'탐색에서 끝나지 않고, 학생 스스로 진로 경로를 설계하도록 돕습니다.',
+  b_title:'학생에서 학교, 그리고 세계로<br>진로 교육의 기준을 만듭니다',
+  b1tag:'B2C 플랫폼', b1h:'메이저맵',
+  b1p:'학과·대학·직업 고민을 끝내는 진로·진학 탐색 플랫폼. 검사 한 번으로 나에게 맞는 학과를 찾고, 학과별 교육과정·진출 직업·입시 정보까지 한 번에 확인합니다.',
+  b1p1:'학과 찰떡 테스트 — 56문항으로 찾는 나에게 맞는 학과 (누적 추천 65만+)',
+  b1p2:'학과별 워드클라우드 — 빅데이터로 보는 학과 핵심 키워드',
+  b1p3:'학과·대학·직업 통합 검색과 웹·iOS·Android 앱',
+  b2tag:'B2B · 학교/기관', b2h:'메이저맵 플러스',
+  b2p:'학교와 교육기관을 위한 진로교육 솔루션. 2025년 한 해에만 250개 학교에서 진로 캠프를 운영했고, 전국 진로교사 5명 중 4명이 메이저맵을 활용합니다.',
+  b2p1:'중·고등학교 진로탐색 캠프 (만족도 85%)',
+  b2p2:'웨이메이커(Waymaker) — 검사·탐색·로드맵·교과선택·주제탐구 원스톱 솔루션',
+  b2p3:'진로교사·강사 전문 연수, 외국인 유학생 캠프',
+  b3h:'메이저맵 글로벌',
+  b3p:'전공 선택의 고민은 만국 공통입니다. 한국에서 검증한 진로 설계 기술을 미국·중국·인도네시아 시장에 맞게 현지화해 확장하고 있습니다.',
+  b3p1:'미국 — AI Major-Fit 매칭과 커리어 데이터', b3p2:'중국 — 가오카오 志愿(지원) 설계 솔루션', b3p3:'인도네시아 — 모바일 퍼스트 전공 적성 테스트',
+  b3link:'글로벌 사업 자세히 보기 →',
+  b4h:'진로 데이터 인텔리전스',
+  b4p:'국내 최대 규모의 진로·진학 행동 데이터를 기반으로 대학·교육청·연구기관과 함께 데이터 기반 진로교육 모델을 만듭니다.',
+  b4p1:'학과 선호·탐색 트렌드 데이터', b4p2:'대학·기관 대상 맞춤 데이터 협력', b4p3:'진로교육 효과성 연구 파트너십',
+  b4link:'데이터 협력 문의 →',
+  t_title:'서비스 뒤에는,<br>진로에 특화된 지식그래프가 있습니다',
+  t_sub:'기술을 자랑하기 위해서가 아니라, 학생의 더 나은 결정을 위해 만듭니다. 메이저맵의 모든 추천과 보고서는 자체 구축한 진로 지식그래프 위에서 동작합니다.',
+  t1h:'진로 지식그래프', t1p:'국내 140여 개 대학의 학과·커리큘럼을 AI로 분석해 학과·대학·직업·입시를 관계로 연결한 진로 특화 그래프. "이 학과를 나오면 어떤 길이 열리는가"에 데이터로 답합니다.',
+  t2h:'AI 추천 엔진', t2p:'진로 특화 언어모델과 그래프 추론을 결합해, 검사 결과·관심사·성적 맥락에 맞는 학과와 경로를 추천합니다.',
+  t3h:'살아있는 데이터', t3p:'56만 사용자, 500만 건의 탐색 데이터가 그래프를 계속 학습시킵니다. 쓰일수록 정확해지는 진로의 지도입니다.',
+  t_note:"🏆 영국 이코노미스트(The Economist) 선정 — 아시아 교육혁신 사례 'Technology for Change Asia'",
+  g_title:'진로의 지도를,<br>세계의 언어로 그립니다',
+  g_sub:'미국 대학생 3명 중 1명은 전공을 바꾸고, 인도네시아 대학생 87%는 전공 선택을 후회합니다. 한국에서 검증한 메이저맵의 기술이 각 나라의 입시·진로 시스템에 맞게 현지화되어 있습니다.',
+  g1p:'전공은 4년, 10만 달러짜리 의사결정. AI Major-Fit 매칭과 실제 커리어 결과 데이터로 미국 고교생과 카운슬러를 돕습니다.',
+  g2p:'가오카오 1,342만 수험생의 志愿填报(지원서 작성)를 위한 冲·稳·保 스마트 지원표. 학생과 학부모가 같은 데이터로 결정합니다.',
+  g3h:'"Jangan Salah Jurusan"<br>전공 선택, 후회 없이',
+  g3p:"'살라 주루산(전공 후회)' 87%의 나라에서, 모바일 퍼스트 적성 테스트와 전형별 입시 전략으로 인도네시아 고교생을 만납니다.",
+  g_visit:'방문하기 →', g_visit2:'방문하기 →', g_visit3:'방문하기 →',
+  g_note:'유학생을 위한 한국 진학 서비스까지 — 메이저맵은 국경 없는 진로 설계 플랫폼으로 성장하고 있습니다.',
+  h_title:'한 걸음씩, 진로교육의<br>기준을 만들어온 시간',
+  h1h:'메이저맵 서비스 시작', h1p:'국내 140여 개 대학의 학과 커리큘럼을 AI로 분석해 학과 간 유사도를 지도로 그리다 — 메이저맵의 원형 탄생.',
+  h2h:'주식회사 메이저맵 설립', h2p:'"학과 선택을 데이터로" — 법인 설립과 함께 회원 13만 명 돌파. 블루포인트파트너스·SOSV 투자 유치.',
+  h3h:'플랫폼 성장과 학교 현장 진출', h3p:'입소문만으로 회원 30만 명 돌파. 웨이메이커 출시, 학교 캠프·교사 연수로 B2B 사업 확장 시작.',
+  h4h:'전국 진로교육 인프라로', h4p:'전국 고등학생 6명 중 1명 사용, 진로교사 5명 중 4명 활용. 이코노미스트 아시아 교육혁신 사례 선정.',
+  h5h:'250개교 캠프, 누적 510개교', h5p:'한 해 250개 학교 캠프 운영, 진로교사 연수 20회. 누적 가입자 56만 명, 검색 500만 회 돌파.',
+  h6h:'글로벌 3개국 진출', h6p:'미국·중국·인도네시아 현지화 서비스 론칭. 지식그래프 기반 진로 설계 기술의 세계 시장 검증 시작.',
+  r_title:'현장과 세계가 먼저<br>알아본 변화',
+  r1h:"'Technology for Change Asia' 교육혁신 사례 선정", r1p:'아시아의 변화를 일으키는 기술로 메이저맵의 진로 설계 기술이 소개되었습니다.',
+  r2s:'학교 현장', r2h:'진로교사 5명 중 4명이 수업에서 활용', r2p:'전국 510개 학교 방문, 캠프 만족도 85% — 교사와 학생이 직접 검증한 솔루션입니다.',
+  r3s:'사회적 가치', r3h:'진로탐색 기회의 격차를 줄이는 임팩트', r3p:'지역과 환경에 관계없이 모든 학생에게 양질의 진로탐색 기회를 제공합니다.',
+  c_title:'학생들의 다음 지도를<br>함께 그려주세요',
+  c_sub:'학교·기관 도입, 데이터 협력, 글로벌 파트너십, 투자 문의 — 어떤 이야기든 환영합니다.',
+  c_btn1:'이메일 문의하기', c_btn2:'학교·기관 도입 안내',
+  f_brand:'메이저맵 주식회사<br>지식그래프 기반 진로 설계 기술 기업<br>대표 이중훈',
+  f_c1:'서비스', f_c1a:'메이저맵', f_c1b:'메이저맵 플러스', f_c2:'글로벌', f_c3:'회사', f_c3a:'회사소개', f_c3b:'연혁', f_c3c:'문의하기'
+},
+en: {
+  _title:'MajorMap Inc. — Mapping Careers with Data',
+  _desc:'MajorMap is a knowledge graph-based career design technology company. One in six Korean high school students uses our platform, now expanding to the US, China, and Indonesia.',
+  nav_about:'About', nav_biz:'Business', nav_tech:'Technology', nav_global:'Global', nav_history:'History', nav_contact:'Contact', nav_cta:'Go to MajorMap',
+  hero_eyebrow:'A knowledge graph-based career design technology company',
+  hero_h1:'So every student<br>can design a path<br><span class="accent">of their own.</span>',
+  hero_sub:'MajorMap connects data on majors, universities, and careers into a single map. One in six high school students in Korea explores their future with MajorMap — and now the map is expanding across the world.',
+  hero_btn1:'Explore Our Business', hero_btn2:'Partner With Us',
+  hero_tech:'Right now, majors, careers, and universities are being connected on our career knowledge graph',
+  s1n:'560K+', s1l:'Registered users', s2n:'650K+', s2l:'Major recommendations', s3n:'5M+', s3l:'Major & career searches',
+  s4n:'1 in 6', s4l:'Korean high schoolers use MajorMap', s5n:'510', s5l:'Schools visited', s6n:'3', s6l:'Global markets',
+  m_title:'Turning career uncertainty<br>into data-driven confidence',
+  m_quote:'Choosing a major is one of life’s biggest decisions — yet it has always relied on <span class="hl">hunches and hearsay</span>. MajorMap connects scattered information on majors, universities, careers, and admissions, building a world where anyone can <span class="hl">design their path with their own data</span>.',
+  m1h:'Discover', m1p:'Starting from interests and aptitudes, students discover majors and careers they never knew existed.',
+  m2h:'Connect', m2p:'Our knowledge graph links majors, universities, careers, and admissions — connecting information and people.',
+  m3h:'Design', m3p:'Beyond exploration, we help students design their own career path.',
+  b_title:'From students to schools to the world —<br>setting the standard for career education',
+  b1tag:'B2C Platform', b1h:'MajorMap',
+  b1p:'The career exploration platform that ends the agonizing over majors, universities, and careers. One assessment finds the majors that fit you, with each major’s curriculum, career outcomes, and admissions information in one place.',
+  b1p1:'Major Fit Test — 56 questions to find your best-fit major (650K+ recommendations)',
+  b1p2:'Major word clouds — every major’s key keywords, powered by big data',
+  b1p3:'Integrated major, university & career search on web, iOS, and Android',
+  b2tag:'B2B · Schools & Institutions', b2h:'MajorMap Plus',
+  b2p:'Career education solutions for schools and institutions. In 2025 alone we ran career camps at 250 schools, and 4 out of 5 career teachers nationwide use MajorMap.',
+  b2p1:'Career exploration camps for middle & high schools (85% satisfaction)',
+  b2p2:'Waymaker — a one-stop solution for assessment, exploration, roadmaps, course selection, and research projects',
+  b2p3:'Professional training for career teachers, plus camps for international students',
+  b3h:'MajorMap Global',
+  b3p:'The struggle to choose a major is universal. We are localizing our Korea-proven career design technology for the US, China, and Indonesia.',
+  b3p1:'United States — AI major-fit matching with real career data', b3p2:'China — smart Gaokao application planning', b3p3:'Indonesia — a mobile-first major aptitude test',
+  b3link:'See our global business →',
+  b4h:'Career Data Intelligence',
+  b4p:'Built on Korea’s largest career-exploration behavioral dataset, we develop data-driven career education models with universities, education offices, and research institutions.',
+  b4p1:'Major preference & exploration trend data', b4p2:'Custom data partnerships for universities and institutions', b4p3:'Research partnerships on career education effectiveness',
+  b4link:'Discuss a data partnership →',
+  t_title:'Behind our services lies<br>a knowledge graph built for careers',
+  t_sub:'We build technology not to show off, but to help students make better decisions. Every MajorMap recommendation and report runs on our proprietary career knowledge graph.',
+  t1h:'Career Knowledge Graph', t1p:'AI-analyzed curricula from 140+ Korean universities, linking majors, universities, careers, and admissions as relationships. It answers “where does this major lead?” with data.',
+  t2h:'AI Recommendation Engine', t2p:'A career-specialized language model combined with graph reasoning recommends majors and paths that fit each student’s assessment results, interests, and academic context.',
+  t3h:'Living Data', t3p:'560K users and 5 million searches keep training the graph — a career map that gets more accurate the more it is used.',
+  t_note:'🏆 Featured by The Economist — ‘Technology for Change Asia’ education innovation case',
+  g_title:'Drawing the career map<br>in the world’s languages',
+  g_sub:'One in three US college students changes majors, and 87% of Indonesian students regret their choice. MajorMap’s Korea-proven technology is localized for each country’s admissions and career systems.',
+  g1p:'Your major is a 4-year, $100K decision. AI major-fit matching and real career outcome data for US students and counselors.',
+  g2p:'Smart “reach–match–safety” application planning for 13.42 million Gaokao examinees. Students and parents decide on the same data.',
+  g3h:'"Jangan Salah Jurusan"<br>No more major regrets',
+  g3p:'In a country where 87% report “salah jurusan” (wrong major), we reach Indonesian students with a mobile-first aptitude test and strategies for every admission track.',
+  g_visit:'Visit →', g_visit2:'Visit →', g_visit3:'Visit →',
+  g_note:'Including services guiding international students to Korean universities — MajorMap is growing into a borderless career design platform.',
+  h_title:'Step by step, building<br>the standard for career education',
+  h1h:'MajorMap is born', h1p:'AI analysis of curricula from 140+ Korean universities mapped the similarity between majors — the prototype of MajorMap.',
+  h2h:'MajorMap Inc. founded', h2p:'“Choose your major with data” — incorporated with 130K members, backed by Bluepoint Partners and SOSV.',
+  h3h:'Growth and entry into schools', h3p:'300K members through word of mouth alone. Launched Waymaker and expanded into B2B with school camps and teacher training.',
+  h4h:'A nationwide career education infrastructure', h4p:'Used by 1 in 6 high schoolers and 4 in 5 career teachers nationwide. Featured by The Economist as an Asian education innovation case.',
+  h5h:'Camps at 250 schools, 510 cumulative', h5p:'Ran camps at 250 schools and 20 teacher training sessions in one year. Surpassed 560K members and 5 million searches.',
+  h6h:'Expansion into 3 countries', h6p:'Launched localized services for the US, China, and Indonesia — taking our knowledge graph technology to the global market.',
+  r_title:'Change recognized first<br>by classrooms and the world',
+  r1h:'Selected as a ‘Technology for Change Asia’ education innovation case', r1p:'MajorMap’s career design technology was featured among the technologies driving change in Asia.',
+  r2s:'In Schools', r2h:'4 out of 5 career teachers use it in class', r2p:'510 schools visited and 85% camp satisfaction — a solution proven by teachers and students themselves.',
+  r3s:'Social Impact', r3h:'Closing the gap in career exploration opportunities', r3p:'Quality career exploration for every student, regardless of region or circumstance.',
+  c_title:'Help us draw the next map<br>for students',
+  c_sub:'School and institutional adoption, data partnerships, global partnerships, investment — we welcome every conversation.',
+  c_btn1:'Email Us', c_btn2:'For Schools & Institutions',
+  f_brand:'MajorMap Inc.<br>A knowledge graph-based career design technology company<br>CEO Joonghoon Lee',
+  f_c1:'Services', f_c1a:'MajorMap', f_c1b:'MajorMap Plus', f_c2:'Global', f_c3:'Company', f_c3a:'About', f_c3b:'History', f_c3c:'Contact'
+},
+zh: {
+  _title:'株式会社MajorMap — 用数据绘制生涯地图',
+  _desc:'MajorMap是一家基于知识图谱的生涯规划科技公司。在韩国，每6名高中生中就有1人使用我们的平台，目前正拓展至美国、中国与印度尼西亚。',
+  nav_about:'公司介绍', nav_biz:'业务领域', nav_tech:'技术', nav_global:'全球业务', nav_history:'发展历程', nav_contact:'联系我们', nav_cta:'前往MajorMap',
+  hero_eyebrow:'基于知识图谱的生涯规划科技公司',
+  hero_h1:'让每一位学生<br>都能规划<br><span class="accent">属于自己的未来。</span>',
+  hero_sub:'MajorMap将专业、大学与职业数据连接成一张地图。在韩国，每6名高中生中就有1人通过MajorMap探索生涯方向，如今这张地图正走向世界。',
+  hero_btn1:'了解业务', hero_btn2:'合作咨询',
+  hero_tech:'此时此刻，专业、职业与大学正在生涯知识图谱上相互连接',
+  s1n:'56万+', s1l:'累计注册用户', s2n:'65万+', s2l:'累计专业推荐', s3n:'500万次', s3l:'专业·职业累计搜索',
+  s4n:'1/6', s4l:'韩国高中生使用比例', s5n:'510所', s5l:'累计到访学校', s6n:'3国', s6l:'全球服务布局',
+  m_title:'用数据的确定性，<br>取代生涯的不确定',
+  m_quote:'选择专业是人生中最重要的决定之一，但这个决定却一直依赖<span class="hl">直觉与道听途说</span>。MajorMap将分散的专业、大学、职业与升学信息连接起来，让每个人都能<span class="hl">用自己的数据规划自己的未来</span>。',
+  m1h:'发现 Discover', m1p:'从兴趣与特长出发，发现未曾了解的专业与职业可能。',
+  m2h:'连接 Connect', m2p:'以贯通专业—大学—职业—升学的知识图谱，连接信息与人。',
+  m3h:'规划 Design', m3p:'不止于探索，更帮助学生亲手规划自己的生涯路径。',
+  b_title:'从学生到学校，再到世界——<br>树立生涯教育的标准',
+  b1tag:'B2C平台', b1h:'MajorMap',
+  b1p:'终结专业、大学、职业烦恼的生涯探索平台。一次测评找到适合自己的专业，各专业的课程设置、就业方向与升学信息一站式掌握。',
+  b1p1:'专业匹配测试——56道题找到与你契合的专业（累计推荐65万+）',
+  b1p2:'专业词云——以大数据呈现各专业核心关键词',
+  b1p3:'专业·大学·职业一体化搜索，支持网页、iOS与Android',
+  b2tag:'B2B · 学校/机构', b2h:'MajorMap Plus',
+  b2p:'面向学校与教育机构的生涯教育解决方案。仅2025年一年就在250所学校开展生涯营，全韩国每5位生涯指导教师中就有4位在使用MajorMap。',
+  b2p1:'初高中生涯探索营（满意度85%）',
+  b2p2:'Waymaker——测评·探索·路线图·选课·课题研究一站式解决方案',
+  b2p3:'生涯教师专业研修，以及留学生生涯探索营',
+  b3h:'MajorMap全球业务',
+  b3p:'选专业的烦恼全世界都一样。我们将在韩国验证的生涯规划技术进行本地化，拓展至美国、中国与印度尼西亚市场。',
+  b3p1:'美国——AI专业匹配与真实职业数据', b3p2:'中国——高考志愿智能填报方案', b3p3:'印度尼西亚——移动优先的专业适配测试',
+  b3link:'了解全球业务 →',
+  b4h:'生涯数据智能',
+  b4p:'基于韩国最大规模的生涯·升学行为数据，与大学、教育厅及研究机构共建数据驱动的生涯教育模型。',
+  b4p1:'专业偏好与探索趋势数据', b4p2:'面向大学与机构的定制数据合作', b4p3:'生涯教育成效研究合作',
+  b4link:'数据合作咨询 →',
+  t_title:'服务的背后，<br>是专为生涯打造的知识图谱',
+  t_sub:'我们打造技术不是为了炫技，而是为了帮助学生做出更好的决定。MajorMap的每一次推荐与每一份报告，都运行在自主构建的生涯知识图谱之上。',
+  t1h:'生涯知识图谱', t1p:'以AI分析韩国140多所大学的专业与课程，将专业、大学、职业、升学以关系相连。用数据回答"读这个专业，未来会通向哪里"。',
+  t2h:'AI推荐引擎', t2p:'结合生涯专用语言模型与图谱推理，根据测评结果、兴趣与成绩情境，推荐适合的专业与路径。',
+  t3h:'持续生长的数据', t3p:'56万用户、500万次探索数据不断训练图谱。这张生涯地图，越被使用越精准。',
+  t_note:'🏆 英国《经济学人》评选——"Technology for Change Asia"亚洲教育创新案例',
+  g_title:'用世界的语言，<br>绘制生涯的地图',
+  g_sub:'美国大学生每3人中就有1人更换专业，印尼87%的大学生后悔自己的专业选择。MajorMap在韩国验证的技术，已针对各国的升学与生涯体系完成本地化。',
+  g1p:'专业是一项为期4年、价值10万美元的决定。以AI专业匹配与真实职业结果数据，服务美国高中生与升学顾问。',
+  g2p:'为1342万高考考生打造的冲·稳·保智能志愿表。学生与家长，用同一份数据共同决策。',
+  g3h:'"Jangan Salah Jurusan"<br>选专业，不后悔',
+  g3p:'在"选错专业"比例高达87%的国度，以移动优先的适配测试与各类升学通道策略，走近印尼高中生。',
+  g_visit:'访问 →', g_visit2:'访问 →', g_visit3:'访问 →',
+  g_note:'还包括面向留学生的韩国升学服务——MajorMap正在成长为无国界的生涯规划平台。',
+  h_title:'一步一个脚印，<br>树立生涯教育的标准',
+  h1h:'MajorMap服务起步', h1p:'以AI分析韩国140多所大学的专业课程，绘制专业相似度地图——MajorMap的雏形由此诞生。',
+  h2h:'株式会社MajorMap成立', h2p:'"用数据选专业"——公司成立之际会员突破13万，获Bluepoint Partners与SOSV投资。',
+  h3h:'平台增长，走进学校', h3p:'仅靠口碑会员突破30万。推出Waymaker，以校园营与教师研修开启B2B业务。',
+  h4h:'成为全国生涯教育基础设施', h4p:'全韩国每6名高中生中1人使用、每5位生涯教师中4位采用。入选《经济学人》亚洲教育创新案例。',
+  h5h:'一年250所学校，累计510所', h5p:'一年开展250所学校生涯营、20场教师研修。累计注册突破56万，搜索量突破500万次。',
+  h6h:'进军全球三国', h6p:'在美国、中国、印尼推出本地化服务，知识图谱生涯规划技术开始接受全球市场检验。',
+  r_title:'教育一线与世界，<br>率先见证的改变',
+  r1h:'入选"Technology for Change Asia"教育创新案例', r1p:'MajorMap的生涯规划技术，作为推动亚洲变革的技术之一获得介绍。',
+  r2s:'学校一线', r2h:'每5位生涯教师中4位在课堂使用', r2p:'到访全国510所学校，营队满意度85%——由师生亲身验证的解决方案。',
+  r3s:'社会价值', r3h:'缩小生涯探索机会差距的影响力', r3p:'无论地区与环境，让每一位学生都享有优质的生涯探索机会。',
+  c_title:'与我们一起，<br>为学生绘制下一张地图',
+  c_sub:'学校/机构引进、数据合作、全球合作、投资咨询——期待与您的每一次交流。',
+  c_btn1:'邮件咨询', c_btn2:'学校·机构引进指南',
+  f_brand:'株式会社MajorMap<br>基于知识图谱的生涯规划科技公司<br>CEO Joonghoon Lee',
+  f_c1:'服务', f_c1a:'MajorMap', f_c1b:'MajorMap Plus', f_c2:'全球', f_c3:'公司', f_c3a:'公司介绍', f_c3b:'发展历程', f_c3c:'联系我们'
+},
+id: {
+  _title:'MajorMap Inc. — Peta Karier Berbasis Data',
+  _desc:'MajorMap adalah perusahaan teknologi perancangan karier berbasis knowledge graph. Satu dari enam siswa SMA Korea memakai platform kami, kini berekspansi ke AS, Tiongkok, dan Indonesia.',
+  nav_about:'Tentang Kami', nav_biz:'Bisnis', nav_tech:'Teknologi', nav_global:'Global', nav_history:'Sejarah', nav_contact:'Kontak', nav_cta:'Buka MajorMap',
+  hero_eyebrow:'Perusahaan teknologi perancangan karier berbasis knowledge graph',
+  hero_h1:'Agar setiap siswa<br>dapat merancang<br><span class="accent">jalur kariernya sendiri.</span>',
+  hero_sub:'MajorMap menghubungkan data jurusan, universitas, dan karier menjadi satu peta. Satu dari enam siswa SMA di Korea menjelajahi masa depannya dengan MajorMap — dan kini peta itu meluas ke seluruh dunia.',
+  hero_btn1:'Jelajahi Bisnis Kami', hero_btn2:'Hubungi Kami',
+  hero_tech:'Saat ini pun, jurusan, karier, dan universitas terus terhubung di knowledge graph karier kami',
+  s1n:'560 rb+', s1l:'Pengguna terdaftar', s2n:'650 rb+', s2l:'Rekomendasi jurusan', s3n:'5 jt+', s3l:'Pencarian jurusan & karier',
+  s4n:'1 dari 6', s4l:'siswa SMA Korea memakainya', s5n:'510', s5l:'Sekolah dikunjungi', s6n:'3', s6l:'Negara layanan global',
+  m_title:'Mengubah keraguan karier<br>menjadi keyakinan berbasis data',
+  m_quote:'Memilih jurusan adalah salah satu keputusan terbesar dalam hidup — tetapi keputusan itu selama ini bergantung pada <span class="hl">firasat dan kabar angin</span>. MajorMap menghubungkan informasi jurusan, universitas, karier, dan penerimaan yang tersebar, menciptakan dunia di mana siapa pun dapat <span class="hl">merancang masa depan dengan datanya sendiri</span>.',
+  m1h:'Temukan', m1p:'Berangkat dari minat dan bakat, siswa menemukan jurusan dan karier yang belum pernah mereka ketahui.',
+  m2h:'Hubungkan', m2p:'Knowledge graph kami menautkan jurusan–universitas–karier–penerimaan, menghubungkan informasi dan manusia.',
+  m3h:'Rancang', m3p:'Tak berhenti pada eksplorasi — kami membantu siswa merancang sendiri jalur kariernya.',
+  b_title:'Dari siswa ke sekolah, hingga dunia —<br>menetapkan standar pendidikan karier',
+  b1tag:'Platform B2C', b1h:'MajorMap',
+  b1p:'Platform eksplorasi karier yang mengakhiri kebingungan memilih jurusan, universitas, dan karier. Satu tes untuk menemukan jurusan yang cocok, lengkap dengan kurikulum, prospek karier, dan info penerimaan di satu tempat.',
+  b1p1:'Tes Kecocokan Jurusan — 56 pertanyaan untuk menemukan jurusanmu (650 rb+ rekomendasi)',
+  b1p2:'Word cloud jurusan — kata kunci inti tiap jurusan berbasis big data',
+  b1p3:'Pencarian terpadu jurusan·universitas·karier di web, iOS, dan Android',
+  b2tag:'B2B · Sekolah/Lembaga', b2h:'MajorMap Plus',
+  b2p:'Solusi pendidikan karier untuk sekolah dan lembaga. Pada 2025 saja kami menggelar kamp karier di 250 sekolah, dan 4 dari 5 guru karier di Korea menggunakan MajorMap.',
+  b2p1:'Kamp eksplorasi karier SMP & SMA (kepuasan 85%)',
+  b2p2:'Waymaker — solusi satu pintu untuk tes, eksplorasi, peta jalan, pemilihan mata pelajaran, dan riset',
+  b2p3:'Pelatihan profesional guru karier serta kamp untuk siswa internasional',
+  b3h:'MajorMap Global',
+  b3p:'Kebingungan memilih jurusan dirasakan di mana-mana. Teknologi perancangan karier yang teruji di Korea kami lokalkan untuk pasar AS, Tiongkok, dan Indonesia.',
+  b3p1:'Amerika Serikat — pencocokan jurusan AI dengan data karier nyata', b3p2:'Tiongkok — perencanaan cerdas pilihan Gaokao', b3p3:'Indonesia — tes kecocokan jurusan mobile-first',
+  b3link:'Lihat bisnis global →',
+  b4h:'Inteligensi Data Karier',
+  b4p:'Berbasis data perilaku eksplorasi karier terbesar di Korea, kami membangun model pendidikan karier berbasis data bersama universitas, dinas pendidikan, dan lembaga riset.',
+  b4p1:'Data tren preferensi & eksplorasi jurusan', b4p2:'Kemitraan data khusus untuk universitas dan lembaga', b4p3:'Kemitraan riset efektivitas pendidikan karier',
+  b4link:'Tanyakan kerja sama data →',
+  t_title:'Di balik layanan kami,<br>ada knowledge graph khusus karier',
+  t_sub:'Kami membangun teknologi bukan untuk pamer, melainkan demi keputusan siswa yang lebih baik. Setiap rekomendasi dan laporan MajorMap berjalan di atas knowledge graph karier yang kami bangun sendiri.',
+  t1h:'Knowledge Graph Karier', t1p:'Kurikulum 140+ universitas Korea dianalisis AI, menghubungkan jurusan, universitas, karier, dan penerimaan sebagai relasi. Menjawab "jurusan ini membuka jalan ke mana?" dengan data.',
+  t2h:'Mesin Rekomendasi AI', t2p:'Memadukan model bahasa khusus karier dengan penalaran graf untuk merekomendasikan jurusan dan jalur sesuai hasil tes, minat, dan konteks akademik siswa.',
+  t3h:'Data yang Hidup', t3p:'560 ribu pengguna dan 5 juta data pencarian terus melatih graf ini. Peta karier yang semakin dipakai semakin akurat.',
+  t_note:"🏆 Dipilih The Economist — kasus inovasi pendidikan 'Technology for Change Asia'",
+  g_title:'Menggambar peta karier<br>dalam bahasa dunia',
+  g_sub:'Satu dari tiga mahasiswa AS pindah jurusan, dan 87% mahasiswa Indonesia menyesali pilihan jurusannya. Teknologi MajorMap yang teruji di Korea dilokalkan sesuai sistem penerimaan dan karier tiap negara.',
+  g1p:'Jurusan adalah keputusan 4 tahun senilai $100 ribu. Pencocokan jurusan AI dan data hasil karier nyata untuk siswa serta konselor AS.',
+  g2p:'Perencanaan pilihan "ambisius–stabil–aman" untuk 13,42 juta peserta Gaokao. Siswa dan orang tua memutuskan dengan data yang sama.',
+  g3h:'"Jangan Salah Jurusan"<br>Pilih jurusan tanpa menyesal',
+  g3p:'Di negara dengan 87% "salah jurusan", kami hadir untuk siswa SMA Indonesia lewat tes minat-bakat mobile-first dan strategi tiap jalur masuk PTN.',
+  g_visit:'Kunjungi →', g_visit2:'Kunjungi →', g_visit3:'Kunjungi →',
+  g_note:'Termasuk layanan studi ke Korea bagi siswa internasional — MajorMap tumbuh menjadi platform perancangan karier tanpa batas negara.',
+  h_title:'Selangkah demi selangkah<br>membangun standar pendidikan karier',
+  h1h:'Layanan MajorMap dimulai', h1p:'Analisis AI kurikulum 140+ universitas Korea memetakan kemiripan antarjurusan — cikal bakal MajorMap.',
+  h2h:'MajorMap Inc. didirikan', h2p:'"Pilih jurusan dengan data" — berbadan hukum dengan 130 ribu anggota, didukung Bluepoint Partners dan SOSV.',
+  h3h:'Pertumbuhan dan masuk ke sekolah', h3p:'300 ribu anggota hanya lewat mulut ke mulut. Meluncurkan Waymaker serta memperluas B2B lewat kamp sekolah dan pelatihan guru.',
+  h4h:'Infrastruktur pendidikan karier nasional', h4p:'Dipakai 1 dari 6 siswa SMA dan 4 dari 5 guru karier se-Korea. Dipilih The Economist sebagai kasus inovasi pendidikan Asia.',
+  h5h:'Kamp di 250 sekolah, total 510', h5p:'Menggelar kamp di 250 sekolah dan 20 pelatihan guru dalam setahun. Melampaui 560 ribu anggota dan 5 juta pencarian.',
+  h6h:'Ekspansi ke 3 negara', h6p:'Meluncurkan layanan terlokalisasi di AS, Tiongkok, dan Indonesia — membawa teknologi knowledge graph ke pasar global.',
+  r_title:'Perubahan yang lebih dulu diakui<br>sekolah dan dunia',
+  r1h:"Terpilih sebagai kasus inovasi pendidikan 'Technology for Change Asia'", r1p:'Teknologi perancangan karier MajorMap diperkenalkan sebagai salah satu teknologi penggerak perubahan di Asia.',
+  r2s:'Di Sekolah', r2h:'4 dari 5 guru karier memakainya di kelas', r2p:'510 sekolah dikunjungi, kepuasan kamp 85% — solusi yang dibuktikan langsung oleh guru dan siswa.',
+  r3s:'Dampak Sosial', r3h:'Mempersempit kesenjangan kesempatan eksplorasi karier', r3p:'Eksplorasi karier berkualitas bagi setiap siswa, apa pun daerah dan kondisinya.',
+  c_title:'Mari menggambar peta berikutnya<br>untuk para siswa',
+  c_sub:'Adopsi sekolah/lembaga, kemitraan data, kemitraan global, investasi — kami terbuka untuk setiap pembicaraan.',
+  c_btn1:'Kirim Email', c_btn2:'Untuk Sekolah & Lembaga',
+  f_brand:'MajorMap Inc.<br>Perusahaan teknologi perancangan karier berbasis knowledge graph<br>CEO Joonghoon Lee',
+  f_c1:'Layanan', f_c1a:'MajorMap', f_c1b:'MajorMap Plus', f_c2:'Global', f_c3:'Perusahaan', f_c3a:'Tentang Kami', f_c3b:'Sejarah', f_c3c:'Kontak'
+}
+};
+
+const HTML_LANG = {ko:'ko', en:'en', zh:'zh-CN', id:'id'};
+function setLang(lang){
+  const dict = I18N[lang] || I18N.ko;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const v = dict[el.getAttribute('data-i18n')];
+    if(v != null) el.innerHTML = v;
+  });
+  document.documentElement.setAttribute('lang', HTML_LANG[lang] || 'ko');
+  document.title = dict._title;
+  const md = document.getElementById('meta-desc');
+  if(md) md.setAttribute('content', dict._desc);
+  const sel = document.getElementById('lang-select');
+  if(sel && sel.value !== lang) sel.value = lang;
+  try{ localStorage.setItem('mm-lang', lang); }catch(e){}
+  window.dispatchEvent(new CustomEvent('mm:lang', {detail: lang}));
+}
+document.getElementById('lang-select').addEventListener('change', e=>setLang(e.target.value));
+(function(){
+  let saved = null;
+  try{ saved = localStorage.getItem('mm-lang'); }catch(e){}
+  if(saved && I18N[saved] && saved !== 'ko') setLang(saved);
 })();
 </script>
 </body>
